@@ -24,10 +24,15 @@ function off_organizer(Action &$action)
     $dirid = $action->getArgument("dirid");
     $nav = new ws_Navigate($action);
     if ($domainId) {
-        $fld = new_Doc($action->dbaccess, $domainId);
-        if (!$fld->isAlive()) $action->exitError(sprintf(_("document %s not found"), $domainId));
-        $spaces = new SearchDoc($action->dbaccess);
-        $spaces->addFilter("id=%d", $fld->initid);
+        
+        $spaces = new SearchDoc($action->dbaccess,'OFFLINEDOMAIN');
+        if ($domainId != 'all') {
+            $fld = new_Doc($action->dbaccess, $domainId);
+            if (!$fld->isAlive()) $action->exitError(sprintf(_("document %s not found"), $domainId));
+            
+            $spaces->addFilter("id=%d", $fld->initid);
+            $domainId=$fld->initid;
+        }
         $nav->setSpaces($spaces);
         if (method_exists($fld, "getFamilies")) {
             $families = $fld->getFamilies();
@@ -45,9 +50,9 @@ function off_organizer(Action &$action)
     
     if ($dirid) {
         $nav->setInitialFolder($dirid);
-    } else if ($domainId) {
+    } else if ($domainId  && ($domainId!='all')) {
         $nav->setInitialFolder($domainId);
-        
+    
     }
     
     $nav->viewMySpace(false);
