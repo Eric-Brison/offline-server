@@ -550,6 +550,11 @@ class _OFFLINEDOMAIN extends Dir
         }
         return $err;
     }
+    
+    /**
+     * send events for workspace interface
+     * @param Doc $doc
+     */
     private static function sendEvents(Doc &$doc)
     {
         global $action;
@@ -788,6 +793,11 @@ class _OFFLINEDOMAIN extends Dir
         return null;
     }
     
+    /**
+     * return all documents reserved by user
+     * @param int $userId system user identificator
+     * @retrun array of document id
+     */
     public function getReservedDocumentIds($userId = 0)
     {
         $ids = array();
@@ -869,6 +879,10 @@ class _OFFLINEDOMAIN extends Dir
         //$this->createSubDirectories();
     }
     
+    /**
+     * refernece must be unique
+     * 
+     */
     public function preCreated()
     {
         $ref = $this->getValue("off_ref");
@@ -878,7 +892,9 @@ class _OFFLINEDOMAIN extends Dir
         }
         return '';
     }
-    
+    /**
+     * create user subdirectories
+     */
     public function postCreated()
     {
         $ref = $this->getValue("off_ref");
@@ -890,10 +906,16 @@ class _OFFLINEDOMAIN extends Dir
         return $err;
     }
     
+    /**
+     * add unique logical name for shared folder
+     */
     private function getShareId()
     {
         return sprintf("offshared_%s", $this->name);
     }
+    /**
+     * add unique logical name for user folder
+     */
     private function getUserFolderId($login)
     {
         return sprintf("offuser_%s_%s", $this->name, $login);
@@ -1045,6 +1067,38 @@ class _OFFLINEDOMAIN extends Dir
             }
         }
         return $this->hookObject;
+    }
+    
+    /**
+     * delete all user folder not used
+     * domain unlock all documents which are not in a domain folder
+     */
+    public function cleanAll()
+    {
+        include_once("FDL/Class.SearchDoc.php");
+        $users = $this->getUserMembersInfo();
+        $userIds = implode(',', array_keys($users));
+        $sql = sprintf("update doc set lockdomainid = null where lockdomainid = %d and locked > 0 and locked not in (%s)", $this->id, $userIds);
+        
+        $err = $this->exec_query($sql);
+        $fuid = array();
+        foreach ( $users as $u ) {
+            $fuid[] = $u["docid"];
+        }
+        if (count($fuid) > 0) {
+            $userFids="'".implode("','",$fuid)."'";
+            $s = new SearchDoc($this->dbaccess, "OFFLINEFOLDER");
+            $s->only=true;
+            $s->addFilter("off_domain = '%d'", $this->id);
+            $s->addFilter(sprintf("off_user not in (%s)", $userFids));
+            $s->setObjectReturn();
+            $s->search();
+            while ( $doc = $s->nextDoc() ) {
+                $err .= $doc->delete();
+            }
+        }
+
+        return $err;
     }
     
 /*
