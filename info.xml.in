@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<module name="dynacase-offline" disabled="no" version="@VERSION@" release="@RELEASE@">
+  <description>Dynacase Offline is the component to access to Dynacase in offline mode</description>
+
+  <replaces>
+        <module name="freedom-offline" />
+  </replaces>
+
+  <requires>
+    <module name="dynacase-workspace" />
+  </requires>
+  
+  <post-install>
+    <process command="programs/record_application @APPNAME@" />
+    
+     <process command="./wsh.php --api=freedom_import --file=./@APPNAME@/offlineFamilies.ods">
+            <label lang="en">Create offline families</label>
+        </process>
+     <process command="./wsh.php --api=freedom_import --file=./@APPNAME@/offlineProfils.ods">
+            <label lang="en">Create offline profils</label>
+        </process>
+    <process command="programs/update_catalog" />
+  </post-install>
+ 
+  <post-upgrade>
+    <process command="programs/pre_migration @APPNAME@" />
+    <process command="programs/record_application @APPNAME@" />
+     <process command="./wsh.php --api=freedom_import --reinitattr=no --file=./@APPNAME@/offlineFamilies.ods">
+            <label lang="en">Update offline families</label>
+        </process>
+    <process command="programs/post_migration @APPNAME@" />
+    <process command="programs/update_catalog" />
+  </post-upgrade>
+</module>
