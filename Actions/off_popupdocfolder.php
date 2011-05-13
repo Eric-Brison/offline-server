@@ -93,13 +93,13 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
             if ($domain->isMember($doc->getSystemUserId())) {
                 $tlink["dom" . $domain->id] = array(
                     "descr" => sprintf(_("Domain %s"), $domain->getTitle()),
-                    "url" => ".",
+                    "url" => "",
                     "separator" => true,
                     "confirm" => "false",
                     "control" => "false",
                     "tconfirm" => "",
                     "target" => "$target",
-                    "visibility" => POPUP_INACTIVE,
+                    "visibility" => POPUP_ACTIVE,
                     "submenu" => $menu,
                     "barmenu" => "false"
                 );
