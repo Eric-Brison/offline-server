@@ -1,0 +1,138 @@
+# French translations for dynacase-offline package
+# Traductions françaises du paquet dynacase-offline.
+# Copyright (C) 2011 THE dynacase-offline'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the dynacase-offline package.
+# Automatically generated, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dynacase-offline\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-05 14:30+0200\n"
+"PO-Revision-Date: 2011-05-05 14:37+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "offline management"
+msgstr "gestion horsligne"
+
+msgid "interface to organize offline documents"
+msgstr "interface pour organiser les documents hors-lignes"
+
+msgid "api domains of current user"
+msgstr "api pour le domain de l'utilisateur courant"
+
+msgid "list documents in space"
+msgstr "listes les documents d'un espace"
+
+#, c-format
+msgid "document is already book in other domain : %s"
+msgstr "document est déjà réservé dans un autre domaine : %s"
+
+#, c-format
+msgid "document to book not exists %s"
+msgstr "document à réserver n'existe pas %s"
+
+#, c-format
+msgid "%s Share folder"
+msgstr "Dossier partagé %s"
+
+#, c-format
+msgid "%s Users folder"
+msgstr "Espaces utilisateur %s"
+
+#, c-format
+msgid "%s User folder"
+msgstr "Espace de %s"
+
+#, c-format
+msgid "file %s must be relative"
+msgstr "le fichier %s doit être relatif"
+
+#, c-format
+msgid "file %s not exists"
+msgstr "le fichier %s n'existe pas"
+
+#, c-format
+msgid "file %s must be a PHP file"
+msgstr "le fichier %s doit être un fichier PHP"
+
+#, c-format
+msgid "file %s not implement DomainHook"
+msgstr "le fichier %s doit implenter l'interface DomainHook"
+
+msgid "no privilege to create offline domain"
+msgstr "pas de privilège pour créer un domaine offline"
+
+#, c-format
+msgid "push:invalid document : %s"
+msgstr "téléversement : document invalide : %s"
+
+msgid "push:no document found"
+msgstr "téléversement : pas de document trouvé"
+
+msgid "verified"
+msgstr "vérifié"
+
+#, c-format
+msgid "lock must be in domain %s"
+msgstr "le verrou doit être dans le domaine %s"
+
+#, c-format
+msgid "synchro: %s"
+msgstr "synchronisation : %s"
+
+msgid "endTransaction:no transaction identificator"
+msgstr "fin de transaction : pas d'identificateur de transation"
+
+#, c-format
+msgid "off:invalid"
+msgstr "Invalide"
+
+#, c-format
+msgid "off:constraint"
+msgstr "Contrainte"
+
+#, c-format
+msgid "off:upToDate"
+msgstr "Mis à jour"
+
+#, c-format
+msgid "off:conflict"
+msgstr "Conflit"
+
+msgid "icon"
+msgstr "icone"
+
+msgid "title"
+msgstr ""
+
+msgid "Modification Date Menu"
+msgstr ""
+
+msgid "Domain"
+msgstr "Domaine"
+
+msgid "Status"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+#, c-format
+msgid "document %s not found"
+msgstr ""
+
+msgid "domain not set"
+msgstr ""
+
+msgid "Actions..."
+msgstr ""
+
+msgid "click and drag to move document"
+msgstr ""

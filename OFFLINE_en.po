@@ -1,0 +1,138 @@
+# French translations for dynacase-offline package
+# Traductions françaises du paquet dynacase-offline.
+# Copyright (C) 2011 THE dynacase-offline'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the dynacase-offline package.
+# Automatically generated, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dynacase-offline\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-05 14:30+0200\n"
+"PO-Revision-Date: 2011-05-05 14:30+0200\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "offline management"
+msgstr ""
+
+msgid "interface to organize offline documents"
+msgstr ""
+
+msgid "api domains of current user"
+msgstr ""
+
+msgid "list documents in space"
+msgstr ""
+
+#, c-format
+msgid "document is already book in other domain : %s"
+msgstr ""
+
+#, c-format
+msgid "document to book not exists %s"
+msgstr ""
+
+#, c-format
+msgid "%s Share folder"
+msgstr ""
+
+#, c-format
+msgid "%s Users folder"
+msgstr ""
+
+#, c-format
+msgid "%s User folder"
+msgstr ""
+
+#, c-format
+msgid "file %s must be relative"
+msgstr ""
+
+#, c-format
+msgid "file %s not exists"
+msgstr ""
+
+#, c-format
+msgid "file %s must be a PHP file"
+msgstr ""
+
+#, c-format
+msgid "file %s not implement DomainHook"
+msgstr ""
+
+msgid "no privilege to create offline domain"
+msgstr ""
+
+#, c-format
+msgid "push:invalid document : %s"
+msgstr ""
+
+msgid "push:no document found"
+msgstr ""
+
+msgid "verified"
+msgstr ""
+
+#, c-format
+msgid "lock must be in domain %s"
+msgstr ""
+
+#, c-format
+msgid "synchro: %s"
+msgstr ""
+
+msgid "endTransaction:no transaction identificator"
+msgstr ""
+
+#, c-format
+msgid "off:invalid"
+msgstr ""
+
+#, c-format
+msgid "off:constraint"
+msgstr ""
+
+#, c-format
+msgid "off:upToDate"
+msgstr ""
+
+#, c-format
+msgid "off:conflict"
+msgstr ""
+
+msgid "icon"
+msgstr ""
+
+msgid "title"
+msgstr ""
+
+msgid "Modification Date Menu"
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+#, c-format
+msgid "document %s not found"
+msgstr ""
+
+msgid "domain not set"
+msgstr ""
+
+msgid "Actions..."
+msgstr ""
+
+msgid "click and drag to move document"
+msgstr ""
