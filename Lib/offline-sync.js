@@ -134,8 +134,7 @@ Fdl.OfflineSync.prototype = {
 	 *            config
 	 *            <ul>
 	 *            <li><b>document : </b>{Fdl.Document} the document to save</li>
-	 *            <li><b>bodyElement : </b>{htmlElement} an object where attach
-	 *            temporary form</li>
+	 *          
 	 *            </ul>
 	 * @return {Fdl.Document} pushed document (null if error)
 	 */
@@ -143,14 +142,18 @@ Fdl.OfflineSync.prototype = {
 		if (config && config.document) {
 			config.method = 'pushDocument';
 			config.transaction=this.transactionId;
-			var data = this.callSyncMethod(config);
-			
-			if (data) {
-				if (!data.error) {
-					return this.context.getDocument({
-						data : data
-					});
+			if (parseInt(config.transaction) > 0) {
+				var data = this.callSyncMethod(config);
+
+				if (data) {
+					if (!data.error) {
+						return this.context.getDocument({
+							data : data
+						});
+					}
 				}
+			} else {
+				this.context.setErrorMessage("no transaction id found");
 			}
 		}
 		return null;
@@ -237,7 +240,7 @@ Fdl.OfflineSync.prototype = {
 	revertDocument : function(config) {
 		if (config && config.document) {
 			config.method = 'revertDocument';
-			config.docid = document.id;
+			config.docid = config.document.id;
 			var data = this.callSyncMethod(config); 
 
 			if (data) {
@@ -315,7 +318,6 @@ Fdl.OfflineSync.prototype.getUserDocuments = function(config) {
 	} else {
 		return null;
 	}
-
 };
 
 /**

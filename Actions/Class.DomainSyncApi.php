@@ -70,6 +70,18 @@ class DomainSyncApi
         }
         return $out;
     }
+    
+  /**
+     * unbook document into user space
+     * @return Fdl_Document
+     */
+    public function revertDocument($config)
+    {
+        // TODO test onPullDocument hook
+        $out=$this->domainApi->revertDocument($config);
+        return $out;
+    }
+    
     /**
      * get user folder documents
      * @return DocumentList
@@ -132,6 +144,7 @@ class DomainSyncApi
         $index = -1;
         if (preg_match('/^([^\]+)\[([0-9]+)\]$/', $aid, $reg)) {
             //   print_r($reg);
+            $index=$reg[2];
         }
         $path = 'php://input';
         $out = '';
@@ -139,20 +152,19 @@ class DomainSyncApi
         if ($tmpfile == false) {
             $err = sprintf("cannot create temporay file %s", $tmpfile);
         } else {
-            print_r2("\nTMPFILE");
-            print_r2("tmpfile:" . $tmpfile);
             copy($path, $tmpfile);
             $filename = $config->filename;
-            $doc = DocWaitManager::getWaitingDoc($docid);
+            $wdoc = DocWaitManager::getWaitingDoc($docid);
             //$doc = new_doc(getDbAccess(), $docid);
-            if ($doc) {
+            if ($wdoc) {
+                $doc=$wdoc->getWaitingDocument();
                 // print $doc->getTitle();
                 $oa = $doc->getAttribute($aid);
                 // print_r($oa);
                 if ($oa) {
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
-                    print_r2($err);
-                    print_r2($doc->getValue($oa->id));
+                   
+                    @unlink($tmpfile);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
                 }
             
