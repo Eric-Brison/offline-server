@@ -51,7 +51,7 @@ class testHook implements DomainHook
     }
     public function onPullDocument(_OfflineDomain &$domain, Doc &$doc)
     {
-        
+        return true;
         $doc->addComment(__METHOD__);
         $classid=$doc->getValue("es_classe");
         if ($classid!='1126') {
