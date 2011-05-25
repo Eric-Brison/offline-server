@@ -407,5 +407,14 @@ class DomainApi
         return new DomainSyncApi($this->domain, $this);
     }
 
+    /**
+     * return object sync 
+     * @return DomainViewApi
+     */
+    public function view()
+    {
+        include_once ("OFFLINE/Class.DomainViewApi.php");
+        return new DomainViewApi($this->domain, $this);
+    }
 }
 ?>
