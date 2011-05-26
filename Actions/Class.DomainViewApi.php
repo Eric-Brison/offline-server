@@ -73,6 +73,9 @@ class DomainViewApi
             if (($oa->usefor != "Q") && ($oa->type == 'tab')) {
                 $node[$aid] = array();
                 $tree[$aid] = &$node[$aid];
+                if ($oa->ordered === null) {
+                    $oa->ordered = $this->getNodeOrder($oa, $oas);
+                }
             }
         }
         foreach ( $oas as $aid => &$oa ) {
@@ -85,6 +88,9 @@ class DomainViewApi
                 } else {
                     $node[$aid] = array();
                     $tree[$aid] = &$node[$aid];
+                }
+                if ($oa->ordered === null) {
+                    $oa->ordered = $this->getNodeOrder($oa, $oas);
                 }
             }
         }
@@ -99,6 +105,9 @@ class DomainViewApi
                 } else {
                     $node[$aid] = array();
                     $tree[$aid] = &$node[$aid];
+                }
+                if ($oa->ordered === null) {
+                    $oa->ordered = $this->getNodeOrder($oa, $oas);
                 }
             }
         }
@@ -119,7 +128,6 @@ class DomainViewApi
         //print_r2($tree);
         $lay->set("viewContent", $this->bindingViewNodeAttribute($tree, $oas));
         
-       
         $lay->set("editContent", $this->bindingEditNodeAttribute($tree, $oas));
         
         //print_r2($viewbinding);
@@ -127,30 +135,51 @@ class DomainViewApi
         return $binding;
     }
     
-    private function bindingViewNodeAttribute(array $node, array &$oas, BasicAttribute &$oa=null)
+    private function getNodeOrder(BasicAttribute &$noa, array &$oas)
+    {
+        if ($noa->ordered === null) {
+            foreach ( $oas as $aid => &$oa ) {
+                $fid = $oa->fieldSet->id;
+                if ($fid == $noa->id) {
+                    $noa->ordered = intval($this->getNodeOrder($oa, $oas)) - 1;
+                    break;
+                }
+            }
+        }
+        return intval($noa->ordered);
+    }
+    private function bindingViewNodeAttribute(array $node, array &$oas, BasicAttribute &$oa = null)
     {
         $out = '';
         if ($oa) {
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
+            $visibility = $oa->mvisibility ? $oa->mvisibility : $oa->visibility;
         }
-        $callback = function ($a, $b) use($oas)
-                {
-                    if ($oas[$a].ordered > $oas[$b].ordered) return 1;
-                    else if ($oas[$a].ordered < $oas[$b].ordered) return -1;
-                    return 0;
-                };
-        uksort($node, $callback);
-        
-        foreach ( $node as $k => $v ) {
-            if (is_array($v)) {
-                $out .= $this->bindingViewNodeAttribute( $v, $oas, $oas[$k]);
-            } else {
-                $out .= $this->bindingViewLeafAttribute($oas[$k]) . "\n";
+        if ((!$oa) || (($visibility != 'I') && ($visibility != 'H')&& ($visibility != 'O'))) {
+            
+            if ($oa) {
+                $out = sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
+            }
+            $callback = function ($a, $b) use($oas)
+            {
+                //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
+                if ($oas[$a]->ordered > $oas[$b]->ordered) return 1;
+                else if ($oas[$a]->ordered < $oas[$b]->ordered) return -1;
+                return 0;
+            };
+            uksort($node, $callback);
+            
+            foreach ( $node as $k => $v ) {
+                if (is_array($v)) {
+                    $out .= $this->bindingViewNodeAttribute($v, $oas, $oas[$k]);
+                } else {
+                    $out .= $this->bindingViewLeafAttribute($oas[$k]) . "\n";
+                }
+            }
+            if ($oa) {
+                $out .= sprintf('</dcpAttribute>');
             }
         }
-        if ($oa) {
-            $out .= sprintf('</dcpAttribute>');
-        }
+        
         return $out;
     }
     
@@ -170,22 +199,28 @@ class DomainViewApi
         return $out;
     }
     
-
-    private function bindingEditNodeAttribute(array $node, array &$oas, BasicAttribute &$oa=null)
+    private function bindingEditNodeAttribute(array $node, array &$oas, BasicAttribute &$oa = null)
     {
         $out = '';
+        $visibility = "";
         if ($oa) {
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
+            $visibility = $oa->mvisibility ? $oa->mvisibility : $oa->visibility;
         }
-        foreach ( $node as $k => $v ) {
-            if (is_array($v)) {
-                $out .= $this->bindingEditNodeAttribute( $v, $oas, $oas[$k]);
-            } else {
-                $out .= $this->bindingEditLeafAttribute($oas[$k]) . "\n";
+        if ((!$oa) || ($visibility != 'I')) {
+            if ($oa) {
+                $out = sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
+            
             }
-        }
-        if ($oa) {
-            $out .= sprintf('</dcpAttribute>');
+            foreach ( $node as $k => $v ) {
+                if (is_array($v)) {
+                    $out .= $this->bindingEditNodeAttribute($v, $oas, $oas[$k]);
+                } else {
+                    $out .= $this->bindingEditLeafAttribute($oas[$k]) . "\n";
+                }
+            }
+            if ($oa) {
+                $out .= sprintf('</dcpAttribute>');
+            }
         }
         return $out;
     }
@@ -193,15 +228,18 @@ class DomainViewApi
     private function bindingEditLeafAttribute(BasicAttribute &$oa)
     {
         $out = '';
-        switch ($oa->type) {
-        case 'docid' :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s" relationFamily="%s" multiple="%s"/>', $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
-            break;
-        case 'enum' :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s"  multiple="%s"/>', $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false");
-            break;
-        default :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s"/>', $oa->type, $oa->id);
+        $visibility = $oa->mvisibility ? $oa->mvisibility : $oa->visibility;
+        if ($visibility != 'I') {
+            switch ($oa->type) {
+            case 'docid' :
+                $out = sprintf('<dcpAttribute type="%s" attrid="%s" relationFamily="%s" multiple="%s" visibility="%s"/>', $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility);
+                break;
+            case 'enum' :
+                $out = sprintf('<dcpAttribute type="%s" attrid="%s"  multiple="%s" visibility="%s"/>', $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility);
+                break;
+            default :
+                $out = sprintf('<dcpAttribute type="%s" attrid="%s" visibility="%s"/>', $oa->type, $oa->id, $visibility);
+            }
         }
         return $out;
     }
