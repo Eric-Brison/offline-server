@@ -157,8 +157,9 @@ class DomainViewApi
         if ((!$oa) || (($visibility != 'I') && ($visibility != 'H') && ($visibility != 'O'))) {
             
             if ($oa) {
+                $label = $oa->encodeXml($oa->getLabel(), true);
+                $out .= sprintf('<dcpAttribute label="%s" type="%s" attrid="%s">', $label, $oa->type, $oa->id);
                 
-                $out .= sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
             }
             $callback = function ($a, $b) use($oas)
             {
@@ -199,15 +200,17 @@ class DomainViewApi
     private function bindingViewLeafAttribute(BasicAttribute &$oa)
     {
         $out = '';
+        
+        $label = $oa->encodeXml($oa->getLabel(), true);
         switch ($oa->type) {
         case 'docid' :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s" relationFamily="%s" multiple="%s"/>', $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
+            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" relationFamily="%s" multiple="%s"/>', $label, $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
             break;
         case 'enum' :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s"  multiple="%s"/>', $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false");
+            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"  multiple="%s"/>', $label, $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false");
             break;
         default :
-            $out = sprintf('<dcpAttribute type="%s" attrid="%s"/>', $oa->type, $oa->id);
+            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"/>', $label, $oa->type, $oa->id);
         }
         return $out;
     }
@@ -221,9 +224,10 @@ class DomainViewApi
         }
         if ((!$oa) || ($visibility != 'I')) {
             if ($oa) {
-                $out = sprintf('<dcpAttribute type="%s" attrid="%s">', $oa->type, $oa->id);
+                $label = $oa->encodeXml($oa->getLabel(), true);
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" visibility="%s">', $label, $oa->type, $oa->id, $visibility);
             }
-               $callback = function ($a, $b) use($oas)
+            $callback = function ($a, $b) use($oas)
             {
                 //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
                 if ($oas[$a]->ordered > $oas[$b]->ordered) return 1;
@@ -249,7 +253,6 @@ class DomainViewApi
                 }
             
             }
-            
             if ($tabbox) {
                 $out .= "</dcpTabBox>";
             }
@@ -275,19 +278,20 @@ class DomainViewApi
             foreach ( $options as $option ) {
                 if ($oa->getOption($option)) {
                     $opt .= $option . '="';
-                    $opt .= $oa->getOption($option);
+                    $opt .= $oa->encodeXml($oa->getOption($option), true);
                     $opt .= '" ';
                 }
             }
+            $label = $oa->encodeXml($oa->getLabel(), true);
             switch ($oa->type) {
             case 'docid' :
-                $out = sprintf('<dcpAttribute type="%s" attrid="%s" relationFamily="%s" multiple="%s" visibility="%s" %s/>', $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" relationFamily="%s" multiple="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
                 break;
             case 'enum' :
-                $out = sprintf('<dcpAttribute type="%s" attrid="%s"  multiple="%s" visibility="%s" %s/>', $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"  multiple="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
                 break;
             default :
-                $out = sprintf('<dcpAttribute type="%s" attrid="%s" visibility="%s" %s/>', $oa->type, $oa->id, $visibility, $opt);
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, $visibility, $opt);
             }
         }
         return $out;
