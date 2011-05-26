@@ -15,8 +15,8 @@
 <!-- Begin generated content -->
 [viewContent]
 <!-- End generated content -->
-                </dcpDocument>
                 <dcpDocFooter/>
+                </dcpDocument>
             </xul:vbox>
         </content>
     </binding>
@@ -31,8 +31,8 @@
 <!-- Begin generated content -->
 [editContent]
 <!-- End generated content -->
-                </dcpDocument>
                 <dcpDocFooter/>
+                </dcpDocument>
             </xul:vbox>
         </content>
         
