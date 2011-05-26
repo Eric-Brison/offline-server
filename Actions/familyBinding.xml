@@ -11,10 +11,12 @@
             <xul:vbox flex="1">
                 <dcpDocument xbl:inherits="initid" mode="view">
                 <dcpDocMenu/>
+                <dcpDocHeader/>
 <!-- Begin generated content -->
 [viewContent]
 <!-- End generated content -->
                 </dcpDocument>
+                <dcpDocFooter/>
             </xul:vbox>
         </content>
     </binding>
@@ -25,10 +27,12 @@
             <xul:vbox flex="1">
                 <dcpDocument xbl:inherits="initid" mode="edit">
                 <dcpDocMenu/>
+                <dcpDocHeader/>
 <!-- Begin generated content -->
 [editContent]
 <!-- End generated content -->
                 </dcpDocument>
+                <dcpDocFooter/>
             </xul:vbox>
         </content>
         

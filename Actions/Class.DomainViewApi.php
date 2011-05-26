@@ -159,7 +159,7 @@ class DomainViewApi
             if ($oa) {
                 $label = $oa->encodeXml($oa->getLabel(), true);
                 $out .= sprintf('<dcpAttribute label="%s" type="%s" attrid="%s">', $label, $oa->type, $oa->id);
-                
+            
             }
             $callback = function ($a, $b) use($oas)
             {
@@ -200,17 +200,19 @@ class DomainViewApi
     private function bindingViewLeafAttribute(BasicAttribute &$oa)
     {
         $out = '';
-        
-        $label = $oa->encodeXml($oa->getLabel(), true);
-        switch ($oa->type) {
-        case 'docid' :
-            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" relationFamily="%s" multiple="%s"/>', $label, $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
-            break;
-        case 'enum' :
-            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"  multiple="%s"/>', $label, $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false");
-            break;
-        default :
-            $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"/>', $label, $oa->type, $oa->id);
+        $visibility = $oa->mvisibility ? $oa->mvisibility : $oa->visibility;
+        if (($visibility != "I") && ($visibility != "H")) {
+            $label = $oa->encodeXml($oa->getLabel(), true);
+            switch ($oa->type) {
+            case 'docid' :
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" relationFamily="%s" multiple="%s"/>', $label, $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
+                break;
+            case 'enum' :
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"  multiple="%s"/>', $label, $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false");
+                break;
+            default :
+                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"/>', $label, $oa->type, $oa->id);
+            }
         }
         return $out;
     }
