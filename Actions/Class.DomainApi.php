@@ -303,8 +303,11 @@ class DomainApi
         $date = $config->until;
         if ($this->domain) {
             $folder = $this->domain->getSharedFolder();
-            
+            if ($folder) {
             $out = $this->getFolderDocuments($folder, $date, $callback);
+            } else {
+                $this->setError(_("no share folder"));
+            }
         } else {
             $this->setError(_("domain not set"));
         }
