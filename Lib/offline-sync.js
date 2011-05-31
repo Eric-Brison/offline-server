@@ -60,7 +60,13 @@ Fdl.OfflineSync.prototype = {
 	 */
 	transactionStatus : null,
 
-
+	/**
+	 * document init to delete detected after pull reequest 
+	 * @type {Array}
+	 */
+	sharedDocumentsToDelete : [],
+    userDocumentsToDelete : [],
+	
 
 
 	/**
@@ -287,12 +293,22 @@ Fdl.OfflineSync.prototype.getSharedDocuments = function(config) {
 			method : 'getSharedDocumentsAcknowledgement'
 		});
 		data.context = this.context;
+		this.sharedDocumentsToDelete=data.documentsToDelete;
 		return new Fdl.DocumentList(data);
 
 	} else {
 		return null;
 	}
 };
+
+Fdl.OfflineSync.prototype.getSharedDocumentsToDelete = function(config) {
+    return this.sharedDocumentsToDelete;
+};
+Fdl.OfflineSync.prototype.getUserDocumentsToDelete = function(config) {
+    return this.userDocumentsToDelete;
+};
+
+
 
 /**
  * retrieve content (recursive) of user folder
@@ -317,6 +333,7 @@ Fdl.OfflineSync.prototype.getUserDocuments = function(config) {
 			method : 'getUserDocumentsAcknowledgement'
 		});
 		data.context = this.context;
+        this.userDocumentsToDelete=data.documentsToDelete;
 		return new Fdl.DocumentList(data);
 
 	} else {

@@ -64,8 +64,11 @@ class DomainSyncApi
         if (!$err) {
             $callback = null;
             $stillRecorded = array();
-            foreach ( $config->stillRecorded as $record ) {
-                $stillRecorded[$record->initid] = $record->revdate;
+            if (is_array($config->stillRecorded)) {
+                
+                foreach ( $config->stillRecorded as $record ) {
+                    $stillRecorded[$record->initid] = $record->revdate;
+                }
             }
             
             if ($this->domain->hook()) {
@@ -95,10 +98,18 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getSharedDocuments($config, $callback);
+            $out->documentsToDelete=$this->getIntersect($this->domain->getSharedFolder(), $stillRecorded);
+           
         } else {
             $out->error = $err;
         }
         return $out;
+    }
+    
+    private function getIntersect(Dir &$folder, array &$stillRecorded) {
+        $serverInitids=$folder->getContentInitid();
+        $clientInitids=array_keys($stillRecorded);
+        return array_values( array_diff($clientInitids,$serverInitids));
     }
     
     /**
@@ -122,12 +133,14 @@ class DomainSyncApi
         if (!$err) {
             $callback = null;
             $stillRecorded = array();
-            foreach ( $config->stillRecorded as $record ) {
-                $stillRecorded[$record->initid] = $record->revdate;
+            if (is_array($config->stillRecorded)) {
+                foreach ( $config->stillRecorded as $record ) {
+                    $stillRecorded[$record->initid] = $record->revdate;
+                }
             }
             if ($this->domain->hook()) {
                 $domain = $this->domain;
-                $callback = function (&$doc) use($domain)
+                $callback = function (&$doc) use($domain, $stillRecorded)
                 {
                     $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                     if ($isUpToDate) return false;
@@ -151,6 +164,7 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
+            $out->documentsToDelete=$this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
         } else {
             $out->error = $err;
         }
