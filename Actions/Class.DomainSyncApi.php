@@ -501,7 +501,8 @@ class DomainSyncApi
             $out->error = _("endTransaction:no transaction identificator");
             $out->status = self::abortTransaction;
         }
-        $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=MANAGEWAITING&domain=' . $this->domain->id . '&transaction=' . $config->transaction;
+        $ufolder=$this->domain->getUserFolder();
+        $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=OFF_ORGANIZER&domain=0&dirid=' . $ufolder->id . '&transaction=' . $config->transaction;
         return $out;
     }
 
