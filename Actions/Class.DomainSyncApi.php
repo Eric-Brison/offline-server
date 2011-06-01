@@ -16,7 +16,7 @@ include_once ("FDL/Class.DocWaitManager.php");
 
 class DomainSyncApi
 {
-    const abordTransaction = "abordTransaction";
+    const abortTransaction = "abortTransaction";
     const successTransaction = "successTransaction";
     const partialTransaction = "partialTransaction";
     const documentNotRecorded = "documentNotRecorded";
@@ -475,7 +475,7 @@ class DomainSyncApi
                 $message = '';
                 if ($allFailure) {
                     if (count($out->detailStatus) > 0) {
-                        $out->status = self::abordTransaction;
+                        $out->status = self::abortTransaction;
                     } else {
                         // nothing has be done / no work is a good work
                         $out->status = self::successTransaction;
@@ -495,11 +495,11 @@ class DomainSyncApi
                 $out->message = $message;
                 $out->error = $err;
             } else {
-                $out->status = self::abordTransaction;
+                $out->status = self::abortTransaction;
             }
         } else {
             $out->error = _("endTransaction:no transaction identificator");
-            $out->status = self::abordTransaction;
+            $out->status = self::abortTransaction;
         }
         $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=MANAGEWAITING&domain=' . $this->domain->id . '&transaction=' . $config->transaction;
         return $out;
