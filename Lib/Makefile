@@ -3,7 +3,7 @@
 
 pages_js = $(patsubst %.js,$(libdir)/offline/%.js,$(wildcard *.js))
 
-offline_js=  offline-core.js offline-domain.js offline-sync.js
+offline_js=  offline-core.js offline-domain.js offline-sync.js offline-view.js
 
 $(libdir):
 	mkdir -p $@
