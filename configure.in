@@ -18,9 +18,12 @@ VERSION=`cat VERSION`
 AC_SUBST(RELEASE)
 RELEASE=`cat RELEASE`
 AC_SUBST(PACKAGE)
-PACKAGE=dynacase-offline
+PACKAGE=dynacase-offline-server
 AC_SUBST(APPNAME)
 APPNAME=OFFLINE
+
+LICENSE="http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License"
+AC_SUBST(LICENSE)
 
 ac_default_prefix=/usr/share/what
 AC_SUBST(PUBRULE)
@@ -45,4 +48,7 @@ AC_MSG_NOTICE([PubRule located at $PUBRULE])
 
 
 #AC_OUTPUT(Makefile GEARS_init.php info.xml)
-AC_OUTPUT(Makefile OFFLINE_init.php info.xml  )
+AC_OUTPUT(Makefile OFFLINE_init.php info.xml \
+          targets/mac/universal/Dynacase\\ Offline.app.template/Contents/Info.plist \
+	  targets/win/32/build.nsi \
+)
