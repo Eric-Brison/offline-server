@@ -173,7 +173,7 @@ class DomainViewApi
             foreach ( $node as $k => $v ) {
                 if ((!$tabbox) && ($oas[$k]->type == "tab")) {
                     $tabbox = true;
-                    $out .= "<dcpTabBox>";
+                    $out .= "<xul:tabbox><xul:tabs/><xul:tabpanels>";
                 }
                 if (is_array($v)) {
                     $out .= $this->bindingViewNodeAttribute($v, $oas, $oas[$k]);
@@ -182,12 +182,12 @@ class DomainViewApi
                 }
                 if ($tabbox && ($oas[$k]->type != "tab")) {
                     $tabbox = false;
-                    $out .= "</dcpTabBox>";
+                    $out .= "</xul:tabpanels></xul:tabbox>";
                 
                 }
             }
             if ($tabbox) {
-                $out .= "</dcpTabBox>";
+                $out .= "</xul:tabpanels></xul:tabbox>";
             }
             if ($oa) {
                 $out .= sprintf('</dcpAttribute>');
@@ -242,7 +242,7 @@ class DomainViewApi
                 
                 if ((!$tabbox) && ($oas[$k]->type == "tab")) {
                     $tabbox = true;
-                    $out .= "<dcpTabBox>";
+                    $out .= "<xul:tabbox><xul:tabs/><xul:tabpanels>";
                 }
                 if (is_array($v)) {
                     $out .= $this->bindingEditNodeAttribute($v, $oas, $oas[$k]);
@@ -251,12 +251,12 @@ class DomainViewApi
                 }
                 if ($tabbox && ($oas[$k]->type != "tab")) {
                     $tabbox = false;
-                    $out .= "</dcpTabBox>";
+                    $out .= "</xul:tabpanels></xul:tabbox>";
                 }
             
             }
             if ($tabbox) {
-                $out .= "</dcpTabBox>";
+                $out .= "</xul:tabpanels></xul:tabbox>";
             }
             if ($oa) {
                 $out .= sprintf('</dcpAttribute>');
