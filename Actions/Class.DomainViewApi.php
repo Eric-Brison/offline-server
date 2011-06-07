@@ -113,7 +113,7 @@ class DomainViewApi
         }
         
         foreach ( $oas as $aid => &$oa ) {
-            if (($oa->usefor != "Q") && ($oa->type != 'array') && ($oa->type != 'frame') && ($oa->type != 'tab')) {
+            if (($oa->usefor != "Q") && ($oa->type != 'menu') && ($oa->type != 'action')&& ($oa->type != 'array') && ($oa->type != 'frame') && ($oa->type != 'tab')) {
                 $fid = $oa->fieldSet->id;
                 if ($fid && $fid != "FIELD_HIDDENS") {
                     $node[$aid] = '';
