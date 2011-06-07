@@ -59,15 +59,11 @@ function _main {
 
     cp "$PKG_NAME/dist/xulrunner/xulrunner-stub.exe" "$PKG_NAME/dist/dynacase-offline.exe"
     cp "$PKG_NAME/dist/xulrunner/mozcrt19.dll" "$PKG_NAME/dist/mozcrt19.dll"
-    cp "$ORIG_DIR/dynacase-offline.ico" "$PKG_NAME/dist/dynacase-offline.ico"
-    cp "$ORIG_DIR/LICENSE.txt" "$PKG_NAME/dist/LICENSE.txt"
+    cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dist/dynacase-offline.ico"
+    cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/LICENSE.txt" "$PKG_NAME/dist/LICENSE.txt"
 
-    if [ "$OUTPUT" != "-" -a "${OUTPUT:0:1}" != "/" ]; then
-	OUTPUT="$ORIG_DIR/$OUTPUT"
-    fi
-
-    cp "$ORIG_DIR/build.nsi" "$PKG_NAME/build.nsi"
-    cp -pR "$ORIG_DIR/l10n" "$PKG_NAME/l10n"
+    cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/build.nsi" "$PKG_NAME/build.nsi"
+    cp -pR "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/l10n" "$PKG_NAME/l10n"
     ( cd "$PKG_NAME/dist" && find . -maxdepth 1 -type f ) | sed -e 's:\./\(.*\)$:Delete "$INSTDIR\\\1":' > "$PKG_NAME/uninstall_files.nsi"
     ( cd "$PKG_NAME/dist" && ls -d */ ) | sed -e 's:^\(.*\)$:RMDir /r "$INSTDIR\\\1":' > "$PKG_NAME/uninstall_dirs.nsi"
 

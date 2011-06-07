@@ -59,11 +59,7 @@ function _main {
 
     cp "$PKG_NAME/xulrunner/xulrunner-stub.exe" "$PKG_NAME/dynacase-offline.exe"
     cp "$PKG_NAME/xulrunner/mozcrt19.dll" "$PKG_NAME/mozcrt19.dll"
-    cp "$ORIG_DIR/dynacase-offline.ico" "$PKG_NAME/dynacase-offline.ico"
-
-    if [ "$OUTPUT" != "-" -a "${OUTPUT:0:1}" != "/" ]; then
-	OUTPUT="$ORIG_DIR/$OUTPUT"
-    fi
+    cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dynacase-offline.ico"
 
     zip -q -y -r "$OUTPUT" "$PKG_NAME"
 

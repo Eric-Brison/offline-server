@@ -59,9 +59,6 @@ function _main {
 
     cp "$PKG_NAME/xulrunner/xulrunner-stub" "$PKG_NAME/dynacase-offline"
 
-    if [ "$OUTPUT" != "-" -a "${OUTPUT:0:1}" != "/" ]; then
-	OUTPUT="$ORIG_DIR/$OUTPUT"
-    fi
     tar -zcf "$OUTPUT" "$PKG_NAME"
 
     set +e

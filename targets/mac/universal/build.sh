@@ -54,7 +54,7 @@ function _main {
     local APP="$PKG_NAME/Dynacase Offline.app"
     mkdir -p "$APP"
 
-    tar -C "$ORIG_DIR/Dynacase Offline.app.template" -cf - . | tar -C "$APP" -xf -
+    tar -C "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/Dynacase Offline.app.template" -cf - . | tar -C "$APP" -xf -
 
     _prepare_xulapp "$APP/Contents/Resources"
 
@@ -64,9 +64,6 @@ function _main {
     mkdir -p "$APP/Contents/MacOS"
     cp "$APP/Contents/Frameworks/XUL.framework/Versions/Current/xulrunner" "$APP/Contents/MacOS/xulrunner"
 
-    if [ "$OUTPUT" != "-" -a "${OUTPUT:0:1}" != "/" ]; then
-	OUTPUT="$ORIG_DIR/$OUTPUT"
-    fi
     zip -q -y -r "$OUTPUT" "$APP"
 
     set +e
