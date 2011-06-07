@@ -169,7 +169,7 @@ class OfflineClientBuilder {
 				'arch' => '32_zip',
 				'icon' => sprintf("%s/share/offline/win/icon-win.png", $pubdir),
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-%VERSION%-win-32.zip'
+				'file' => 'dynacase-offline-win-32.zip'
 			)
 		);
 
