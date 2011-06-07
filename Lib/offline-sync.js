@@ -286,7 +286,7 @@ Fdl.OfflineSync.prototype.getSharedDocuments = function(config) {
 	var data = this.callSyncMethod({
 		method : 'getSharedDocuments',
 		until : until,
-		stillRecorded : config.stillRecorded
+		stillRecorded : (config)?config.stillRecorded:null
 	});
 	if (data) {
 		data.acknowledgement=this.callSyncMethod({
@@ -326,7 +326,7 @@ Fdl.OfflineSync.prototype.getUserDocuments = function(config) {
 	}
 	var data = this.callSyncMethod({
 		method : 'getUserDocuments',until:until,
-        stillRecorded : config.stillRecorded
+        stillRecorded : (config)?config.stillRecorded:null
 	});
 	if (data) {
 		data.acknowledgement=this.callSyncMethod({
