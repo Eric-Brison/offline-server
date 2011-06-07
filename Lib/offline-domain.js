@@ -308,3 +308,20 @@ Fdl.OfflineDomain.prototype.sync = function() {
 	}
 	return this.syncObject;
 };
+
+
+Fdl.OfflineDomain.prototype.viewObject = null;
+/**
+ * return sync object
+ * 
+ * @returns {Fdl.OfflineSync}
+ */
+Fdl.OfflineDomain.prototype.view = function() {
+    if (!this.viewObject) {
+        this.viewObject = new Fdl.OfflineView({
+            context : this.context,
+            domain : this
+        });
+    }
+    return this.viewObject;
+};

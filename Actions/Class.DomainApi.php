@@ -303,8 +303,11 @@ class DomainApi
         $date = $config->until;
         if ($this->domain) {
             $folder = $this->domain->getSharedFolder();
-            
+            if ($folder) {
             $out = $this->getFolderDocuments($folder, $date, $callback);
+            } else {
+                $this->setError(_("no share folder"));
+            }
         } else {
             $this->setError(_("domain not set"));
         }
@@ -407,5 +410,14 @@ class DomainApi
         return new DomainSyncApi($this->domain, $this);
     }
 
+    /**
+     * return object sync 
+     * @return DomainViewApi
+     */
+    public function view()
+    {
+        include_once ("OFFLINE/Class.DomainViewApi.php");
+        return new DomainViewApi($this->domain, $this);
+    }
 }
 ?>

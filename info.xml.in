@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<module name="dynacase-offline" disabled="no" version="@VERSION@" release="@RELEASE@">
+<module name="@PACKAGE@" disabled="no" version="@VERSION@" release="@RELEASE@">
   <description>Dynacase Offline is the component to access to Dynacase in offline mode</description>
 
   <replaces>

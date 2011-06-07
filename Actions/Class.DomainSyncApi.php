@@ -16,7 +16,7 @@ include_once ("FDL/Class.DocWaitManager.php");
 
 class DomainSyncApi
 {
-    const abordTransaction = "abordTransaction";
+    const abortTransaction = "abortTransaction";
     const successTransaction = "successTransaction";
     const partialTransaction = "partialTransaction";
     const documentNotRecorded = "documentNotRecorded";
@@ -41,6 +41,20 @@ class DomainSyncApi
     }
     
     /**
+     * test if document must be returned to the client
+     * 
+     * @param Doc $doc
+     * @param array $stillRecorded
+     * @return true is client document is uptodate
+     */
+    public static function isUpToDate(Doc &$doc, array &$stillRecorded)
+    {
+        if (!$stillRecorded[$doc->initid]) return false;
+        if ($stillRecorded[$doc->initid] == $doc->revdate) return true;
+        return false;
+    }
+    
+    /**
      * get share folder documents
      * @return DocumentList
      */
@@ -49,10 +63,20 @@ class DomainSyncApi
         $err = $this->callHook("onBeforePullSharedDocuments");
         if (!$err) {
             $callback = null;
+            $stillRecorded = array();
+            if (is_array($config->stillRecorded)) {
+                
+                foreach ( $config->stillRecorded as $record ) {
+                    $stillRecorded[$record->initid] = $record->revdate;
+                }
+            }
+            
             if ($this->domain->hook()) {
                 $domain = $this->domain;
-                $callback = function (&$doc) use($domain)
+                $callback = function (&$doc) use($domain, $stillRecorded)
                 {
+                    $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
+                    if ($isUpToDate) return false;
                     $err = call_user_func_array(array(
                         $domain->hook(),
                         $method = "onPullDocument"
@@ -63,22 +87,39 @@ class DomainSyncApi
                     
                     return (empty($err) || ($err === true));
                 };
+            } else {
+                if (count($stillRecorded) > 0) {
+                    $callback = function (&$doc) use($stillRecorded)
+                    {
+                        $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
+                        if ($isUpToDate) return false;
+                        return true;
+                    };
+                }
             }
             $out = $this->domainApi->getSharedDocuments($config, $callback);
+            $out->documentsToDelete=$this->getIntersect($this->domain->getSharedFolder(), $stillRecorded);
+           
         } else {
             $out->error = $err;
         }
         return $out;
     }
     
-  /**
+    private function getIntersect(Dir &$folder, array &$stillRecorded) {
+        $serverInitids=$folder->getContentInitid();
+        $clientInitids=array_keys($stillRecorded);
+        return array_values( array_diff($clientInitids,$serverInitids));
+    }
+    
+    /**
      * unbook document into user space
      * @return Fdl_Document
      */
     public function revertDocument($config)
     {
         // TODO test onPullDocument hook
-        $out=$this->domainApi->revertDocument($config);
+        $out = $this->domainApi->revertDocument($config);
         return $out;
     }
     
@@ -91,10 +132,18 @@ class DomainSyncApi
         $err = $this->callHook("onBeforePullUserDocuments");
         if (!$err) {
             $callback = null;
+            $stillRecorded = array();
+            if (is_array($config->stillRecorded)) {
+                foreach ( $config->stillRecorded as $record ) {
+                    $stillRecorded[$record->initid] = $record->revdate;
+                }
+            }
             if ($this->domain->hook()) {
                 $domain = $this->domain;
-                $callback = function (&$doc) use($domain)
+                $callback = function (&$doc) use($domain, $stillRecorded)
                 {
+                    $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
+                    if ($isUpToDate) return false;
                     $err = call_user_func_array(array(
                         $domain->hook(),
                         $method = "onPullDocument"
@@ -104,8 +153,18 @@ class DomainSyncApi
                     ));
                     return (empty($err) || ($err === true));
                 };
+            } else {
+                if (count($stillRecorded) > 0) {
+                    $callback = function (&$doc) use($stillRecorded)
+                    {
+                        $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
+                        if ($isUpToDate) return false;
+                        return true;
+                    };
+                }
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
+            $out->documentsToDelete=$this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
         } else {
             $out->error = $err;
         }
@@ -144,7 +203,7 @@ class DomainSyncApi
         $index = -1;
         if (preg_match('/^([^\]+)\[([0-9]+)\]$/', $aid, $reg)) {
             //   print_r($reg);
-            $index=$reg[2];
+            $index = $reg[2];
         }
         $path = 'php://input';
         $out = '';
@@ -157,13 +216,13 @@ class DomainSyncApi
             $wdoc = DocWaitManager::getWaitingDoc($docid);
             //$doc = new_doc(getDbAccess(), $docid);
             if ($wdoc) {
-                $doc=$wdoc->getWaitingDocument();
+                $doc = $wdoc->getWaitingDocument();
                 // print $doc->getTitle();
                 $oa = $doc->getAttribute($aid);
                 // print_r($oa);
                 if ($oa) {
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
-                   
+                    
                     @unlink($tmpfile);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
                 }
@@ -415,7 +474,12 @@ class DomainSyncApi
                 }
                 $message = '';
                 if ($allFailure) {
-                    $out->status = self::abordTransaction;
+                    if (count($out->detailStatus) > 0) {
+                        $out->status = self::abortTransaction;
+                    } else {
+                        // nothing has be done / no work is a good work
+                        $out->status = self::successTransaction;
+                    }
                 } else {
                     $out->status = $completeSuccess ? self::successTransaction : self::partialTransaction;
                     $message = $this->callHook("onAfterSaveTransaction");
@@ -431,13 +495,14 @@ class DomainSyncApi
                 $out->message = $message;
                 $out->error = $err;
             } else {
-                $out->status = self::abordTransaction;
+                $out->status = self::abortTransaction;
             }
         } else {
             $out->error = _("endTransaction:no transaction identificator");
-            $out->status = self::abordTransaction;
+            $out->status = self::abortTransaction;
         }
-        $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=MANAGEWAITING&domain=' . $this->domain->id . '&transaction=' . $config->transaction;
+        $ufolder=$this->domain->getUserFolder();
+        $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=OFF_ORGANIZER&domain=0&dirid=' . $ufolder->id . '&transaction=' . $config->transaction;
         return $out;
     }
 

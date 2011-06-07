@@ -60,7 +60,13 @@ Fdl.OfflineSync.prototype = {
 	 */
 	transactionStatus : null,
 
-
+	/**
+	 * document init to delete detected after pull reequest 
+	 * @type {Array}
+	 */
+	sharedDocumentsToDelete : [],
+    userDocumentsToDelete : [],
+	
 
 
 	/**
@@ -254,6 +260,7 @@ Fdl.OfflineSync.prototype = {
 		return null;
 	},
 
+	
 	toString : function() {
 		return 'Fdl.OfflineSync';
 	}
@@ -275,21 +282,33 @@ Fdl.OfflineSync.prototype.getSharedDocuments = function(config) {
 	if (config && config.until) {
 		until = config.until;
 	}
+	
 	var data = this.callSyncMethod({
 		method : 'getSharedDocuments',
-		until : until
+		until : until,
+		stillRecorded : (config)?config.stillRecorded:null
 	});
 	if (data) {
 		data.acknowledgement=this.callSyncMethod({
 			method : 'getSharedDocumentsAcknowledgement'
 		});
 		data.context = this.context;
+		this.sharedDocumentsToDelete=data.documentsToDelete;
 		return new Fdl.DocumentList(data);
 
 	} else {
 		return null;
 	}
 };
+
+Fdl.OfflineSync.prototype.getSharedDocumentsToDelete = function(config) {
+    return this.sharedDocumentsToDelete;
+};
+Fdl.OfflineSync.prototype.getUserDocumentsToDelete = function(config) {
+    return this.userDocumentsToDelete;
+};
+
+
 
 /**
  * retrieve content (recursive) of user folder
@@ -306,13 +325,15 @@ Fdl.OfflineSync.prototype.getUserDocuments = function(config) {
 		until = config.until;
 	}
 	var data = this.callSyncMethod({
-		method : 'getUserDocuments',until:until
+		method : 'getUserDocuments',until:until,
+        stillRecorded : (config)?config.stillRecorded:null
 	});
 	if (data) {
 		data.acknowledgement=this.callSyncMethod({
 			method : 'getUserDocumentsAcknowledgement'
 		});
 		data.context = this.context;
+        this.userDocumentsToDelete=data.documentsToDelete;
 		return new Fdl.DocumentList(data);
 
 	} else {
