@@ -1,7 +1,7 @@
 <?php
 
 function off_mkclient(&$action) {
-	include_once('OFFLINE/Class.OFflineClientBuilder.php');
+	include_once('OFFLINE/Class.OfflineClientBuilder.php');
 
 	$dest_dir = $action->parent->getParam('OFFLINE_CLIENT_BUILD_OUTPUT_DIR', '');
 	
