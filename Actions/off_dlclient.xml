@@ -1,0 +1,20 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+[CSS:REF]
+[JS:REF]
+</head>
+
+<body onload="filterClientByOs()">
+
+<ul id="dl_list">
+[BLOCK DL_LIST]
+<li class="[DL_OS] [DL_ARCH]"><img src="Images/[DL_ICON]"/><a href="[CORE_EXTERNURL]?app=OFFLINE&action=OFF_DLCLIENT&os=[DL_OS]&arch=[DL_ARCH]">[DL_TITLE]</a></li>
+[ENDBLOCK DL_LIST]
+</ul>
+
+<a href="#" onclick="unfilterClientByOs()">[TEXT:OFFLINE:view all versions]</a>
+
+</body>
+</html>

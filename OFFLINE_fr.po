@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-05 14:30+0200\n"
-"PO-Revision-Date: 2011-05-05 14:37+0200\n"
+"PO-Revision-Date: 2011-06-07 16:03+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -136,3 +136,39 @@ msgstr ""
 
 msgid "click and drag to move document"
 msgstr ""
+
+msgid "OFFLINE:%s directory not found"
+msgstr "Répertoire '%s' non trouvé"
+
+msgid "OFFLINE:%s directory not writable"
+msgstr "Répertoire '%s' non accessible en écriture"
+
+msgid "OFFLINE:Offline client build output dir"
+msgstr "Répertoire où sont générés les clients Offline"
+
+msgid "OFFLINE:list of clients to download"
+msgstr "Liste des clients disponible en téléchargement"
+
+msgid "OFFLINE:access list of clients to download"
+msgstr "Accès à la liste des clients disponible en téléchargement"
+
+msgid "OFFLINE:view all versions"
+msgstr "Voir toutes les versions"
+
+msgid "OFFLINE:File '%s' not found"
+msgstr "Fichier '%s' non trouvé"
+
+msgid "OFFLINE:File not found for '%s'"
+msgstr "Fichier non trouvé pour '%s'"
+
+msgid "OFFLINE:client build failed with error: %s"
+msgstr "Echec de la construction du client: %s"
+
+msgid "OFFLINE:Offline client additional customize dir"
+msgstr "Répertoire optionnel de customisation du client offline"
+
+msgid "OFFLINE:access client build"
+msgstr "Accès à la construction des clients offline"
+
+msgid "OFFLINE:build clients"
+msgstr "Construction des clients offline"

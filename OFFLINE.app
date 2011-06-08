@@ -14,9 +14,17 @@ $app_desc = array(
     "childof" => "ONEFAM" // instance of ONEFAM application	
 );
 
-$app_acl = array()
+$app_acl = array(
+	array(
+		"name" => "OFF_DLCLIENT",
+		"description" =>N_("OFFLINE:access list of clients to download"),
+		"group_default"  =>"Y"),
+	array(
+		"name" => "OFF_MKCLIENT",
+		"description" =>N_("OFFLINE:access client build"),
+		"group_default" =>"Y")
+);
 
-;
 $action_desc = array(
     array(
         "name" => "OFF_ORGANIZER",
@@ -50,6 +58,20 @@ $action_desc = array(
         "name" => "OFF_POPUPLISTFOLDER",
         "short_name" => N_("list documents in space"),
         "acl" => "ONEFAM_READ",
+        "root" => "N"
+    ),
+    
+    array(
+        "name" => "OFF_DLCLIENT",
+        "short_name" => N_("OFFLINE:list of clients to download"),
+        "acl" => "OFF_DLCLIENT",
+        "root" => "N"
+    ),
+    
+    array(
+        "name" => "OFF_MKCLIENT",
+        "short_name" => N_("OFFLINE:build clients"),
+        "acl" => "OFF_MKCLIENT",
         "root" => "N"
     )
 );
