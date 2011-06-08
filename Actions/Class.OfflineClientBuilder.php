@@ -116,9 +116,9 @@ class OfflineClientBuilder {
 				3 => $spec['file']
 			);
 
-			$ret = call_user_func_array(array($ocb, 'build'), $argv);
+			$ret = call_user_func_array(array($this, 'build'), $argv);
 			if( $ret === false ) {
-				$this->error = sprintf("Build error for {'os'=%s, 'arch'=%s}: %s", $os, $arch, $this->error);
+				$this->error = sprintf("Error building {os:'%s', arch:'%s'}: %s", $os, $arch, $this->error);
 				return false;
 			}
 		}
@@ -135,7 +135,7 @@ class OfflineClientBuilder {
 				'title' => 'Linux (i686)',
 				'os' => 'linux',
 				'arch' => 'i686',
-				'icon' => sprintf("%s/share/offline/linux/icon-linux.png", $pubdir),
+				'icon' => 'icon-linux.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
 				'file' => 'dynacase-offline-linux-i686.tar.gz'
 			),
@@ -143,7 +143,7 @@ class OfflineClientBuilder {
 				'title' => 'Linux (x86_64)',
 				'os' => 'linux',
 				'arch' => 'x86_64',
-				'icon' => sprintf("%s/share/offline/linux/icon-linux.png", $pubdir),
+				'icon' => 'icon-linux.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
 				'file' => 'dynacase-offline-linux-x86_64.tar.gz'
 			),
@@ -151,7 +151,7 @@ class OfflineClientBuilder {
 				'title' => 'Mac OS X (universal)',
 				'os' => 'mac',
 				'arch' => 'universal',
-				'icon' => sprintf("%s/share/offline/mac/icon-mac.png", $pubdir),
+				'icon' => 'icon-mac.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
 				'file' => 'dynacase-offline-mac-universal.zip'
 			),
@@ -159,7 +159,7 @@ class OfflineClientBuilder {
 				'title' => 'Windows XP/Vista/7 (EXE 32 bits)',
 				'os' => 'win',
 				'arch' => '32',
-				'icon' => sprintf("%s/share/offline/win/icon-win.png", $pubdir),
+				'icon' => 'icon-win.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
 				'file' => 'dynacase-offline-win-32.exe'
 			),
@@ -167,7 +167,7 @@ class OfflineClientBuilder {
 				'title' => 'Windows XP/Vista/7 (Zip 32 bits)',
 				'os' => 'win',
 				'arch' => '32_zip',
-				'icon' => sprintf("%s/share/offline/win/icon-win.png", $pubdir),
+				'icon' => 'icon-win.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
 				'file' => 'dynacase-offline-win-32.zip'
 			)
