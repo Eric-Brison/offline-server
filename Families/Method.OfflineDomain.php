@@ -171,7 +171,7 @@ class _OFFLINEDOMAIN extends Dir
                 if ($v["off_families"]) {
                     $fams[] = $v["off_families"];
                     if ($v["off_subfamilies"] != "no") {
-                        $fams += array_keys($this->getChildFam($v["off_families"], false));
+                        $fams = array_merge(array_keys($this->getChildFam($v["off_families"], false)), $fams);
                     }
                 }
             }
