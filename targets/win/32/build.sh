@@ -35,6 +35,11 @@ function _usage {
 function _main {
     set -e
 
+    if [ -z "$(type -p makensis||true)" ]; then
+	echo "Soft-error: required 'makensis' not found in PATH"
+	exit 0
+    fi
+
     _check_env
 
     local PKG_NAME=$1
