@@ -164,12 +164,19 @@ class DomainViewApi
             $callback = function ($a, $b) use($oas)
             {
                 //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
+                if ($oas[$a]->type=="tab" && $oas[$b]->type!="tab") return 1;
+                else if ($oas[$a]->type!="tab" && $oas[$b]->type=="tab") return -1;
                 if ($oas[$a]->ordered > $oas[$b]->ordered) return 1;
                 else if ($oas[$a]->ordered < $oas[$b]->ordered) return -1;
                 return 0;
             };
             uksort($node, $callback);
             $tabbox = false;
+            /*
+            print_r2(array_keys($node));
+            foreach ( $node as $k => $v ) {
+                print "<br/>$k:".$oas[$k]->ordered;
+            }*/
             foreach ( $node as $k => $v ) {
                 if ((!$tabbox) && ($oas[$k]->type == "tab")) {
                     $tabbox = true;
@@ -232,6 +239,8 @@ class DomainViewApi
             $callback = function ($a, $b) use($oas)
             {
                 //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
+                if ($oas[$a]->type=="tab" && $oas[$b]->type!="tab") return 1;
+                else if ($oas[$a]->type!="tab" && $oas[$b]->type=="tab") return -1;
                 if ($oas[$a]->ordered > $oas[$b]->ordered) return 1;
                 else if ($oas[$a]->ordered < $oas[$b]->ordered) return -1;
                 return 0;
