@@ -1,0 +1,25 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+[CSS:REF]
+[JS:REF]
+</head>
+
+<body>
+
+<div id="header">
+<a class="button" id="build" href="[CORE_EXTERNURL]?app=OFFLINE&action=ADMIN&command=build">Build clients</a>
+</div>
+
+<div id="status">
+<h1 class="[STATUS_CLASS]">[STATUS_MESSAGE]</h1>
+<pre>[ERROR_LOG]</pre>
+</div>
+
+<div id="footer">
+<a class="link" href="[CORE_EXTERNURL]?app=OFFLINE&action=OFF_DLCLIENT">View clients</a>
+</div>
+
+</body>
+</html>
