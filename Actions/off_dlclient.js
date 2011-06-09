@@ -3,13 +3,13 @@
  */
 
 function getClientOs() {
-  if( navigator.appVersion.indexOf("Win") != -1 ) {
-    return "win";
+  if( window.navigator.platform.indexOf("Linux") != -1 ) {
+    return "linux";
   }
-  if( navigator.appVersion.indexOf("Mac") != -1 ) {
+  if( window.navigator.platform.indexOf("Mac") != -1 ) {
     return "mac";
   }
-  if( navigator.appVersion.indexOf("Win") != -1 ) {
+  if( window.navigator.platform.indexOf("Win") != -1 ) {
     return "win";
   }
   return "unknown";
@@ -18,7 +18,7 @@ function getClientOs() {
 function filterClientByOs() {
   var os = getClientOs();
   if( os == "unknown" ) {
-    return unfilterByClientOs();
+    return unfilterClientByOs();
   }
   var ul = document.getElementById('dl_list');
   for( var i = 0; i < ul.childNodes.length; i++ ) {
