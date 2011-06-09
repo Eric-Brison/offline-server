@@ -49,7 +49,7 @@ function _prepare_xulapp {
 
     # -- Apply customize dir if required --
     if [ -n "$CUSTOMIZE_DIR" ]; then
-	tar -C "$CUSTOMIZE_DIR" -cf - . | tar -C "$PKG_NAME" -xf -
+	tar -C "$CUSTOMIZE_DIR" -cf - . | tar -C "$DEST_DIR" -xf -
     fi
 
 }
