@@ -64,6 +64,10 @@ function _main {
     mkdir -p "$APP/Contents/MacOS"
     cp "$APP/Contents/Frameworks/XUL.framework/Versions/Current/xulrunner" "$APP/Contents/MacOS/xulrunner"
 
+    if [ -f "$OUTPUT" ]; then
+	rm "$OUTPUT"
+    fi
+
     zip -q -y -r "$OUTPUT" "$APP"
 
     set +e
