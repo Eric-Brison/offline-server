@@ -6,6 +6,7 @@ class OfflineClientBuilder {
 	const xulapp_path = 'share/offline/xulapp';
 
 	private $output_dir = '.';
+	private $opts = array();
 
 	private $targets_path = '';
 	private $xulruntimes_path = '';
@@ -13,8 +14,9 @@ class OfflineClientBuilder {
 
 	public $error = '';
 
-	public function __construct($output_dir = '.') {
+	public function __construct($output_dir = '.', $opts = array()) {
 		$this->output_dir = $output_dir;
+		$this->opts = $opts;
 		$this->_initPath();
 		return $this;
 	}
@@ -89,6 +91,12 @@ class OfflineClientBuilder {
 		$orig_wpub = getenv('wpub');
 		putenv(sprintf('wpub=%s', $pubdir));
 
+		$orig_customize_dir = false;
+		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
+			$orig_customize_dir = getenv('CUSTOMIZE_DIR');
+			putenv(sprintf('CUSTOMIZE_DIR=%s', $this->opts['CUSTOMIZE_DIR']));
+		}
+
 		$cmd = sprintf('%s %s %s > %s 2>&1', escapeshellarg($build_script), escapeshellarg($prefix), escapeshellarg($outputFile), escapeshellarg($tmpfile));
 		$out = system($cmd, $ret);
 		if( $ret !== 0 ) {
@@ -99,6 +107,14 @@ class OfflineClientBuilder {
 			putenv('wpub');
 		} else {
 			putenv(sprintf('wpub=%s', $orig_wpub));
+		}
+
+		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
+			if( $orig_customize_dir === false ) {
+				putenv('CUSTOMIZE_DIR');
+			} else {
+				putenv(sprintf('CUSTOMIZE_DIR=%s', $orig_customize_dir));
+			}
 		}
 
 		unlink($tmpfile);

@@ -1,0 +1,17 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+[CSS:REF]
+[JS:REF]
+</head>
+
+<body>
+
+<div class="ok">
+<h1>OK</h1>
+<a href="[CORE_EXTERNURL]?app=OFFLINE&action=OFF_DLCLIENT">View clients</a>
+</div>
+
+</body>
+</html>
