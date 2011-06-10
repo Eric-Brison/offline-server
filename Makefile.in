@@ -10,21 +10,10 @@ appname = @APPNAME@
 srcdir = @srcdir@
 applib = FDL
 libdir=$(pubdir)/lib
-offlinedir = $(pubdir)/$(appname)
-#offlinedir = .
-src = src/xul
-skeleton = src/squelette-apps
-apps = Programs
-TAR_DIST_NAME=dynacase-offline
-TAR_DIST_DIR=dynacase-offline-$(VERSION)-$(RELEASE)
 
-TAR_DIST_OPTS=--owner 0 --group 0
-
-
-export pubdir utildir applib appname offlinedir libdir
+export pubdir utildir applib appname libdir
 
 SUBDIR= Families Lib Actions Images targets patches
-#SUBDIR= Families Lib Actions Programs Images
 
 TOP_MODULES =
 
@@ -38,89 +27,9 @@ pages_not_xml = info.xml
 include $(utildir)/PubRule
 
 DISTFILES += $(SUBDIR) \
-            RELEASE VERSION \
-            htaccess \
+            RELEASE VERSION
 
-#copie des fichiers sources
+_static_dirs:
+	mkdir -p $(pubdir)/share/offline/clients $(pubdir)/share/offline/customize
 
-cleanPrograms: 
-	rm -rf $(apps)/freedom_offline_windows $(apps)/freedom_offline_linux  $(apps)/freedom_offline_xpi $(apps)/content/ \
-	$(apps)/locale $(apps)/skin $(apps)/freedom_offline_windows.zip $(apps)/freedom_offline_linux.zip $(apps)/freedomOffline.xpi 
-
-clean: cleanPrograms
-	rm -f $(PACKAGE)-*.tgz $(PACKAGE)-*.webinst
-
-copyhtaccess: htaccess
-	cp $< $(offlinedir)/.htaccess
-
-$(offlinedir)/Apps:
-	mkdir -p $@
-
-copyVersion: VERSION $(offlinedir)/Apps
-	cp $< $(offlinedir)/Apps/VERSION
-
-copyRelease: RELEASE
-	cp $< $(offlinedir)/Apps/RELEASE
-
-
-$(skeleton)/freedom_offline_windows/xulrunner.zip:
-	wget  http://ftp.dynacase.org/dynacase/components/xulrunner-1.9.1.2.en-US.win32.zip -O $@
-
-$(skeleton)/freedom_offline_linux/xulrunner.zip:
-	wget http://ftp.dynacase.org/dynacase/components/xulrunner-1.9.1.2.en-US.linux.zip -O $@
-
-copyFOLinux: $(skeleton)/freedom_offline_linux $(skeleton)/freedom_offline_linux/xulrunner.zip
-	cp -r $< $(apps)
-
-copyFOWindows: $(skeleton)/freedom_offline_windows  $(skeleton)/freedom_offline_windows/xulrunner.zip
-	cp -r $< $(apps)
-
-copyFOXPI: $(skeleton)/freedom_offline_xpi $(src)/content/ $(src)/locale $(src)/skin
-	cp -r $< $(apps)
-
-copySrc: $(src)/content/ $(src)/locale $(src)/skin 
-	cp -r $^ $(apps)
-
-generateMains:  copySrc
-	cat $(apps)/content/main_part_appli.js $(apps)/content/main.js >> $(apps)/content/main_Appli.js \
-	&& cat $(apps)/content/main_part_xpi.js $(apps)/content/main.js >> $(apps)/content/main_Xpi.js 
-
-rmMainParts: generateMains
-	rm $(apps)/content/main_part_appli.js $(apps)/content/main_part_xpi.js
-
-
-unpackageLin: copyFOLinux
-	unzip -q $(apps)/freedom_offline_linux/xulrunner.zip -d $(apps)/freedom_offline_linux/
-
-
-unpackageWin: copyFOWindows
-	unzip -q $(apps)/freedom_offline_windows/xulrunner.zip -d $(apps)/freedom_offline_windows/
-
-rmfileIn: copyFOLinux copyFOWindows
-	rm $(apps)/freedom_offline_linux/application.ini.in $(apps)/freedom_offline_windows/application.ini.in
-
-removezip: unpackageLin unpackageWin rmfileIn
-	rm $(apps)/freedom_offline_windows/xulrunner.zip $(apps)/freedom_offline_linux/xulrunner.zip
-
-
-createFdl-data: ../data/js/fdl-data-core.js ../data/js/fdl-data-document.js ../data/js/fdl-data-collection.js ../data/js/fdl-data-user.js ../data/js/fdl-data-attribute.js ../data/js/fdl-data-search.js ../data/js/fdl-data-documenthistory.js ../data/js/fdl-data-application.js copySrc
-	cat ../data/js/fdl-data-core.js ../data/js/fdl-data-document.js ../data/js/fdl-data-collection.js ../data/js/fdl-data-user.js ../data/js/fdl-data-attribute.js ../data/js/fdl-data-search.js ../data/js/fdl-data-documenthistory.js ../data/js/fdl-data-application.js >> $(apps)/content/fdl-data.js
-
-tarball:
-	export offlinedir=.
-	make cleanPrograms
-	make rmMainParts
-	make copyFOXPI
-	make copyFOLinux
-	make copyFOWindows
-	make -C Programs publish offlinedir=.
-	mv Programs/freedom_offline_windows.zip $(TAR_DIST_DIR)_windows.zip
-	mv Programs/freedom_offline_linux.zip $(TAR_DIST_DIR)_linux.zip
-	mv Programs/freedomOffline.xpi $(TAR_DIST_DIR)_firefox.xpi
-	#cd ..
-	#tar -C Programs/Apps -zcf $(TAR_DIST_NAME)-$(VERSION)-$(RELEASE).tar.gz $(TAR_DIST_OPTS) .
-
-#publish:  cleanPrograms copyhtaccess copyVersion copyRelease rmMainParts copyFOXPI removezip 
-
-
-
+publish: _static_dirs
