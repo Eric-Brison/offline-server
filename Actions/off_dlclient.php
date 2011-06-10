@@ -4,7 +4,11 @@ function off_dlclient(&$action) {
 	include_once('OFFLINE/Class.OfflineClientBuilder.php');
 
 	$action->parent->AddJsRef("OFFLINE/Layout/off_dlclient.js");
-	$action->parent->AddCssRef("OFFLINE:off_dlclient.css");
+	$action->parent->AddCssRef("CORE:welcome.css", true);
+	$action->parent->AddCssRef("OFFLINE:off_dlclient.css", true);
+
+	$action->lay->set("thisyear",strftime("%Y", time()));
+	$action->lay->set("userRealName",$action->user->firstname." ".$action->user->lastname);
 
 	/* Get parameters */
 	$parms = array();
@@ -16,6 +20,20 @@ function off_dlclient(&$action) {
 		$action->ExitError(sprintf('OFFLINE_CLIENT_BUILD_OUTPUT_DIR: '._("OFFLINE:%s directory not found"), $clientDir));
 		return;
 	}
+
+	// 3rd parties developpement
+	$fext = $action->getLayoutFile("off_externals.xml");
+	$action->lay->set("HAVE_EXTERNALS", false);
+	$trd = array();
+	if (file_exists($fext)) {
+	  $fdata = file($fext);
+	  foreach($fdata as $k=>$v) {
+	    $action->lay->set("HAVE_EXTERNALS", true);
+	    $ds = explode("#", $v);
+	    $trd[] = array( "site"=>$ds[0], "name"=>$ds[1], "license"=>$ds[2]);
+	  }
+	}
+	$action->lay->setBlockData("EXTERNALS", $trd);
 
 	/**
 	 * os/arch download requested?
@@ -29,6 +47,9 @@ function off_dlclient(&$action) {
 	 */
 	$ocb = new OfflineClientBuilder();
 	$osArchList = $ocb->getOsArchList();
+
+	$action->lay->set("version",$ocb->getOfflineInfo('Version'));
+	$action->lay->set("buildid",$ocb->getOfflineInfo('BuildID'));
 
 	$dl_list = array();
 	foreach( $osArchList as &$spec ) {
