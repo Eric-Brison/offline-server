@@ -80,14 +80,6 @@ class OfflineClientBuilder {
 		$prefix = $this->expandFilename($prefix, array('OS' => $os, 'ARCH' => $arch));
 		$outputFile = sprintf('%s/%s', $this->output_dir, $this->expandFilename($outputFile, array('OS' => $os, 'ARCH' => $arch)));
 
-		$cwd = getcwd();
-
-		$ret = chdir($target_dir);
-		if( $ret === false ) {
-			$this->error = sprintf("Could not chdir to '%s'.", $target_dir);
-			return false;
-		}
-
 		$orig_wpub = getenv('wpub');
 		putenv(sprintf('wpub=%s', $pubdir));
 
@@ -118,7 +110,6 @@ class OfflineClientBuilder {
 		}
 
 		unlink($tmpfile);
-		chdir($cwd);
 		return ($ret === 0) ? true : false;
 	}
 

@@ -23,7 +23,6 @@ function _admin_build(&$action) {
 	include_once('OFFLINE/Class.OfflineClientBuilder.php');
 
 	$dest_dir = $action->parent->getParam('OFFLINE_CLIENT_BUILD_OUTPUT_DIR', '');
-	
 	if( ! is_dir($dest_dir) ) {
 		$action->ExitError(sprintf(_("OFFLINE:%s directory not found"), $dest_dir));
 		return;
@@ -32,13 +31,19 @@ function _admin_build(&$action) {
 		$action->ExitError(sprintf(_("OFFLINE:%s directory not writable"), $dest_dir));
 		return;
 	}
+	$dest_dir = realpath($dest_dir);
 
 	$opts = array();
 
 	$customize_dir = $action->parent->getParam('OFFLINE_CLIENT_CUSTOMIZE_DIR', '');
 	if( $customize_dir != '' ) {
-		$opts['CUSTOMIZE_DIR'] = $customize_dir;
+		if( ! is_dir($customize_dir) ) {
+			$action->ExitError(sprintf(_("OFFLINE:%s directory not found"), $customize_dir));
+			return;
+		}
+		$customize_dir = realpath($customize_dir);
 	}
+	$opts['CUSTOMIZE_DIR'] = $customize_dir;
 
 	$ocb = new OfflineClientBuilder($dest_dir, $opts);
 

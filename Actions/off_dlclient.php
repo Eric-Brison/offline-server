@@ -16,6 +16,7 @@ function off_dlclient(&$action) {
 		$action->ExitError(sprintf('OFFLINE_CLIENT_BUILD_OUTPUT_DIR: '._("OFFLINE:%s directory not found"), $clientDir));
 		return;
 	}
+	$clientDir = realpath($clientDir);
 
 	/**
 	 * os/arch download requested?
@@ -58,6 +59,7 @@ function sendClient(&$action, $os, $arch) {
 		$action->ExitError(sprintf('OFFLINE_CLIENT_BUILD_OUTPUT_DIR: '._("OFFLINE:%s directory not found"), $clientDir));
 		return;
 	}
+	$clientDir = realpath($clientDir);
 	
 	$ocb = new OfflineClientBuilder();
 	$osArchList = $ocb->getOsArchList();
