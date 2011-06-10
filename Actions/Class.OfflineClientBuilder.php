@@ -4,6 +4,7 @@ class OfflineClientBuilder {
 	const targets_path = 'share/offline/targets';
 	const xulruntimes_path = 'share/offline/xulruntimes';
 	const xulapp_path = 'share/offline/xulapp';
+	const xulapp_appini = 'share/offline/xulapp/application.ini';
 
 	private $output_dir = '.';
 	private $opts = array();
@@ -11,6 +12,7 @@ class OfflineClientBuilder {
 	private $targets_path = '';
 	private $xulruntimes_path = '';
 	private $xulapp_path = '';
+	private $xulapp_appini = '';
 
 	public $error = '';
 
@@ -29,6 +31,7 @@ class OfflineClientBuilder {
 		$this->targets_path = sprintf('%s/%s', $pubdir, self::targets_path);
 		$this->xulruntimes_path = sprintf('%s/%s', $pubdir, self::xulruntimes_path);
 		$this->xulapp_path = sprintf('%s/%s', $pubdir, self::xulapp_path);
+		$this->xulapp_appini = sprintf('%s/%s', $pubdir, self::xulapp_appini);
 
 		return true;
 	}
@@ -198,7 +201,7 @@ class OfflineClientBuilder {
 	}
 
 	public function expandFilename($filename, $keymap = array()) {
-		$keymap['VERSION'] = $this->_getOfflineVersion();
+	  $keymap['VERSION'] = $this->getOfflineInfo('Version');
 
 		foreach( $keymap as $k => $v ) {
 			$filename = str_replace(sprintf('%%%s%%', $k), $v, $filename);
@@ -232,22 +235,14 @@ class OfflineClientBuilder {
 		}
 	}
 
-	private function _getOfflineVersion() {
-		include_once('WHAT/Class.Application.php');
-		$null = null;
+	public function getOfflineInfo($info='Version') {
 
-		$app = new Application();
-		$ret = $app->set('OFFLINE', $null);
-		if( $ret != '' ) {
-			return false;
-		}
-
-		$p = new Param($null, array('VERSION', PARAM_APP, $app->id));
-		if( is_object($p) && property_exists($p, 'val') ) {
-			return $p->val;
-		}
-		return false;
+	  $conf = parse_ini_file($this->xulapp_appini, true);
+	  if (isset($conf['App'][$info])) return  $conf['App'][$info];
+	  return false;
+	  
 	}
+
 }
 
 ?>
