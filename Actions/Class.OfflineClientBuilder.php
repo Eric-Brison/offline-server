@@ -192,7 +192,7 @@ class OfflineClientBuilder {
 	}
 
 	public function expandFilename($filename, $keymap = array()) {
-	  $keymap['VERSION'] = $this->getOfflineInfo('Version');
+		$keymap['VERSION'] = $this->getOfflineInfo('Version');
 
 		foreach( $keymap as $k => $v ) {
 			$filename = str_replace(sprintf('%%%s%%', $k), $v, $filename);
@@ -227,11 +227,9 @@ class OfflineClientBuilder {
 	}
 
 	public function getOfflineInfo($info='Version') {
-
-	  $conf = parse_ini_file($this->xulapp_appini, true);
-	  if (isset($conf['App'][$info])) return  $conf['App'][$info];
-	  return false;
-	  
+		$conf = parse_ini_file($this->xulapp_appini, true);
+		if( is_array($conf) && isset($conf['App'][$info]) ) return  $conf['App'][$info];
+		return false;
 	}
 
 }
