@@ -19,6 +19,124 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #, c-format
+msgid "%s Share folder"
+msgstr "Dossier partagé %s"
+
+#, c-format
+msgid "%s User folder"
+msgstr "Espace de %s"
+
+#, c-format
+msgid "%s Users folder"
+msgstr "Espaces utilisateur %s"
+
+msgid "Book in my space"
+msgstr ""
+
+msgid "Clear Share Folder"
+msgstr ""
+
+msgid "Clear User Folder"
+msgstr ""
+
+msgid "Domain"
+msgstr "Domaine"
+
+#, c-format
+msgid "Domain %s"
+msgstr ""
+
+msgid "Insert the document to see it with offline application"
+msgstr ""
+
+msgid "Modification Date Menu"
+msgstr ""
+
+#, c-format
+msgid "OFFLINE:%s directory not found"
+msgstr "Répertoire '%s' non trouvé"
+
+#, c-format
+msgid "OFFLINE:%s directory not writable"
+msgstr "Répertoire '%s' non accessible en écriture"
+
+#, c-format
+msgid "OFFLINE:File '%s' not found"
+msgstr "Fichier '%s' non trouvé"
+
+#, c-format
+msgid "OFFLINE:File not found for '%s'"
+msgstr "Fichier non trouvé pour '%s'"
+
+msgid "OFFLINE:Hello"
+msgstr "Bonjour"
+
+msgid "OFFLINE:Offline client additional customize dir"
+msgstr "Répertoire optionnel de customisation du client offline"
+
+msgid "OFFLINE:Offline client build output dir"
+msgstr "Répertoire où sont générés les clients Offline"
+
+msgid "OFFLINE:access client build"
+msgstr "Accès à la construction des clients offline"
+
+msgid "OFFLINE:access list of clients to download"
+msgstr "Accès à la liste des clients disponible en téléchargement"
+
+msgid "OFFLINE:build clients"
+msgstr "Construction des clients offline"
+
+msgid ""
+"OFFLINE:consult and modify your documents when your Dynacase server is "
+"unreachable"
+msgstr ""
+"Consultez et modifez vos documents lorsque votre serveur Dynacase n'est pas "
+"accessible"
+
+msgid "OFFLINE:list of clients to download"
+msgstr "Liste des clients disponible en téléchargement"
+
+msgid "OFFLINE:view all versions"
+msgstr "Voir toutes les versions"
+
+msgid "OFFLINE:you can dowload here the Offline client for your platform"
+msgstr ""
+"Vous pouvez ici télécharger la version de Dynacase Offline en fonction de "
+"votre plateforme"
+
+msgid "Properties"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+#, c-format
+msgid "Remove from %s"
+msgstr ""
+
+msgid "Remove the document from share space"
+msgstr ""
+
+#, c-format
+msgid "Set in %s"
+msgstr ""
+
+msgid "Set in my space to read it"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "access to documents of my space"
+msgstr ""
+
+msgid "api domains of current user"
+msgstr "api pour le domain de l'utilisateur courant"
+
+msgid "book the document to modify it with offline application"
+msgstr ""
+
+#, c-format
 msgid "document %s not found"
 msgstr ""
 
@@ -30,17 +148,15 @@ msgstr "document est déjà réservé dans un autre domaine : %s"
 msgid "document to book not exists %s"
 msgstr "document à réserver n'existe pas %s"
 
-#, c-format
-msgid "%s Share folder"
-msgstr "Dossier partagé %s"
+msgid "domain not set"
+msgstr ""
+
+msgid "endTransaction:no transaction identificator"
+msgstr "fin de transaction : pas d'identificateur de transation"
 
 #, c-format
-msgid "%s Users folder"
-msgstr "Espaces utilisateur %s"
-
-#, c-format
-msgid "%s User folder"
-msgstr "Espace de %s"
+msgid "file %s must be a PHP file"
+msgstr "le fichier %s doit être un fichier PHP"
 
 #, c-format
 msgid "file %s must be relative"
@@ -51,147 +167,52 @@ msgid "file %s not exists"
 msgstr "le fichier %s n'existe pas"
 
 #, c-format
-msgid "file %s must be a PHP file"
-msgstr "le fichier %s doit être un fichier PHP"
-
-#, c-format
 msgid "file %s not implement DomainHook"
 msgstr "le fichier %s doit implenter l'interface DomainHook"
 
-msgid "OFFLINE:Offline client build output dir"
-msgstr "Répertoire où sont générés les clients Offline"
+msgid "icon"
+msgstr "icone"
 
-msgid "OFFLINE:Offline client additional customize dir"
-msgstr "Répertoire optionnel de customisation du client offline"
-
-msgid ""
-"OFFLINE:consult and modify your documents when your Dynacase server is "
-"unreachable"
-msgstr "Consultez et modifez vos documents lorsque votre serveur Dynacase n'est pas accessible"
-
-msgid "OFFLINE:Hello"
-msgstr "Bonjour"
-
-msgid "OFFLINE:you can dowload here the Offline client for your platform"
-msgstr "Vous pouvez ici télécharger la version de Dynacase Offline en fonction de votre plateforme"
-
-msgid "OFFLINE:view all versions"
-msgstr "Voir toutes les versions"
-
-msgid "offline management"
-msgstr "Mode déconnecté"
-
-msgid "OFFLINE:access list of clients to download"
-msgstr "Accès à la liste des clients disponible en téléchargement"
-
-msgid "OFFLINE:access client build"
-msgstr "Accès à la construction des clients offline"
+msgid "insert the document to see it with offline application"
+msgstr ""
 
 msgid "interface to organize offline documents"
 msgstr "interface pour organiser les documents hors-lignes"
 
-msgid "api domains of current user"
-msgstr "api pour le domain de l'utilisateur courant"
-
 msgid "list documents in space"
 msgstr "listes les documents d'un espace"
 
-msgid "OFFLINE:list of clients to download"
-msgstr "Liste des clients disponible en téléchargement"
+#, c-format
+msgid "lock must be in domain %s"
+msgstr "le verrou doit être dans le domaine %s"
 
-msgid "OFFLINE:build clients"
-msgstr "Construction des clients offline"
+msgid "no privilege to create offline domain"
+msgstr "pas de privilège pour créer un domaine offline"
+
+msgid "no share folder"
+msgstr ""
+
+msgid "not a member domain"
+msgstr ""
 
 #, c-format
-msgid "off:invalid"
-msgstr "Invalide"
+msgid "off:conflict"
+msgstr "Conflit"
 
 #, c-format
 msgid "off:constraint"
 msgstr "Contrainte"
 
 #, c-format
+msgid "off:invalid"
+msgstr "Invalide"
+
+#, c-format
 msgid "off:upToDate"
 msgstr "Mis à jour"
 
-#, c-format
-msgid "off:conflict"
-msgstr "Conflit"
-
-msgid "icon"
-msgstr "icone"
-
-msgid "title"
-msgstr ""
-
-msgid "Modification Date Menu"
-msgstr ""
-
-msgid "Domain"
-msgstr "Domaine"
-
-msgid "Status"
-msgstr ""
-
-msgid "Reason"
-msgstr ""
-
-#, c-format
-msgid "Domain %s"
-msgstr ""
-
-msgid "Book in my space"
-msgstr ""
-
-msgid "book the document to modify it with offline application"
-msgstr ""
-
-msgid "Set in my space to read it"
-msgstr ""
-
-msgid "insert the document to see it with offline application"
-msgstr ""
-
-msgid "remove from my space"
-msgstr ""
-
-msgid "remove the document from my space"
-msgstr ""
-
-#, c-format
-msgid "Set in %s"
-msgstr ""
-
-msgid "Insert the document to see it with offline application"
-msgstr ""
-
-#, c-format
-msgid "Remove from %s"
-msgstr ""
-
-msgid "Remove the document from share space"
-msgstr ""
-
-msgid "view my space"
-msgstr ""
-
-msgid "access to documents of my space"
-msgstr ""
-
-msgid "domain not set"
-msgstr ""
-
-msgid "no share folder"
-msgstr ""
-
-msgid "Clear User Folder"
-msgstr ""
-
-msgid "Clear Share Folder"
-msgstr ""
-
-msgid "Properties"
-msgstr ""
+msgid "offline management"
+msgstr "Mode déconnecté"
 
 #, c-format
 msgid "push:invalid document : %s"
@@ -200,41 +221,24 @@ msgstr "téléversement : document invalide : %s"
 msgid "push:no document found"
 msgstr "téléversement : pas de document trouvé"
 
-msgid "verified"
-msgstr "vérifié"
-
-msgid "not a member domain"
+msgid "remove from my space"
 msgstr ""
 
-#, c-format
-msgid "lock must be in domain %s"
-msgstr "le verrou doit être dans le domaine %s"
+msgid "remove the document from my space"
+msgstr ""
 
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
 
-msgid "endTransaction:no transaction identificator"
-msgstr "fin de transaction : pas d'identificateur de transation"
+msgid "title"
+msgstr ""
 
-#, c-format
-msgid "OFFLINE:%s directory not found"
-msgstr "Répertoire '%s' non trouvé"
+msgid "verified"
+msgstr "vérifié"
 
-#, c-format
-msgid "OFFLINE:File '%s' not found"
-msgstr "Fichier '%s' non trouvé"
-
-#, c-format
-msgid "OFFLINE:File not found for '%s'"
-msgstr "Fichier non trouvé pour '%s'"
-
-#, c-format
-msgid "OFFLINE:%s directory not writable"
-msgstr "Répertoire '%s' non accessible en écriture"
-
-msgid "no privilege to create offline domain"
-msgstr "pas de privilège pour créer un domaine offline"
+msgid "view my space"
+msgstr ""
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Echec de la construction du client: %s"
