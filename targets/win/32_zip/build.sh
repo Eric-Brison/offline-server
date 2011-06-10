@@ -61,6 +61,10 @@ function _main {
     cp "$PKG_NAME/xulrunner/mozcrt19.dll" "$PKG_NAME/mozcrt19.dll"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dynacase-offline.ico"
 
+    if [ -f "$OUTPUT" ]; then
+	rm "$OUTPUT"
+    fi
+
     zip -q -y -r "$OUTPUT" "$PKG_NAME"
 
     set +e

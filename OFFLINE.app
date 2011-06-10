@@ -20,7 +20,7 @@ $app_acl = array(
 		"description" =>N_("OFFLINE:access list of clients to download"),
 		"group_default"  =>"Y"),
 	array(
-		"name" => "OFF_MKCLIENT",
+		"name" => "ADMIN",
 		"description" =>N_("OFFLINE:access client build"),
 		"group_default" =>"Y")
 );
@@ -69,9 +69,9 @@ $action_desc = array(
     ),
     
     array(
-        "name" => "OFF_MKCLIENT",
+        "name" => "ADMIN",
         "short_name" => N_("OFFLINE:build clients"),
-        "acl" => "OFF_MKCLIENT",
+        "acl" => "ADMIN",
         "root" => "N"
     )
 );

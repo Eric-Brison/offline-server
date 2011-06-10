@@ -28,8 +28,10 @@ function filterClientByOs() {
     }
     if( node.className.indexOf(os) != -1 ) {
       node.style.display = 'block';
-    } else {
+      node.className = 'preselected';
+   } else {
       node.style.display = 'none';
+      node.className = '';
     }
   }
 }
@@ -43,4 +45,5 @@ function unfilterClientByOs() {
     }
     node.style.display = 'block';
   }
+  document.getElementById('bt-filter').style.display = 'none';
 }

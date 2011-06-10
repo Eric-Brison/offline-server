@@ -4,7 +4,7 @@ SUBDIR = linux mac win
 
 export targets_dir = $(pubdir)/share/offline/targets
 
-$(pubdir)/share: $(libdir)
+$(pubdir)/share: $(pubdir)
 	mkdir -p "$@"
 
 $(pubdir)/share/offline: $(pubdir)/share
