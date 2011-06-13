@@ -66,6 +66,7 @@ class DomainViewApi
     {
         $lay = new Layout(getLayoutFile("OFFLINE", "familyBinding.xml"));
         $lay->set("FAMNAME", $family->name);
+        $lay->set("FAMID", $family->id);
         $oas = $family->getAttributes();
         $tree = array();
         $node = array();
