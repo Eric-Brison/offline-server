@@ -1,8 +1,19 @@
 @CHARSET "UTF-8";
 
-ul.dl_list, ul.dl_list li {
-	list-style-type:none;
-	display:block;
-	margin:0;
-	padding:0;
+ul#dl_list li {
+        list-style-type:none;
+        margin:0;
+        padding:0;
+}
+ul#dl_list li a {
+    color : [COLOR_A5];
+    font-size : 130%;
+}
+
+ul#dl_list li.preselected {
+    padding-bottom:10px;
+}
+ul#dl_list li.preselected a {
+    color : [COLOR_A0];
+    font-weight : bold;
 }

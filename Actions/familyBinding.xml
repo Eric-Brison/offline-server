@@ -9,7 +9,7 @@
         
         <content>
             <xul:vbox flex="1">
-                <dcpDocument xbl:inherits="initid" mode="view">
+                <dcpDocument xbl:inherits="initid" mode="view" fromname="[FAMNAME]" fromid="[FAMID]">
                 <dcpDocMenu/>
                 <dcpDocHeader/>
 <!-- Begin generated content -->
@@ -25,7 +25,7 @@
         
         <content>
             <xul:vbox flex="1">
-                <dcpDocument xbl:inherits="initid" mode="edit">
+                <dcpDocument xbl:inherits="initid" mode="edit" fromname="[FAMNAME]" fromid="[FAMID]">
                 <dcpDocMenu/>
                 <dcpDocHeader/>
 <!-- Begin generated content -->
