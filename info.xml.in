@@ -8,7 +8,26 @@
 
   <requires>
     <module name="dynacase-workspace" />
+    <module name="dynacase-offline-client" />
+    <module name="dynacase-offline-xulruntimes" />
+    <module name="dynacase-htmledit" />
   </requires>
+
+  <pre-install>
+    <check type="syscommand" command="gunzip" />
+    <check type="syscommand" command="tar" />
+    <check type="syscommand" command="patch" />
+    <check type="syscommand" command="zip" />
+    <check type="syscommand" command="makensis" />
+  </pre-install>
+
+  <pre-upgrade>
+    <check type="syscommand" command="gunzip" />
+    <check type="syscommand" command="tar" />
+    <check type="syscommand" command="patch" />
+    <check type="syscommand" command="zip" />
+    <check type="syscommand" command="makensis" />
+  </pre-upgrade>
   
   <post-install>
     <process command="programs/record_application @APPNAME@" />

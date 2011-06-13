@@ -41,40 +41,9 @@ function off_popupdocfolder(&$action) {
     $tlink = array();
     addOfflinePopup($tlink, $doc, $target = "nresume", "");
 
+                
     unset($tlink[""]);
-    /*
-      $tlink+=array(
-
-      "editdoc"=>array( "descr"=>_("Edit"),
-      "url"=>"$surl&app=GENERIC&action=GENERIC_EDIT&rzone=$zone&id=$docid",
-      "confirm"=>"false",
-      "tconfirm"=>"",
-      "target"=>"",
-      "visibility"=>POPUP_ACTIVE,
-      "submenu"=>"",
-      "barmenu"=>"false"),
-
-      "histo"=>array( "descr"=>_("History"),
-      "url"=>"$surl&app=FREEDOM&action=HISTO&id=$docid&viewrev=N",
-      "confirm"=>"false",
-      "tconfirm"=>"",
-      "target"=>"",
-      "visibility"=>POPUP_ACTIVE,
-      "submenu"=>"",
-      "barmenu"=>"false"),
-
-      "properties"=>array( "descr"=>_("properties"),
-      "url"=>"$surl&app=FDL&action=IMPCARD&zone=".((method_exists($doc,"viewsimpleprop"))?"WORKSPACE:VIEWSIMPLEPROP:T":"FDL:VIEWPROPERTIES:T")."&id=$docid",
-      "tconfirm"=>"",
-      "confirm"=>"false",
-      "target"=>"properties$docid",
-      "mwidth"=>400,
-      "mheight"=>300,
-      "visibility"=>POPUP_ACTIVE,
-      "submenu"=>"",
-      "barmenu"=>"false"));
-
-     */
+ 
 
     //  addFamilyPopup($tlink,$doc);
     popupdoc($action, $tlink, $tsubmenu);
@@ -198,6 +167,21 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
                 );
             }
         }
+    }
+    
+    if ($allDomains->length > 0) {
+    $tlink["offdownload"] = array(
+                    "descr" => sprintf(_("Download offline client application")),
+                    "url" => "?app=OFFLINE&action=OFF_DLCLIENT",
+                    "separator" => true,
+                    "confirm" => "false",
+                    "control" => "false",
+                    "tconfirm" => "",
+                    "target" => "_offdl",
+                    "visibility" => POPUP_ACTIVE,
+                    "submenu" => $menu,
+                    "barmenu" => "false"
+                );
     }
 }
 

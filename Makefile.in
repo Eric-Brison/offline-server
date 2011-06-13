@@ -23,7 +23,7 @@ TAR_DIST_OPTS=--owner 0 --group 0
 
 export pubdir utildir applib appname offlinedir libdir
 
-SUBDIR= Families Lib Actions  Images
+SUBDIR= Families Lib Actions Images targets patches
 #SUBDIR= Families Lib Actions Programs Images
 
 TOP_MODULES =
