@@ -201,9 +201,9 @@ class DomainSyncApi
         $docid = $config->docid;
         $aid = $config->aid;
         $index = -1;
-        if (preg_match('/^([^\]+)\[([0-9]+)\]$/', $aid, $reg)) {
-            //   print_r($reg);
+        if (preg_match('/(.*)\[([0-9]+)\]$/', $aid, $reg)) {
             $index = $reg[2];
+            $aid = trim($reg[1]);
         }
         $path = 'php://input';
         $out = '';
@@ -222,7 +222,6 @@ class DomainSyncApi
                 // print_r($oa);
                 if ($oa) {
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
-                    
                     @unlink($tmpfile);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
                 }
