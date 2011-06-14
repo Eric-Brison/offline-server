@@ -54,12 +54,14 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
     $onlysub = getHttpVars("submenu");
     $docDomainsId = $doc->getDomainIds();
     $allDomains = DomainManager::getDomains();
+    $canDownload=false;
     foreach ($allDomains as $domain) {
         if ($domain->isAlive()) {
             $families = $domain->getFamilies();
             if (!in_array($doc->fromid, $families))
                 continue;
             if ($domain->isMember($doc->getSystemUserId())) {
+                $canDownload=true;
                 $tlink["dom" . $domain->id] = array(
                     "descr" => sprintf(_("Domain %s"), $domain->getTitle()),
                     "url" => "",
@@ -169,19 +171,19 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
         }
     }
     
-    if ($allDomains->length > 0) {
-    $tlink["offdownload"] = array(
-                    "descr" => sprintf(_("Download offline client application")),
-                    "url" => "?app=OFFLINE&action=OFF_DLCLIENT",
-                    "separator" => true,
-                    "confirm" => "false",
-                    "control" => "false",
-                    "tconfirm" => "",
-                    "target" => "_offdl",
-                    "visibility" => POPUP_ACTIVE,
-                    "submenu" => $menu,
-                    "barmenu" => "false"
-                );
+    if ($canDownload) {
+        $tlink["offdownload"] = array(
+            "descr" => sprintf(_("Download offline client application")),
+            "url" => "?app=OFFLINE&action=OFF_DLCLIENT",
+            "separator" => true,
+            "confirm" => "false",
+            "control" => "false",
+            "tconfirm" => "",
+            "target" => "_offdl",
+            "visibility" => POPUP_ACTIVE,
+            "submenu" => $menu,
+            "barmenu" => "false"
+        );
     }
 }
 
