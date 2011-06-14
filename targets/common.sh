@@ -41,7 +41,7 @@ function _prepare_xulapp {
     if [ -d "$wpub/share/offline/patches" ]; then
 	(
 	    shopt -s nullglob
-	    for PATCH in "$wpub/share/offline/"*.patch; do
+	    for PATCH in "$wpub/share/offline/patches/"*.patch; do
 		patch -p1 -d "$DEST_DIR" -i "$PATCH"
 	    done
 	    )
