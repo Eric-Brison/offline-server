@@ -38,6 +38,8 @@ Var Shortcuts_SM_Checkbox
 Var Shortcuts_SM_Checkbox_State
 Var Shortcuts_D_Checkbox
 Var Shortcuts_D_Checkbox_State
+Var Shortcuts_ALL_Checkbox
+Var Shortcuts_ALL_Checkbox_State
 
 Var Previous_Uninstall
 Var Previous_Uninstall_dir
@@ -96,6 +98,7 @@ Function .onInit
     
     StrCpy $Shortcuts_SM_Checkbox_State 1
     StrCpy $Shortcuts_D_Checkbox_State 1
+    StrCpy $Shortcuts_ALL_Checkbox_State 0
 FunctionEnd
 
 Function un.onInit
@@ -139,6 +142,15 @@ Function onShortcutsPageCreate
         ${NSD_Check} $Shortcuts_D_Checkbox
     ${EndIf}
 
+    ${NSD_CreateCheckbox} 15u 60u 100% 10u $(l10n_SHORTCUTS_ALL)
+    Pop $Shortcuts_ALL_Checkbox
+    GetFunctionAddress $0 OnALLCheckbox
+    nsDialogs::OnClick $Shortcuts_ALL_Checkbox $0
+
+    ${If} $Shortcuts_ALL_Checkbox_State == ${BST_CHECKED}
+        ${NSD_Check} $Shortcuts_ALL_Checkbox
+    ${EndIf}
+
     nsDialogs::Show
 FunctionEnd
 
@@ -151,6 +163,12 @@ FunctionEnd
 ; event when the Desktop shortcut is (un)checked in the custom page
 Function OnDCheckbox
     ${NSD_GetState} $Shortcuts_D_Checkbox $Shortcuts_D_Checkbox_State
+    Pop $0 # HWND
+FunctionEnd
+
+; event when the "Apply to all users" is (un)checked in the custom page
+Function OnALLCheckbox
+    ${NSD_GetState} $Shortcuts_ALL_Checkbox $Shortcuts_ALL_Checkbox_State
     Pop $0 # HWND
 FunctionEnd
 
@@ -211,14 +229,29 @@ Section ""
         WriteUninstaller "uninstall.exe"
         
         Call WriteUninstallReg
-    
+	
+        ${If} $Shortcuts_ALL_Checkbox_State == ${BST_CHECKED}
+            SetShellVarContext all
+        ${EndIf}
+	
         ${If} $Shortcuts_SM_Checkbox_State == ${BST_CHECKED}
             CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
             CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk" \
                 "$INSTDIR\${PRODUCT_INTERNAL_NAME}.exe" \
                 "" "$INSTDIR\${PRODUCT_INTERNAL_NAME}.ico"
-            CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" \
-                "$INSTDIR\uninstall.exe"
+            ${If} $Shortcuts_ALL_Checkbox_State == ${BST_CHECKED}
+                ; If "Apply to all users" is selected, then
+                ; the Uninstall.lnk is only created in the admins
+                ; programs list, and not in everyones programs list
+                SetShellVarContext current
+                CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
+                CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" \
+                    "$INSTDIR\uninstall.exe"
+                SetShellVarContext all
+            ${Else}
+                CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" \
+                    "$INSTDIR\uninstall.exe"
+            ${EndIf}
         ${EndIf}
         
         ${If} $Shortcuts_D_Checkbox_State == ${BST_CHECKED}
@@ -242,6 +275,12 @@ Section "Uninstall"
     RMDir /r "$INSTDIR\extensions"
     
     ; Remove shortcuts, if any
+    SetShellVarContext all
+    Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
+    RMDir  "$SMPROGRAMS\${PRODUCT_NAME}"
+    Delete "$DESKTOP\${PRODUCT_NAME}.lnk"
+    
+    SetShellVarContext current
     Delete "$SMPROGRAMS\${PRODUCT_NAME}\${PRODUCT_NAME}.lnk"
     Delete "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk"
     RMDir  "$SMPROGRAMS\${PRODUCT_NAME}"

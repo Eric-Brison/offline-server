@@ -12,3 +12,5 @@ LangString l10n_ICONS_DESKTOP ${LANG_FRENCH} \
     "On my &Desktop"
 LangString l10n_ICONS_STARTMENU ${LANG_FRENCH} \
     "In my &Start Menu Programs folder"
+LangString l10n_SHORTCUTS_ALL ${LANG_ENGLISH} \
+    "Apply to all users"
