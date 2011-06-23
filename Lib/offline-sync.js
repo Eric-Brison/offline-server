@@ -150,14 +150,18 @@ Fdl.OfflineSync.prototype = {
 			config.transaction=this.transactionId;
 			if (parseInt(config.transaction) > 0) {
 				var data = this.callSyncMethod(config);
-
 				if (data) {
-					if (!data.error) {
-						return this.context.getDocument({
-							data : data
-						});
-					}
-				}
+                    if (!data.error) {
+                        if (data.properties.id > 0) {
+                        return this.context.getDocument({
+                            data : data
+                        });
+                        } else {
+                            // new document: not already activated so return temporary document
+                            return config.document;
+                        }
+                    }
+                }
 			} else {
 				this.context.setErrorMessage("no transaction id found");
 			}

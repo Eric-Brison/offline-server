@@ -27,7 +27,7 @@ interface DomainHook
     public function onAfterPushTransaction(_OfflineDomain &$domain);
     
     
-    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc);
+    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc=null);
     public function onAfterSaveDocument(_OfflineDomain &$domain,  Doc &$updatedDoc);
     
     public function onAfterSaveTransaction(_OfflineDomain &$domain);

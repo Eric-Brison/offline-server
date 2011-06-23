@@ -3,7 +3,7 @@
  * Exception code
  * all code exception use by platform are here
  * @category --category--
- * @package platform
+ * @package OFFLINE
  * @author anakeen
  * @copyright : anakeen SAS
  * @license : http://www.gnu.org/licenses/agpl.html GNU AFFERO GENERAL PUBLIC LICENSE

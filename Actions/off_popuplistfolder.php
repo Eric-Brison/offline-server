@@ -5,7 +5,7 @@
  * @author Anakeen 2006
  * @version $Id: ws_popupdocfolder.php,v 1.11 2007/02/12 10:52:00 eric Exp $
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
- * @package FREEDOM
+ * @package OFFLINE
  * @subpackage 
  */
 /**

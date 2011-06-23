@@ -31,11 +31,12 @@ class testHook implements DomainHook
         
         $domain->addComment(__METHOD__);
     }
-
+    
     public function onBeforePullSharedDocuments(_OfflineDomain &$domain)
     {
         $domain->addComment(__METHOD__);
-        //return 'pas de partage';
+    
+     //return 'pas de partage';
     }
     
     public function onAfterPullUserDocuments(_OfflineDomain &$domain)
@@ -47,47 +48,48 @@ class testHook implements DomainHook
     {
         
         $domain->addComment(__METHOD__ . $updatedDoc->getTitle());
-                $updatedDoc->addComment(__METHOD__);
+        $updatedDoc->addComment(__METHOD__);
     }
     public function onPullDocument(_OfflineDomain &$domain, Doc &$doc)
     {
         return true;
         $doc->addComment(__METHOD__);
-        $classid=$doc->getValue("es_classe");
-        if ($classid!='1126') {
+        $classid = $doc->getValue("es_classe");
+        if ($classid != '1126') {
             
-        $domain->addComment(__METHOD__ . ' '.$doc->getTitle(), HISTO_INFO);
+            $domain->addComment(__METHOD__ . ' ' . $doc->getTitle(), HISTO_INFO);
         
         } else {
             
-        $domain->addComment(__METHOD__ . " not pull $classid ".$doc->getTitle(), HISTO_ERROR);
-        return 'not a reptilia';
+            $domain->addComment(__METHOD__ . " not pull $classid " . $doc->getTitle(), HISTO_ERROR);
+            return 'not a reptilia';
         }
         return true;
-        
+    
     }
     
     public function onBeforePushDocument(_OfflineDomain &$domain, Doc &$doc)
     {
         
-
         $domain->addComment(__METHOD__ . $doc->getTitle());
-                $doc->addComment(__METHOD__);
+        $doc->addComment(__METHOD__);
     }
     public function onAfterPushDocument(_OfflineDomain &$domain, Doc &$doc)
     {
         
         $domain->addComment(__METHOD__ . $doc->getTitle());
-                $doc->addComment(__METHOD__);
+        $doc->addComment(__METHOD__);
     }
-    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc)
+    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc=null)
     {
-
+        
+        if ($refererDoc) {
         $domain->addComment(__METHOD__ . $refererDoc->getTitle());
-                $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
-        //print "Before";print_r2($res);
-        $err = $refererDoc->addRevision("before save in synchro");
-        $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
+            $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
+            //print "Before";print_r2($res);
+            $err = $refererDoc->addRevision("before save in synchro");
+            $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
+        }
         //print "After";print_r2($res);
         // if ($refererDoc->getValue("es_poids") < 98) {
         // $waitDoc->setValue("es_poids", $refererDoc->getValue("es_poids") + 1);

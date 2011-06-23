@@ -20,6 +20,7 @@ class DomainSyncApi
     const successTransaction = "successTransaction";
     const partialTransaction = "partialTransaction";
     const documentNotRecorded = "documentNotRecorded";
+    const newPrefix = "DLID-";
     /**
      * internal domain document
      * @var _OFFLINEDOMAIN
@@ -98,18 +99,19 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getSharedDocuments($config, $callback);
-            $out->documentsToDelete=$this->getIntersect($this->domain->getSharedFolder(), $stillRecorded);
-           
+            $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder(), $stillRecorded);
+        
         } else {
             $out->error = $err;
         }
         return $out;
     }
     
-    private function getIntersect(Dir &$folder, array &$stillRecorded) {
-        $serverInitids=$folder->getContentInitid();
-        $clientInitids=array_keys($stillRecorded);
-        return array_values( array_diff($clientInitids,$serverInitids));
+    private function getIntersect(Dir &$folder, array &$stillRecorded)
+    {
+        $serverInitids = $folder->getContentInitid();
+        $clientInitids = array_keys($stillRecorded);
+        return array_values(array_diff($clientInitids, $serverInitids));
     }
     
     /**
@@ -164,7 +166,7 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
-            $out->documentsToDelete=$this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
+            $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
         } else {
             $out->error = $err;
         }
@@ -241,12 +243,17 @@ class DomainSyncApi
     private function raw2doc($rawdoc, &$doc)
     {
         $fromid = $rawdoc->properties->fromid;
-        $doc = createTmpDoc(getDbAccess(), $fromid);
+        $doc = createDoc(getDbAccess(), $fromid, false, false, false); // no default values
         $err = '';
         if (!$doc) {
             $err = sprintf("cannot create document %s", $fromid);
         } else {
             $props = array();
+            if ($this->isNewDocument($rawdoc)) {
+                $rawdoc->properties->localid = $rawdoc->properties->id;
+                $rawdoc->properties->initid = 0;
+                $rawdoc->properties->id = 0;
+            }
             foreach ( $rawdoc->properties as $k => $v ) {
                 if (is_array($v)) $v = implode("\n", $v);
                 $props[$k] = $v;
@@ -256,6 +263,9 @@ class DomainSyncApi
                 
                 $oa = $doc->getAttribute($k);
                 if ($oa) {
+                    if ($oa->type == "docid") {
+                        $v = $this->numerizeId($v);
+                    }
                     $serr = $doc->setValue($k, $v);
                     if ($serr) {
                         $err .= sprintf("%s : %s", $oa->getLabel(), $serr);
@@ -267,6 +277,13 @@ class DomainSyncApi
         return $err;
     
     }
+    
+    private function isNewDocument($rawdoc)
+    {
+        if (preg_match('/^' . $this::newPrefix . '/', $rawdoc->properties->id)) return true;
+        return false;
+    }
+    
     /**
      * Modify waiting doc
      * @return Fdl_Document document 
@@ -277,7 +294,8 @@ class DomainSyncApi
         if ($rawdoc) {
             $out = '';
             $doc = null;
-            if ($rawdoc->properties->id) {
+            
+            if (!$this->isNewDocument($rawdoc)) {
                 $refdoc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
             }
@@ -306,11 +324,12 @@ class DomainSyncApi
                 if (!$waitDoc) {
                     $doc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
+                } else {
+                    $waitDoc->transaction = $config->transaction;
+                    $waitDoc->status = $waitDoc::invalid;
+                    $waitDoc->statusmessage = $err;
+                    $waitDoc->modify();
                 }
-                $waitDoc->transaction = $config->transaction;
-                $waitDoc->status = $waitDoc::invalid;
-                $waitDoc->statusmessage = $err;
-                $waitDoc->modify();
                 $out->error = sprintf(_("push:invalid document : %s"), $err);
             }
         } else {
@@ -384,6 +403,58 @@ class DomainSyncApi
         
         return $err;
     }
+    /*
+    function numerizeLocalLinks(Doc &$doc)
+    {
+        $oas = $doc->getNormalAttributes();
+        foreach ( $oas as $aid => $oa ) {
+            if ($oa->type == "docid") {
+                $value = $doc->getValue($aid);
+                if ($value) {
+                    $doc->setValue($aid, preg_replace("/(DLID-[a-f0-9-]+)/se", "\$this->numerizeId('\\1')", $value));
+                }
+            }
+        
+        }
+    }*/
+    
+    function numerizeId($s)
+    {
+        return preg_replace("/(DLID-[a-f0-9-]+)/se", "sprintf('-%u', crc32('\\1'))", $s);
+    }
+    function updateLocalLink(&$results)
+    {
+        $details = $results->detailStatus;
+        $localIds = array();
+        $serverIds = array();
+        foreach ( $details as $k => $v ) {
+            $lid = $v['localId'];
+            if ($lid) {
+                $localIds[] = $this->numerizeId($lid);
+                $serverIds[] = $k;
+            }
+        }
+        
+        $list = new DocumentList();
+        $list->addDocumentIdentificators($serverIds);
+        foreach ( $list as $id => $doc ) {
+            $oas = $doc->getNormalAttributes();
+            $needModify = false;
+            foreach ( $oas as $aid => $oa ) {
+                if ($oa->type == "docid") {
+                    $value = $doc->getValue($aid);
+                    if ($value) {
+                        $nvalue = str_replace($localIds, $serverIds, $value);
+                        if ($nvalue != $value) {
+                            $doc->setValue($aid, $nvalue);
+                            $needModify = true;
+                        }
+                    }
+                }
+            }
+            if ($needModify) $doc->modify();
+        }
+    }
     /**
      * End transaction
      * @return object 
@@ -411,6 +482,7 @@ class DomainSyncApi
                 if ($policy == "global") {
                     $this->domain->savePoint($point);
                 }
+                
                 foreach ( $waitings as $k => $waitDoc ) {
                     if ($waitDoc->status == $waitDoc::invalid) {
                         $out->detailStatus[$waitDoc->refererinitid] = array(
@@ -424,13 +496,16 @@ class DomainSyncApi
                         
                         $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument());
                         if (!$saveerr) {
-                            $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                            if ($waitDoc->getRefererDocument()) {
+                                $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                            }
                         }
                         if ($saveerr == "") {
                             $saveerr = $waitDoc->save();
                             $out->detailStatus[$waitDoc->refererinitid] = array(
                                 "statusMessage" => $waitDoc->statusmessage,
                                 "statusCode" => $waitDoc->status,
+                                "localId" => $waitDoc->localid,
                                 "isValid" => $waitDoc->isValid()
                             );
                             if ($saveerr == '') {
@@ -442,7 +517,9 @@ class DomainSyncApi
                                 $waitDoc->status = $out->detailStatus[$waitDoc->refererinitid]["statusCode"];
                                 $waitDoc->statusmessage = $out->detailStatus[$waitDoc->refererinitid]["statusMessage"];
                                 $waitDoc->modify();
-                                $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $saveerr), HISTO_ERROR);
+                                if ($waitDoc->getRefererDocument()) {
+                                    $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $saveerr), HISTO_ERROR);
+                                }
                             }
                         } else {
                             $out->detailStatus[$waitDoc->refererinitid] = array(
@@ -481,6 +558,7 @@ class DomainSyncApi
                     }
                 } else {
                     $out->status = $completeSuccess ? self::successTransaction : self::partialTransaction;
+                    $this->updateLocalLink($out);
                     $message = $this->callHook("onAfterSaveTransaction");
                 }
                 
@@ -500,7 +578,7 @@ class DomainSyncApi
             $out->error = _("endTransaction:no transaction identificator");
             $out->status = self::abortTransaction;
         }
-        $ufolder=$this->domain->getUserFolder();
+        $ufolder = $this->domain->getUserFolder();
         $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=OFF_ORGANIZER&domain=0&dirid=' . $ufolder->id . '&transaction=' . $config->transaction;
         return $out;
     }
