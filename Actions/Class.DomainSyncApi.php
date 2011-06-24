@@ -650,11 +650,8 @@ class DomainSyncApi
         foreach ( $waitings as $k => $waitDoc ) {
             if ($waitDoc->status == $waitDoc::upToDate) {
                 
-                error_log('try resolv' . $waitDoc->title . "$localId - $numLocalId- $serverId");
-                
                 $doc = $waitDoc->getRefererDocument();
                 if ($doc) {
-                error_log('try ref' . $doc->getTitle());
                     $oas = $doc->getNormalAttributes();
                     $needModify = false;
                     foreach ( $oas as $aid => $oa ) {
