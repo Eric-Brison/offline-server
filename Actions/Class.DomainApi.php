@@ -376,9 +376,7 @@ class DomainApi
                 }
             }
         }
-    
     }
-    
 
     
     /**

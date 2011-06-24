@@ -251,7 +251,7 @@ class DomainSyncApi
             $props = array();
             if ($this->isNewDocument($rawdoc)) {
                 $rawdoc->properties->localid = $rawdoc->properties->id;
-                $rawdoc->properties->initid = 0;
+                $rawdoc->properties->initid = $this->numerizeId($rawdoc->properties->id);
                 $rawdoc->properties->id = 0;
             }
             foreach ( $rawdoc->properties as $k => $v ) {
@@ -264,8 +264,9 @@ class DomainSyncApi
                 $oa = $doc->getAttribute($k);
                 if ($oa) {
                     if ($oa->type == "docid") {
-                        $v = $this->numerizeId($v);
+                        $v = $this->numerizeAllId($v);
                     }
+                    if ($v=='') $v=" ";
                     $serr = $doc->setValue($k, $v);
                     if ($serr) {
                         $err .= sprintf("%s : %s", $oa->getLabel(), $serr);
@@ -418,10 +419,27 @@ class DomainSyncApi
         }
     }*/
     
+    function numerizeAllId($s)
+    {
+        return preg_replace("/(DLID-[a-f0-9-]+)/se", "\$this->numerizeId('\\1')", $s);
+    }
+    /**
+     * localid to numeric id
+     * @param string $s DLID-<uuid>
+     * @return int
+     */
     function numerizeId($s)
     {
-        return preg_replace("/(DLID-[a-f0-9-]+)/se", "sprintf('-%u', crc32('\\1'))", $s);
+        $u=crc32($s);
+        if ($u < 0) return $u;
+        $u=abs($u);
+        if (($u >> 31) == 0) return -($u);
+        return -($u/2);
     }
+    /**
+     * change local relation link by server document identificator
+     * @param stdClass $results
+     */
     function updateLocalLink(&$results)
     {
         $details = $results->detailStatus;
@@ -509,6 +527,9 @@ class DomainSyncApi
                                 "isValid" => $waitDoc->isValid()
                             );
                             if ($saveerr == '') {
+                                if ($waitDoc->localid) {
+                                    $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId(), true);
+                                }
                                 $waitDoc->getRefererDocument()->addComment("synchronised");
                                 $this->domain->commitPoint($waitPoint);
                             } else {
@@ -517,6 +538,7 @@ class DomainSyncApi
                                 $waitDoc->status = $out->detailStatus[$waitDoc->refererinitid]["statusCode"];
                                 $waitDoc->statusmessage = $out->detailStatus[$waitDoc->refererinitid]["statusMessage"];
                                 $waitDoc->modify();
+                                error_log("waitDoc".$waitDoc->statusmessage);
                                 if ($waitDoc->getRefererDocument()) {
                                     $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $saveerr), HISTO_ERROR);
                                 }

@@ -68,7 +68,7 @@ class offFolderListFormat
         }
         if ($w->select(array(
             $doc->initid,
-            $doc->userid
+            $doc->userid,0
         ))) {
             $img = '';
             switch ($w->status) {
