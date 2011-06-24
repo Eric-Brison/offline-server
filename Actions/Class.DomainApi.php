@@ -113,8 +113,15 @@ class DomainApi
             $docid = $config->docid;
             $doc = new_doc(getDbaccess(), $docid, true);
             if ($doc->isAlive()) {
-        include_once ("FDL/Class.DocWaitManager.php");
-                $err = DocWaitManager::clearWaitingDocs($this->domain->id, $this->domain->getSystemUserId(), $doc->initid);
+                include_once ("FDL/Class.DocWaitManager.php");
+                $this->updateUnResolvedLocalLinks($doc);
+                $uid=$this->domain->getSystemUserId();
+                if ($doc->lockdomainid == $this->domain->id && $doc->locked==$uid) {
+                    $wdoc=new DocWait($this->domain->dbaccess, array($doc->initid, $uid));
+                    if ($wdoc->isAffected()) $wdoc->resetWaitingDocument();
+                } else {
+                  $err = DocWaitManager::clearWaitingDocs($this->domain->id, $uid, $doc->initid);
+                }
             }
             if ($err) $this->setError($err);
             $fdoc = new Fdl_Document(0, null, $doc);
@@ -124,6 +131,25 @@ class DomainApi
         }
         return $out;
     }
+    
+    private function updateUnResolvedLocalLinks(Doc &$doc) {
+        $oas = $doc->getNormalAttributes();
+           $unresolvedLinks=DocWaitManager::getUnresolvedLocalLinks($this->domain->id, $this->domain->getSystemUserId());
+           $localIds=array_keys($unresolvedLinks);
+           $serverIds=array_values($unresolvedLinks);
+            foreach ( $oas as $aid => $oa ) {
+                if ($oa->type == "docid") {
+                    $value = $doc->getValue($aid);
+                    if ($value) {
+                        $nvalue = str_replace($serverIds, $localIds, $value);
+                        if ($nvalue != $value) {
+                            $doc->$aid=$nvalue; // need to by pass setValue cause incorrect docid syntax
+                        }
+                    }
+                }
+            }
+    }
+    
     /**
      * put document into user space read only
      * @return Fdl_Document
@@ -166,7 +192,6 @@ class DomainApi
         return $out;
     }
     
-
     /**
      * put document into user space read only
      * @return Fdl_Document
@@ -259,7 +284,6 @@ class DomainApi
         return;
     }
     
-
     /**
      * delete all documents from user folder
      * @return void
@@ -267,7 +291,7 @@ class DomainApi
     public function clearSharedDocuments()
     {
         if ($this->domain) {
-            $err = $this->domain->clearSharedFolder( false);
+            $err = $this->domain->clearSharedFolder(false);
             if ($err) $this->setError($err);
         
         } else {
@@ -281,7 +305,7 @@ class DomainApi
      * @param function $callback filter on documents
      * @return DocumentList
      */
-    public function getUserDocuments($config, $callback=null)
+    public function getUserDocuments($config, $callback = null)
     {
         $date = $config->until;
         if ($this->domain) {
@@ -298,13 +322,13 @@ class DomainApi
      * @param function $callback filter on documents
      * @return DocumentList
      */
-    public function getSharedDocuments($config, $callback=null)
+    public function getSharedDocuments($config, $callback = null)
     {
         $date = $config->until;
         if ($this->domain) {
             $folder = $this->domain->getSharedFolder();
             if ($folder) {
-            $out = $this->getFolderDocuments($folder, $date, $callback);
+                $out = $this->getFolderDocuments($folder, $date, $callback);
             } else {
                 $this->setError(_("no share folder"));
             }
@@ -314,9 +338,6 @@ class DomainApi
         return $out;
     }
     
-
-   
-    
     /**
      * get folder documents
      * @param Dir $folder the folder to inspect
@@ -324,12 +345,12 @@ class DomainApi
      * @param function $callback filter on documents
      * @return DocumentList
      */
-    private function getFolderDocuments(Dir &$folder, $mdate = '', $callback=null)
+    private function getFolderDocuments(Dir &$folder, $mdate = '', $callback = null)
     {
         include_once ("FDL/Class.DocumentList.php");
         
         if ($this->domain) {
-            $col = new Fdl_Collection(0,null, $folder);
+            $col = new Fdl_Collection(0, null, $folder);
             
             if ($callback) $col->setContentMap($callback);
             $col->setContentOnlyValue(true);
@@ -377,7 +398,6 @@ class DomainApi
             }
         }
     }
-
     
     /**
      * get document locked by user
@@ -407,7 +427,7 @@ class DomainApi
         include_once ("OFFLINE/Class.DomainSyncApi.php");
         return new DomainSyncApi($this->domain, $this);
     }
-
+    
     /**
      * return object sync 
      * @return DomainViewApi

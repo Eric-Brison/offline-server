@@ -133,6 +133,29 @@ Fdl.OfflineSync.prototype = {
 	},
 	
 
+    /**
+     * resetWaitingDocs
+     * 
+     * @param {Object}
+     *            config
+     *            <ul>
+     * 
+     * </ul>
+     * @return {Boolean} true if ok
+     */
+	resetWaitingDocs : function() {
+        var data = this.callSyncMethod({
+            method : 'resetWaitingDocs'
+        });
+        if (data) {
+            if (data.error) {
+                this.context.setErrorMessage(data.error);
+                return false;
+            } 
+            return true;
+        }
+        return null;
+    },
 	/**
 	 * save document to the server
 	 * 

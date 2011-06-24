@@ -266,7 +266,7 @@ class DomainSyncApi
                     if ($oa->type == "docid") {
                         $v = $this->numerizeAllId($v);
                     }
-                    if ($v=='') $v=" ";
+                    if ($v == '') $v = " ";
                     $serr = $doc->setValue($k, $v);
                     if ($serr) {
                         $err .= sprintf("%s : %s", $oa->getLabel(), $serr);
@@ -355,6 +355,23 @@ class DomainSyncApi
         }
         return null;
     }
+    
+    /**
+     * reset all waitings Transaction
+     * @return object transactionId
+     */
+    public function resetWaitingDocs()
+    {
+        include_once ("FDL/Class.DocWaitManager.php");
+        
+        $err = DocWaitManager::clearWaitingDocs($this->domain->id, $this->domain->getSystemUserId());
+        
+        $out = '';
+        $out->error = $err;
+        
+        return $out;
+    }
+    
     /**
      * Begin Transaction
      * @return object transactionId
@@ -430,11 +447,11 @@ class DomainSyncApi
      */
     function numerizeId($s)
     {
-        $u=crc32($s);
+        $u = crc32($s);
         if ($u < 0) return $u;
-        $u=abs($u);
+        $u = abs($u);
         if (($u >> 31) == 0) return -($u);
-        return -($u/2);
+        return -($u / 2);
     }
     /**
      * change local relation link by server document identificator
@@ -496,70 +513,15 @@ class DomainSyncApi
             if (!$err) {
                 
                 $out->detailStatus = array();
-                $point = "synchro" . $config->transaction;
+                $beforeSavePoint = "synchro" . $config->transaction;
                 if ($policy == "global") {
-                    $this->domain->savePoint($point);
+                    $this->domain->savePoint($beforeSavePoint);
                 }
                 
-                foreach ( $waitings as $k => $waitDoc ) {
-                    if ($waitDoc->status == $waitDoc::invalid) {
-                        $out->detailStatus[$waitDoc->refererinitid] = array(
-                            "statusMessage" => $waitDoc->statusmessage,
-                            "statusCode" => $waitDoc->status,
-                            "isValid" => false
-                        );
-                    } else {
-                        $waitPoint = "docw" . $k;
-                        $this->domain->savePoint($waitPoint);
-                        
-                        $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument());
-                        if (!$saveerr) {
-                            if ($waitDoc->getRefererDocument()) {
-                                $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
-                            }
-                        }
-                        if ($saveerr == "") {
-                            $saveerr = $waitDoc->save();
-                            $out->detailStatus[$waitDoc->refererinitid] = array(
-                                "statusMessage" => $waitDoc->statusmessage,
-                                "statusCode" => $waitDoc->status,
-                                "localId" => $waitDoc->localid,
-                                "isValid" => $waitDoc->isValid()
-                            );
-                            if ($saveerr == '') {
-                                if ($waitDoc->localid) {
-                                    $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId(), true);
-                                }
-                                $waitDoc->getRefererDocument()->addComment("synchronised");
-                                $this->domain->commitPoint($waitPoint);
-                            } else {
-                                $this->domain->rollbackPoint($waitPoint);
-                                // need to redo modify cause rollback
-                                $waitDoc->status = $out->detailStatus[$waitDoc->refererinitid]["statusCode"];
-                                $waitDoc->statusmessage = $out->detailStatus[$waitDoc->refererinitid]["statusMessage"];
-                                $waitDoc->modify();
-                                error_log("waitDoc".$waitDoc->statusmessage);
-                                if ($waitDoc->getRefererDocument()) {
-                                    $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $saveerr), HISTO_ERROR);
-                                }
-                            }
-                        } else {
-                            $out->detailStatus[$waitDoc->refererinitid] = array(
-                                "statusMessage" => $saveerr,
-                                "statusCode" => self::documentNotRecorded,
-                                "isValid" => false
-                            );
-                            $this->domain->rollbackPoint($waitPoint);
-                            
-                            // need to redo modify cause rollback
-                            $waitDoc->status = $out->detailStatus[$waitDoc->refererinitid]["statusCode"];
-                            $waitDoc->statusmessage = $out->detailStatus[$waitDoc->refererinitid]["statusMessage"];
-                            $waitDoc->modify();
-                            $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $err), HISTO_ERROR);
-                        }
-                    }
-                }
+                // main save is here
+                $out->detailStatus = $this->saveWaitings($waitings);
                 
+                // analyze results
                 $completeSuccess = true;
                 $allFailure = true;
                 foreach ( $out->detailStatus as $aStatus ) {
@@ -580,21 +542,26 @@ class DomainSyncApi
                     }
                 } else {
                     $out->status = $completeSuccess ? self::successTransaction : self::partialTransaction;
-                    $this->updateLocalLink($out);
-                    $message = $this->callHook("onAfterSaveTransaction");
+                    if ($completeSuccess || ($policy != "global")) {
+                        $this->updateLocalLink($out);
+                        
+                        $message = $this->callHook("onAfterSaveTransaction");
+                    }
                 }
                 
                 if ($policy == "global") {
                     if ($out->status == self::successTransaction) {
-                        $this->domain->commitPoint($point);
+                        $this->domain->commitPoint($beforeSavePoint);
                     } else {
-                        $this->domain->rollbackPoint($point);
+                        $out->status = self::abortTransaction; // no partial in global mode
+                        $this->domain->rollbackPoint($beforeSavePoint);
                     }
                 }
                 $out->message = $message;
                 $out->error = $err;
             } else {
                 $out->status = self::abortTransaction;
+                $out->statusMessage = $err;
             }
         } else {
             $out->error = _("endTransaction:no transaction identificator");
@@ -604,7 +571,119 @@ class DomainSyncApi
         $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=OFF_ORGANIZER&domain=0&dirid=' . $ufolder->id . '&transaction=' . $config->transaction;
         return $out;
     }
-
+    
+    private function saveWaitings(&$waitings)
+    {
+        $out = array();
+        foreach ( $waitings as $k => $waitDoc ) {
+            if ($waitDoc->status == $waitDoc::invalid) {
+                $out[$waitDoc->refererinitid] = array(
+                    "statusMessage" => $waitDoc->statusmessage,
+                    "statusCode" => $waitDoc->status,
+                    "isValid" => false
+                );
+            } else {
+                $waitPoint = "docw" . $k;
+                $this->domain->savePoint($waitPoint);
+                
+                $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument());
+                if (!$saveerr) {
+                    if ($waitDoc->getRefererDocument()) {
+                        $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                    }
+                }
+                if ($saveerr == "") {
+                    $saveerr = $waitDoc->save();
+                    $out[$waitDoc->refererinitid] = array(
+                        "statusMessage" => $waitDoc->statusmessage,
+                        "statusCode" => $waitDoc->status,
+                        "localId" => $waitDoc->localid,
+                        "isValid" => $waitDoc->isValid()
+                    );
+                    if ($saveerr == '') {
+                        if ($waitDoc->localid) {
+                            $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId(), true);
+                            $morelinks=$this->resolveLocalLinks($waitDoc->localid, $waitDoc->refererinitid);
+                            foreach ($morelinks as $mid=>$link) {
+                                if (! $out[$mid]) $out[$mid]=$link;
+                            }
+                        }
+                        $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument());
+                        $waitDoc->getRefererDocument()->addComment("synchronised");
+                        $this->domain->commitPoint($waitPoint);
+                    } else {
+                        $this->domain->rollbackPoint($waitPoint);
+                        // need to redo modify cause rollback
+                        $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
+                        $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
+                        $waitDoc->modify();
+                        if ($waitDoc->getRefererDocument()) {
+                            $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $saveerr), HISTO_ERROR);
+                        }
+                    }
+                } else {
+                    $out[$waitDoc->refererinitid] = array(
+                        "statusMessage" => $saveerr,
+                        "statusCode" => self::documentNotRecorded,
+                        "isValid" => false
+                    );
+                    $this->domain->rollbackPoint($waitPoint);
+                    
+                    // need to redo modify cause rollback
+                    $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
+                    $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
+                    $waitDoc->modify();
+                    $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $waitDoc->statusmessage), HISTO_ERROR);
+                }
+            }
+        
+        }
+        
+        return $out;
+    }
+    
+    private function resolveLocalLinks($localId, $serverId)
+    {
+        $numLocalId=$this->numerizeId($localId);
+        $waitings = DocWaitManager::getWaitingDocsByDomain($this->domain->id);
+        $out = array();
+        foreach ( $waitings as $k => $waitDoc ) {
+            if ($waitDoc->status == $waitDoc::upToDate) {
+                
+                error_log('try resolv' . $waitDoc->title . "$localId - $numLocalId- $serverId");
+                
+                $doc = $waitDoc->getRefererDocument();
+                if ($doc) {
+                error_log('try ref' . $doc->getTitle());
+                    $oas = $doc->getNormalAttributes();
+                    $needModify = false;
+                    foreach ( $oas as $aid => $oa ) {
+                        if ($oa->type == "docid") {
+                            $value = $doc->getValue($aid);
+                            if ($value) {
+                                $nvalue = str_replace($numLocalId, $serverId, $value);
+                                if ($nvalue != $value) {
+                                    $doc->setValue($aid, $nvalue);
+                                    $needModify = true;
+                                }
+                            }
+                        }
+                    }
+                    if ($needModify) {
+                        $doc->modify();
+                        
+                        $out[$waitDoc->refererinitid] = array(
+                            "statusMessage" => $waitDoc->statusmessage,
+                            "statusCode" => $waitDoc->status,
+                            "isValid" => true
+                        );
+                    }
+                }
+            }
+        }
+        
+        return $out;
+    }
 }
 
 ?>
