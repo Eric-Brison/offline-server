@@ -68,6 +68,11 @@ class DomainViewApi
         $lay->set("FAMNAME", $family->name);
         $lay->set("FAMID", $family->id);
         $oas = $family->getAttributes();
+        
+        // need cause defval is not declared as attribute
+        simpleQuery($family->dbaccess, sprintf("select defval from docfam where id=%d", $family->id), $defval, true, true);
+        $family->defval=$defval;
+        $this->_defaultValues=$family->getDefValues($defval);
         $tree = array();
         $node = array();
         foreach ( $oas as $aid => &$oa ) {
@@ -276,6 +281,17 @@ class DomainViewApi
         return $out;
     }
     
+    private function getDefaultValue($aid) {
+        if (is_array($this->_defaultValues)) {
+            $def=$this->_defaultValues[$aid];
+            if (strtolower($def)=="::getuserid()") $def=Doc::getUserId();
+            elseif (strtolower($def)=="::userdocid()") $def=Doc::userDocId();
+            elseif (substr($def,0,2)=="::") $def='';
+            return $def;
+        }
+        return '';
+    }
+    
     private function bindingEditLeafAttribute(BasicAttribute &$oa)
     {
         $out = '';
@@ -295,15 +311,16 @@ class DomainViewApi
                 }
             }
             $label = $oa->encodeXml($oa->getLabel(), true);
+            $common=sprintf(' label="%s" type="%s" attrid="%s" visibility="%s" required="%s" defaultValue="%s" %s', $label, $oa->type, $oa->id, $visibility, $oa->needed?'true':'false', $this->getDefaultValue($oa->id), $opt);
             switch ($oa->type) {
             case 'docid' :
-                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" relationFamily="%s" multiple="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
+                $out = sprintf('<dcpAttribute %s relationFamily="%s" multiple="%s"/>', $common, trim($oa->format), ($oa->getOption("multiple") == "yes") ? "true" : "false");
                 break;
             case 'enum' :
-                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s"  multiple="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, ($oa->getOption("multiple") == "yes") ? "true" : "false", $visibility, $opt);
+                $out = sprintf('<dcpAttribute %s multiple="%s" />', $common, ($oa->getOption("multiple") == "yes") ? "true" : "false");
                 break;
             default :
-                $out = sprintf('<dcpAttribute label="%s" type="%s" attrid="%s" visibility="%s" %s/>', $label, $oa->type, $oa->id, $visibility, $opt);
+                $out = sprintf('<dcpAttribute %s/>', $common);
             }
         }
         return $out;
