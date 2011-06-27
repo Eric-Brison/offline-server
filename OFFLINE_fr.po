@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-14 11:14+0200\n"
-"PO-Revision-Date: 2011-06-14 11:14+0200\n"
+"PO-Revision-Date: 2011-06-27 14:16+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -31,29 +31,29 @@ msgid "%s Users folder"
 msgstr "Espaces utilisateur %s"
 
 msgid "Book in my space"
-msgstr ""
+msgstr "Réserver dans mon espace"
 
 msgid "Clear Share Folder"
-msgstr ""
+msgstr "Effacer le dossier partagé"
 
 msgid "Clear User Folder"
-msgstr ""
+msgstr "Effacer le dossier utilisateur"
 
 msgid "Domain"
 msgstr "Domaine"
 
 #, c-format
 msgid "Domain %s"
-msgstr ""
+msgstr "Domaine %s"
 
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
 
 msgid "Insert the document to see it with offline application"
-msgstr ""
+msgstr "Insérer le document pour le voir avec l'application offline"
 
 msgid "Modification Date Menu"
-msgstr ""
+msgstr "Date de modification"
 
 #, c-format
 msgid "OFFLINE:%s directory not found"
@@ -108,40 +108,40 @@ msgstr ""
 "votre plateforme"
 
 msgid "Properties"
-msgstr ""
+msgstr "Propriétés"
 
 msgid "Reason"
-msgstr ""
+msgstr "Raison"
 
 #, c-format
 msgid "Remove from %s"
-msgstr ""
+msgstr "Supprimer depuis %s"
 
 msgid "Remove the document from share space"
-msgstr ""
+msgstr "Supprimer le document de l'espace partagé"
 
 #, c-format
 msgid "Set in %s"
-msgstr ""
+msgstr "Mettre dans %s"
 
 msgid "Set in my space to read it"
-msgstr ""
+msgstr "Mettre dans mon espace"
 
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 msgid "access to documents of my space"
-msgstr ""
+msgstr "accès aux documents de mon espace"
 
 msgid "api domains of current user"
 msgstr "api pour le domain de l'utilisateur courant"
 
 msgid "book the document to modify it with offline application"
-msgstr ""
+msgstr "réserver le document pour modification avec l'application offline"
 
 #, c-format
 msgid "document %s not found"
-msgstr ""
+msgstr "document %s non trouvé"
 
 #, c-format
 msgid "document is already book in other domain : %s"
@@ -152,7 +152,7 @@ msgid "document to book not exists %s"
 msgstr "document à réserver n'existe pas %s"
 
 msgid "domain not set"
-msgstr ""
+msgstr "domaine non initialisé"
 
 msgid "endTransaction:no transaction identificator"
 msgstr "fin de transaction : pas d'identificateur de transation"
@@ -177,7 +177,7 @@ msgid "icon"
 msgstr "icone"
 
 msgid "insert the document to see it with offline application"
-msgstr ""
+msgstr "insérer le document pour lecture avec l'application offline"
 
 msgid "interface to organize offline documents"
 msgstr "interface pour organiser les documents hors-lignes"
@@ -193,10 +193,10 @@ msgid "no privilege to create offline domain"
 msgstr "pas de privilège pour créer un domaine offline"
 
 msgid "no share folder"
-msgstr ""
+msgstr "pas de dossier partagé"
 
 msgid "not a member domain"
-msgstr ""
+msgstr "n'est pas un membre du domaine"
 
 #, c-format
 msgid "off:conflict"
@@ -225,23 +225,23 @@ msgid "push:no document found"
 msgstr "téléversement : pas de document trouvé"
 
 msgid "remove from my space"
-msgstr ""
+msgstr "enlever de mon espace"
 
 msgid "remove the document from my space"
-msgstr ""
+msgstr "enlever le document de mon espace"
 
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
 
 msgid "title"
-msgstr ""
+msgstr "titre"
 
 msgid "verified"
 msgstr "vérifié"
 
 msgid "view my space"
-msgstr ""
+msgstr "voir mon espace"
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Echec de la construction du client: %s"
