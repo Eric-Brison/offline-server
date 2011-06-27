@@ -215,6 +215,11 @@ class DomainSyncApi
         } else {
             copy($path, $tmpfile);
             $filename = $config->filename;
+            
+            if ($this->isLocalIdenticator($docid)) {
+                $localid=$docid;
+                $docid=$this->numerizeId($docid);
+            }
             $wdoc = DocWaitManager::getWaitingDoc($docid);
             //$doc = new_doc(getDbAccess(), $docid);
             if ($wdoc) {
@@ -223,6 +228,12 @@ class DomainSyncApi
                 $oa = $doc->getAttribute($aid);
                 // print_r($oa);
                 if ($oa) {
+                    if (! $doc->id) {
+                        // it is a new doc
+                        $doc->id=0;
+                        $doc->initid=$docid;
+                        $doc->localid=$localid;
+                    }
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
                     @unlink($tmpfile);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
@@ -281,7 +292,11 @@ class DomainSyncApi
     
     private function isNewDocument($rawdoc)
     {
-        if (preg_match('/^' . $this::newPrefix . '/', $rawdoc->properties->id)) return true;
+        return $this->isLocalIdenticator($rawdoc->properties->id);
+    }
+    private function isLocalIdenticator($id)
+    {
+        if (preg_match('/^' . $this::newPrefix . '/', $id)) return true;
         return false;
     }
     
@@ -593,9 +608,11 @@ class DomainSyncApi
                     }
                 }
                 if ($saveerr == "") {
-                    $saveerr = $waitDoc->save();
+                    $saveInfo=null;
+                    $saveerr = $waitDoc->save($saveInfo);
                     $out[$waitDoc->refererinitid] = array(
                         "statusMessage" => $waitDoc->statusmessage,
+                        "saveInfo" => $saveInfo,
                         "statusCode" => $waitDoc->status,
                         "localId" => $waitDoc->localid,
                         "isValid" => $waitDoc->isValid()
