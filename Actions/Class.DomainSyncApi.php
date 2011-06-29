@@ -120,8 +120,20 @@ class DomainSyncApi
      */
     public function revertDocument($config)
     {
-        // TODO test onPullDocument hook
-        $out = $this->domainApi->revertDocument($config);
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            $err = $this->callHook("onPullDocument", $doc);
+            if ($err == "" || $err===true) {
+                $this->domain->addFollowingStates($doc);   
+                
+                $out = $this->domainApi->revertDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
         return $out;
     }
     
@@ -146,6 +158,7 @@ class DomainSyncApi
                 {
                     $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                     if ($isUpToDate) return false;
+                    $domain->addFollowingStates($doc);
                     $err = call_user_func_array(array(
                         $domain->hook(),
                         $method = "onPullDocument"
@@ -172,6 +185,8 @@ class DomainSyncApi
         }
         return $out;
     }
+    
+    
     /**
      * get Acknowledgement after user folder documents
      * @return string
@@ -307,10 +322,12 @@ class DomainSyncApi
     public function pushDocument($config)
     {
         $rawdoc = $config->document;
+        
         if ($rawdoc) {
             $out = '';
             $doc = null;
             
+            $extraData=$rawdoc->properties->pushextradata;
             if (!$this->isNewDocument($rawdoc)) {
                 $refdoc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
@@ -321,16 +338,16 @@ class DomainSyncApi
             }
             
             if ($err == "") {
-                $err = $this->callHook("onBeforePushDocument", $doc);
+                $err = $this->callHook("onBeforePushDocument", $doc,$extraData);
                 
                 if (!$err) {
                     
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
+                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction,$extraData);
                 }
                 if ($err) {
                     $out->error = $err;
                 } else {
-                    $message = $this->callHook("onAfterPushDocument", $doc);
+                    $message = $this->callHook("onAfterPushDocument", $doc, $extraData);
                     $fdoc = new Fdl_Document($doc->id, null, $doc);
                     $out = $fdoc->getDocument(true, false);
                     $out["message"] = $message;
@@ -339,7 +356,7 @@ class DomainSyncApi
                 $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
                 if (!$waitDoc) {
                     $doc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
+                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction,$extraData);
                 } else {
                     $waitDoc->transaction = $config->transaction;
                     $waitDoc->status = $waitDoc::invalid;
@@ -601,7 +618,9 @@ class DomainSyncApi
                 $waitPoint = "docw" . $k;
                 $this->domain->savePoint($waitPoint);
                 
-                $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument());
+                $eExtra= ($waitDoc->extradata)?json_decode($waitDoc->extradata):null;
+                error_log("extra:".$waitDoc->extradata);
+                $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument(), $eExtra);
                 if (!$saveerr) {
                     if ($waitDoc->getRefererDocument()) {
                         $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
@@ -625,7 +644,7 @@ class DomainSyncApi
                                 if (! $out[$mid]) $out[$mid]=$link;
                             }
                         }
-                        $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument());
+                        $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument(),$eExtra);
                         $waitDoc->getRefererDocument()->addComment("synchronised");
                         $this->domain->commitPoint($waitPoint);
                     } else {

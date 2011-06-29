@@ -65,17 +65,19 @@ interface DomainHook
      * if return error the push is aborted
      * @param _OfflineDomain $domain the current domain document
      * @param Doc $doc the document to push
+     * @param Object $extraData extra data set by client
      * @return string error message 
      */
-    public function onBeforePushDocument(_OfflineDomain &$domain, Doc &$doc);
+    public function onBeforePushDocument(_OfflineDomain &$domain, Doc &$doc, $extraData=null);
     /**
      * call after push document from client to server
      * the document waiting from the transation end to be recording in database
      * @param _OfflineDomain $domain the current domain document
      * @param Doc $doc the document to push
+     * @param Object $extraData extra data set by client
      * @return void
      */
-    public function onAfterPushDocument(_OfflineDomain &$domain, Doc &$doc);
+    public function onAfterPushDocument(_OfflineDomain &$domain, Doc &$doc, $extraData=null);
     /**
      * call after all documents are been transfered from client to server
      * at the step documents waiting to be recorded
@@ -91,18 +93,20 @@ interface DomainHook
      * @param _OfflineDomain $domain the current domain document
      * @param Doc $waitDoc the waiting document
      * @param Doc $refererDoc the referer document (can be null if it is a document creation)
+     * @param Object $extraData extra data set by client
      * @return string error message 
      */
-    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc=null);
+    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc=null, $extraData=null);
     
     /**
      * call after record document 
      * 
      * @param _OfflineDomain $domain the current domain document
      * @param Doc $updatedDoc the updated document
+     * @param Object $extraData extra data set by client
      * @return void
      */
-    public function onAfterSaveDocument(_OfflineDomain &$domain,  Doc &$updatedDoc);
+    public function onAfterSaveDocument(_OfflineDomain &$domain,  Doc &$updatedDoc, $extraData=null);
     
     /**
      * final call  after all document records 

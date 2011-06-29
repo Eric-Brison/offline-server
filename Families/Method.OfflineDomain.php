@@ -66,6 +66,37 @@ class _OFFLINEDOMAIN extends Dir
         return $err;
     }
     
+    public function addFollowingStates(Doc &$doc)
+    {
+        if (!$doc->wid) return false;
+        $wdoc = new_doc($this->dbaccess, $doc->wid);
+        if (!$wdoc->isAlive()) return false;
+        try {
+            $wdoc->Set($doc);
+            $fs = $wdoc->getFollowingStates();
+            $fsout = array();
+            foreach ( $fs as $state ) {
+                $tr = $wdoc->getTransition($doc->state, $state);
+                $fsout[$state] = array(
+                    "label" => _($state),
+                    "color" => $wdoc->getColor($state),
+                    "activity" => $wdoc->getActivity($state),
+                    "transition" => _($tr["id"])
+                );
+            }
+            $this->addExtraData($doc, "followingStates", $fsout);
+        } catch ( Exception $e ) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public function addExtraData(Doc &$doc, $key, $value)
+    {
+        $doc->addfields["pullextradata"] = "pullextradata";
+        $doc->pullextradata[$key] = $value;
+    }
     /**
      * remove supported family in offline domain
      * @param string $familyId family identificator
@@ -1075,7 +1106,7 @@ class _OFFLINEDOMAIN extends Dir
      */
     public function cleanAll()
     {
-        include_once("FDL/Class.SearchDoc.php");
+        include_once ("FDL/Class.SearchDoc.php");
         $users = $this->getUserMembersInfo();
         $userIds = implode(',', array_keys($users));
         $sql = sprintf("update doc set lockdomainid = null where lockdomainid = %d and locked > 0 and locked not in (%s)", $this->id, $userIds);
@@ -1086,9 +1117,9 @@ class _OFFLINEDOMAIN extends Dir
             $fuid[] = $u["docid"];
         }
         if (count($fuid) > 0) {
-            $userFids="'".implode("','",$fuid)."'";
+            $userFids = "'" . implode("','", $fuid) . "'";
             $s = new SearchDoc($this->dbaccess, "OFFLINEFOLDER");
-            $s->only=true;
+            $s->only = true;
             $s->addFilter("off_domain = '%d'", $this->id);
             $s->addFilter(sprintf("off_user not in (%s)", $userFids));
             $s->setObjectReturn();
@@ -1097,7 +1128,7 @@ class _OFFLINEDOMAIN extends Dir
                 $err .= $doc->delete();
             }
         }
-
+        
         return $err;
     }
     

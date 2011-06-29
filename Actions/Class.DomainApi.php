@@ -103,7 +103,7 @@ class DomainApi
     }
     
     /**
-     * unbook document into user space
+     * revert document 
      * @return Fdl_Document
      */
     public function revertDocument($config)
@@ -122,10 +122,13 @@ class DomainApi
                 } else {
                   $err = DocWaitManager::clearWaitingDocs($this->domain->id, $uid, $doc->initid);
                 }
-            }
+            
             if ($err) $this->setError($err);
             $fdoc = new Fdl_Document(0, null, $doc);
             $out = $fdoc->getDocument(true, false);
+            } else {
+                $this->setError(sprintf(_("document %s not found"), $docid));
+            }
         } else {
             $this->setError(_("domain not set"));
         }
