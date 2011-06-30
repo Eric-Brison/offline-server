@@ -124,8 +124,8 @@ class DomainSyncApi
         $doc = new_doc(getDbaccess(), $docid, true);
         if ($doc->isAlive()) {
             $err = $this->callHook("onPullDocument", $doc);
-            if ($err == "" || $err===true) {
-                $this->domain->addFollowingStates($doc);   
+            if ($err == "" || $err === true) {
+                $this->domain->addFollowingStates($doc);
                 
                 $out = $this->domainApi->revertDocument($config);
             } else {
@@ -186,7 +186,6 @@ class DomainSyncApi
         return $out;
     }
     
-    
     /**
      * get Acknowledgement after user folder documents
      * @return string
@@ -232,8 +231,8 @@ class DomainSyncApi
             $filename = $config->filename;
             
             if ($this->isLocalIdenticator($docid)) {
-                $localid=$docid;
-                $docid=$this->numerizeId($docid);
+                $localid = $docid;
+                $docid = $this->numerizeId($docid);
             }
             $wdoc = DocWaitManager::getWaitingDoc($docid);
             //$doc = new_doc(getDbAccess(), $docid);
@@ -243,11 +242,11 @@ class DomainSyncApi
                 $oa = $doc->getAttribute($aid);
                 // print_r($oa);
                 if ($oa) {
-                    if (! $doc->id) {
+                    if (!$doc->id) {
                         // it is a new doc
-                        $doc->id=0;
-                        $doc->initid=$docid;
-                        $doc->localid=$localid;
+                        $doc->id = 0;
+                        $doc->initid = $docid;
+                        $doc->localid = $localid;
                     }
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
                     @unlink($tmpfile);
@@ -327,7 +326,7 @@ class DomainSyncApi
             $out = '';
             $doc = null;
             
-            $extraData=$rawdoc->properties->pushextradata;
+            $extraData = $rawdoc->properties->pushextradata;
             if (!$this->isNewDocument($rawdoc)) {
                 $refdoc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
@@ -338,11 +337,11 @@ class DomainSyncApi
             }
             
             if ($err == "") {
-                $err = $this->callHook("onBeforePushDocument", $doc,$extraData);
+                $err = $this->callHook("onBeforePushDocument", $doc, $extraData);
                 
                 if (!$err) {
                     
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction,$extraData);
+                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
                 }
                 if ($err) {
                     $out->error = $err;
@@ -356,7 +355,7 @@ class DomainSyncApi
                 $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
                 if (!$waitDoc) {
                     $doc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction,$extraData);
+                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
                 } else {
                     $waitDoc->transaction = $config->transaction;
                     $waitDoc->status = $waitDoc::invalid;
@@ -370,7 +369,7 @@ class DomainSyncApi
         }
         return $out;
     }
-    private function callHook($method, &$arg1 = null, &$arg2 = null)
+    private function callHook($method, &$arg1 = null, &$arg2 = null, &$arg3 = null)
     {
         
         if ($this->domain->hook()) {
@@ -381,7 +380,8 @@ class DomainSyncApi
                 ), array(
                     &$this->domain,
                     &$arg1,
-                    &$arg2
+                    &$arg2,
+                    &$arg3
                 ));
             }
         }
@@ -576,7 +576,6 @@ class DomainSyncApi
                     $out->status = $completeSuccess ? self::successTransaction : self::partialTransaction;
                     if ($completeSuccess || ($policy != "global")) {
                         $this->updateLocalLink($out);
-                        
                         $message = $this->callHook("onAfterSaveTransaction");
                     }
                 }
@@ -618,8 +617,7 @@ class DomainSyncApi
                 $waitPoint = "docw" . $k;
                 $this->domain->savePoint($waitPoint);
                 
-                $eExtra= ($waitDoc->extradata)?json_decode($waitDoc->extradata):null;
-                error_log("extra:".$waitDoc->extradata);
+                $eExtra = $waitDoc->getExtraData();
                 $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument(), $eExtra);
                 if (!$saveerr) {
                     if ($waitDoc->getRefererDocument()) {
@@ -627,7 +625,7 @@ class DomainSyncApi
                     }
                 }
                 if ($saveerr == "") {
-                    $saveInfo=null;
+                    $saveInfo = null;
                     $saveerr = $waitDoc->save($saveInfo);
                     $out[$waitDoc->refererinitid] = array(
                         "statusMessage" => $waitDoc->statusmessage,
@@ -639,12 +637,17 @@ class DomainSyncApi
                     if ($saveerr == '') {
                         if ($waitDoc->localid) {
                             $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId(), true);
-                            $morelinks=$this->resolveLocalLinks($waitDoc->localid, $waitDoc->refererinitid);
-                            foreach ($morelinks as $mid=>$link) {
-                                if (! $out[$mid]) $out[$mid]=$link;
+                            $morelinks = $this->resolveLocalLinks($waitDoc->localid, $waitDoc->refererinitid);
+                            foreach ( $morelinks as $mid => $link ) {
+                                if (!$out[$mid]) $out[$mid] = $link;
                             }
                         }
-                        $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument(),$eExtra);
+                        $message = $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument(), $eExtra);
+                        $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveDocument = $message;
+                        if ($eExtra->changeState) {
+                            $message = $this->afterSaveChangeState($waitDoc->getRefererDocument(), $eExtra->changeState);
+                            $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveChangeState = $message;
+                        }
                         $waitDoc->getRefererDocument()->addComment("synchronised");
                         $this->domain->commitPoint($waitPoint);
                     } else {
@@ -680,7 +683,7 @@ class DomainSyncApi
     
     private function resolveLocalLinks($localId, $serverId)
     {
-        $numLocalId=$this->numerizeId($localId);
+        $numLocalId = $this->numerizeId($localId);
         $waitings = DocWaitManager::getWaitingDocsByDomain($this->domain->id);
         $out = array();
         foreach ( $waitings as $k => $waitDoc ) {
@@ -716,6 +719,12 @@ class DomainSyncApi
         }
         
         return $out;
+    }
+    
+    private function afterSaveChangeState(Doc &$doc, $newState) {
+        
+       $err= $doc->setState($newState, sprintf(_("synchronize change state to %s"),$newState));
+       return $err;
     }
 }
 

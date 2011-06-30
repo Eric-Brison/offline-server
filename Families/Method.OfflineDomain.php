@@ -69,27 +69,30 @@ class _OFFLINEDOMAIN extends Dir
     public function addFollowingStates(Doc &$doc)
     {
         if (!$doc->wid) return false;
-        $wdoc = new_doc($this->dbaccess, $doc->wid);
-        if (!$wdoc->isAlive()) return false;
-        try {
-            $wdoc->Set($doc);
-            $fs = $wdoc->getFollowingStates();
-            $fsout = array();
-            foreach ( $fs as $state ) {
-                $tr = $wdoc->getTransition($doc->state, $state);
-                $fsout[$state] = array(
-                    "label" => _($state),
-                    "color" => $wdoc->getColor($state),
-                    "activity" => $wdoc->getActivity($state),
-                    "transition" => _($tr["id"])
-                );
+        if (($doc->lockdomainid == $this->id) && ($doc->locked == $this->getSystemUserId())) {
+            $wdoc = new_doc($this->dbaccess, $doc->wid);
+            if (!$wdoc->isAlive()) return false;
+            try {
+                $wdoc->Set($doc);
+                $fs = $wdoc->getFollowingStates();
+                $fsout = array();
+                foreach ( $fs as $state ) {
+                    $tr = $wdoc->getTransition($doc->state, $state);
+                    $fsout[$state] = array(
+                        "label" => _($state),
+                        "color" => $wdoc->getColor($state),
+                        "activity" => $wdoc->getActivity($state),
+                        "transition" => _($tr["id"])
+                    );
+                }
+                $this->addExtraData($doc, "followingStates", $fsout);
+                
+                return true;
+            } catch ( Exception $e ) {
             }
-            $this->addExtraData($doc, "followingStates", $fsout);
-        } catch ( Exception $e ) {
-            return false;
         }
         
-        return true;
+        return false;
     }
     
     public function addExtraData(Doc &$doc, $key, $value)
