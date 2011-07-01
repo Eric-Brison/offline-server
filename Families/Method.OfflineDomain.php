@@ -72,7 +72,7 @@ class _OFFLINEDOMAIN extends Dir
         if (($doc->lockdomainid == $this->id) && ($doc->locked == $this->getSystemUserId())) {
             $wdoc = new_doc($this->dbaccess, $doc->wid);
             if (!$wdoc->isAlive()) return false;
-            if (! $this->canUseWorkflow($doc->fromid)) return false;
+            if (!$this->canUseWorkflow($doc->fromid)) return false;
             try {
                 $wdoc->Set($doc);
                 $fs = $wdoc->getFollowingStates();
@@ -223,8 +223,18 @@ class _OFFLINEDOMAIN extends Dir
         return $famids;
     }
     
-    public function canUseWorkflow($familyId) {
-        return true;
+    public function canUseWorkflow($familyId)
+    {
+        $families = $this->getAValues("off_t_families");
+        $fams = array();
+        foreach ( $families as $k => $v ) {
+            if ($v["off_families"]==$familyId) {
+                if ($v["off_useworkflow"] == "yes") {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
@@ -237,7 +247,7 @@ class _OFFLINEDOMAIN extends Dir
         $userId = $this->getDomainUserId($userId);
         $folder = $this->getUserFolder($userId);
         $tmpfile = tempnam(getTmpDir(), 'syncReport');
-        $report=$this->generateReport($userId);
+        $report = $this->generateReport($userId);
         file_put_contents($tmpfile, $report);
         
         $folder->disableEditControl();
@@ -265,7 +275,7 @@ class _OFFLINEDOMAIN extends Dir
             $v->arg = unserialize($v->arg);
             
             $tsync[] = array(
-                "oddClass" => ($k%2==0)?"even":"odd",
+                "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v),
                 "syncCode" => substr($v->code, strlen('DomainSyncApi::')),
                 "syncAction" => $this->reportGetAction($v),
@@ -281,9 +291,10 @@ class _OFFLINEDOMAIN extends Dir
         return $lay->gen();
     }
     
-    private function reportGetDate($sync) {
-        return FrenchDateToLocaleDate(strtok($sync->date,'.'));
-       
+    private function reportGetDate($sync)
+    {
+        return FrenchDateToLocaleDate(strtok($sync->date, '.'));
+    
     }
     private function reportGetStatus($sync)
     {
@@ -292,10 +303,10 @@ class _OFFLINEDOMAIN extends Dir
             switch ($sync->arg->status) {
             case DomainSyncApi::successTransaction :
                 $status = "ok";
-                foreach ($sync->arg->detailStatus as $dstatus) {
-                    $dstatus=(object)$dstatus;
+                foreach ( $sync->arg->detailStatus as $dstatus ) {
+                    $dstatus = (object) $dstatus;
                     if ($dstatus->saveInfo->onAfterSaveChangeState || $dstatus->saveInfo->onAfterSaveDocument) {
-                        $status="warn";
+                        $status = "warn";
                         break;
                     }
                 }
@@ -323,7 +334,8 @@ class _OFFLINEDOMAIN extends Dir
     private function reportGetAction($sync)
     {
         return _($sync->code); # _("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
-        
+    
+
     }
     private function reportGetMessage($sync)
     {
@@ -343,7 +355,7 @@ class _OFFLINEDOMAIN extends Dir
             foreach ( $list as $id => $doc ) {
                 $status = (object) $sync->arg->detailStatus[$doc->initid];
                 
-                $msgdoc[id] = $this->reportFormatEndStatus($status, sprintf("%s <span>%s</span>",$doc->getTitle(), $doc->initid));
+                $msgdoc[id] = $this->reportFormatEndStatus($status, sprintf("%s <span>%s</span>", $doc->getTitle(), $doc->initid));
             
             }
             if (count($msgdoc) > 1) {
@@ -351,7 +363,7 @@ class _OFFLINEDOMAIN extends Dir
             } elseif (count($msgdoc) == 1) {
                 $message = current($msgdoc);
             } else {
-                $message.=_("no documents uploaded");
+                $message .= _("no documents uploaded");
             }
             //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
@@ -366,15 +378,15 @@ class _OFFLINEDOMAIN extends Dir
             break;
         
         case 'DomainSyncApi::beginTransaction' :
-            $message=$sync->arg->error;
-           
+            $message = $sync->arg->error;
+            
             //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
         
         case 'DomainSyncApi::revertDocument' :
             
             if ($sync->arg->error) $message = sprintf("%s : %s", $sync->arg->title, $sync->arg->error);
-            else $message = sprintf(_("%s has been downloaded"), sprintf("%s <span>%s</span>",$sync->arg->title, $sync->arg->initid));
+            else $message = sprintf(_("%s has been downloaded"), sprintf("%s <span>%s</span>", $sync->arg->title, $sync->arg->initid));
             //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
         case 'DomainSyncApi::getUserDocuments' :
@@ -382,7 +394,7 @@ class _OFFLINEDOMAIN extends Dir
             if (is_array($sync->arg->documentsToUpdate)) {
                 $list = new DocumentList();
                 $list->addDocumentIdentificators($sync->arg->documentsToUpdate);
-                $msgdoc=array();
+                $msgdoc = array();
                 foreach ( $list as $docid => $doc ) {
                     $msgdoc[$docid] = sprintf("%s <span>%s</span>", $doc->getTitle(), $doc->initid);
                 }
@@ -397,7 +409,7 @@ class _OFFLINEDOMAIN extends Dir
             if (is_array($sync->arg->documentsToDelete)) {
                 $list = new DocumentList();
                 $list->addDocumentIdentificators($sync->arg->documentsToDelete);
-                $msgdoc=array();
+                $msgdoc = array();
                 foreach ( $list as $docid => $doc ) {
                     $msgdoc[$docid] = $doc->getTitle();
                 }
@@ -409,17 +421,17 @@ class _OFFLINEDOMAIN extends Dir
                     $deleteMessage = '';
                 }
             }
-            $message='';
+            $message = '';
             if ($sync->arg->error) $message = $sync->arg->error;
-            if ($updateMessage && $deleteMessage) $message.=nl2br($updateMessage."\n".$deleteMessage);
-            elseif ($updateMessage) $message.=$updateMessage;
-            elseif ($deleteMessage) $message.=$deleteMessage;
-            else $message.=_("no documents to retrieve");
-                // $message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            if ($updateMessage && $deleteMessage) $message .= nl2br($updateMessage . "\n" . $deleteMessage);
+            elseif ($updateMessage) $message .= $updateMessage;
+            elseif ($deleteMessage) $message .= $deleteMessage;
+            else $message .= _("no documents to retrieve");
+            // $message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
         default :
-        //$message = '<pre>' . print_r($sync->arg, true) . "</pre>";
-        $message="-";
+            //$message = '<pre>' . print_r($sync->arg, true) . "</pre>";
+            $message = "-";
         }
         return $message;
     }
@@ -453,7 +465,7 @@ class _OFFLINEDOMAIN extends Dir
             $statusMessage .= sprintf(("%s\n"), $status->saveInfo->onAfterSaveChangeState);
         }
         if (!$msgConstraint) {
-          $statusMessage .= $status->statusMessage;
+            $statusMessage .= $status->statusMessage;
         }
         
         return $statusMessage . $msgdoc;
