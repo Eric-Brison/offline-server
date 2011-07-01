@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-01 14:56+0200\n"
-"PO-Revision-Date: 2011-07-01 14:56+0200\n"
+"POT-Creation-Date: 2011-07-01 17:23+0200\n"
+"PO-Revision-Date: 2011-07-01 17:23+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -68,7 +68,7 @@ msgid "DomainSyncApi::getSharedDocuments"
 msgstr "récupération des documents partagés"
 
 msgid "DomainSyncApi::getUserDocuments"
-msgstr "récupération des documents utilisateurs"
+msgstr "récupération des documents utilisateur"
 
 msgid "DomainSyncApi::pushDocument"
 msgstr "téléversement d'un document"
@@ -78,6 +78,9 @@ msgstr "récupération d'un document"
 
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
+
+msgid "Hide OK status"
+msgstr "Masquer les status OK"
 
 msgid "Insert the document to see it with offline application"
 msgstr "Insérer le document pour le voir avec l'application offline"
@@ -312,6 +315,9 @@ msgstr "Date"
 
 msgid "syncMessage"
 msgstr "Message"
+
+msgid "syncPrint"
+msgstr "Imprimer"
 
 #, c-format
 msgid "synchro: %s"

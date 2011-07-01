@@ -184,10 +184,12 @@ class DomainSyncApi
                 };
             } else {
                 if (count($stillRecorded) > 0) {
-                    $callback = function (&$doc) use($stillRecorded)
+                    $domain = $this->domain;
+                    $callback = function (&$doc) use($domain,$stillRecorded)
                     {
                         $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                         if ($isUpToDate) return false;
+                        $domain->addFollowingStates($doc);
                         return true;
                     };
                 }
