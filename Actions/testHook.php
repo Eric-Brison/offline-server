@@ -74,6 +74,7 @@ class testHook implements DomainHook
     {
         $domain->addComment(__METHOD__ . $doc->getTitle());
         $doc->addComment(__METHOD__ . ':' . serialize($data));
+       // return "stop the push";
     }
     public function onAfterPushDocument(_OfflineDomain &$domain, Doc &$doc, $data = null)
     {

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-14 11:14+0200\n"
-"PO-Revision-Date: 2011-06-27 14:16+0200\n"
+"POT-Creation-Date: 2011-07-01 14:56+0200\n"
+"PO-Revision-Date: 2011-07-01 14:56+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -30,6 +30,18 @@ msgstr "Espace de %s"
 msgid "%s Users folder"
 msgstr "Espaces utilisateur %s"
 
+#, c-format
+msgid "%s following constraints are not validated: %s"
+msgstr "%s les contraintes suivantes ne sont pas respectées : %s"
+
+#, c-format
+msgid "%s has been downloaded"
+msgstr "téléchargement de %s"
+
+#, c-format
+msgid "%s has been recorded"
+msgstr "enregistrement de %s"
+
 msgid "Book in my space"
 msgstr "Réserver dans mon espace"
 
@@ -45,6 +57,24 @@ msgstr "Domaine"
 #, c-format
 msgid "Domain %s"
 msgstr "Domaine %s"
+
+msgid "DomainSyncApi::beginTransaction"
+msgstr "début de synchronisation"
+
+msgid "DomainSyncApi::endTransaction"
+msgstr "fin des téléversements"
+
+msgid "DomainSyncApi::getSharedDocuments"
+msgstr "récupération des documents partagés"
+
+msgid "DomainSyncApi::getUserDocuments"
+msgstr "récupération des documents utilisateurs"
+
+msgid "DomainSyncApi::pushDocument"
+msgstr "téléversement d'un document"
+
+msgid "DomainSyncApi::revertDocument"
+msgstr "récupération d'un document"
 
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
@@ -130,8 +160,19 @@ msgstr "Mettre dans mon espace"
 msgid "Status"
 msgstr "Status"
 
+msgid "Sync report"
+msgstr "Rapport de synchronisation"
+
+#, c-format
+msgid "Sync report %s.html"
+msgstr "Rapport de synchronisation %s.html"
+
 msgid "access to documents of my space"
 msgstr "accès aux documents de mon espace"
+
+#, c-format
+msgid "after save warning:%s\n"
+msgstr "Avertissement suite à l'enregistrement : %s\n"
 
 msgid "api domains of current user"
 msgstr "api pour le domain de l'utilisateur courant"
@@ -140,8 +181,22 @@ msgid "book the document to modify it with offline application"
 msgstr "réserver le document pour modification avec l'application offline"
 
 #, c-format
+msgid "delete document %s"
+msgstr "suppression du document %s"
+
+msgid "delete documents :"
+msgstr "suppression des documents :"
+
+#, c-format
 msgid "document %s not found"
 msgstr "document %s non trouvé"
+
+#, c-format
+msgid "document creation %s"
+msgstr "création du document %s"
+
+msgid "document creation failed"
+msgstr "erreur lors de la création d'un document"
 
 #, c-format
 msgid "document is already book in other domain : %s"
@@ -153,6 +208,13 @@ msgstr "document à réserver n'existe pas %s"
 
 msgid "domain not set"
 msgstr "domaine non initialisé"
+
+#, c-format
+msgid "download document %s"
+msgstr "téléchargement du document %s"
+
+msgid "download documents :"
+msgstr "téléchargement des documents :"
 
 msgid "endTransaction:no transaction identificator"
 msgstr "fin de transaction : pas d'identificateur de transation"
@@ -176,6 +238,9 @@ msgstr "le fichier %s doit implenter l'interface DomainHook"
 msgid "icon"
 msgstr "icone"
 
+msgid "id"
+msgstr "ide"
+
 msgid "insert the document to see it with offline application"
 msgstr "insérer le document pour lecture avec l'application offline"
 
@@ -188,6 +253,15 @@ msgstr "listes les documents d'un espace"
 #, c-format
 msgid "lock must be in domain %s"
 msgstr "le verrou doit être dans le domaine %s"
+
+msgid "new document"
+msgstr "nouveau document"
+
+msgid "no documents to retrieve"
+msgstr "aucun document à récupérer"
+
+msgid "no documents uploaded"
+msgstr "aucun document à enregistrer"
 
 msgid "no privilege to create offline domain"
 msgstr "pas de privilège pour créer un domaine offline"
@@ -230,9 +304,22 @@ msgstr "enlever de mon espace"
 msgid "remove the document from my space"
 msgstr "enlever le document de mon espace"
 
+msgid "syncAction"
+msgstr "Action"
+
+msgid "syncDate"
+msgstr "Date"
+
+msgid "syncMessage"
+msgstr "Message"
+
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
+
+#, c-format
+msgid "synchronize change state to %s"
+msgstr "changement d'état par synchronisation vers %s"
 
 msgid "title"
 msgstr "titre"

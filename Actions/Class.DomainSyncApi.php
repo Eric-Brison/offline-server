@@ -104,6 +104,15 @@ class DomainSyncApi
         } else {
             $out->error = $err;
         }
+        $log = '';
+        $log->error = $out->error;
+        $log->documentsToDelete = $out->documentsToDelete;
+        if (is_array($out->content)) {
+            foreach ( $out->content as &$rdoc ) {
+                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+            }
+        }
+        $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
     
@@ -134,6 +143,11 @@ class DomainSyncApi
         } else {
             $out->error = sprintf(_("document %s not found"), $docid);
         }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
     
@@ -183,6 +197,15 @@ class DomainSyncApi
         } else {
             $out->error = $err;
         }
+        $log = '';
+        $log->error = $out->error;
+        $log->documentsToDelete = $out->documentsToDelete;
+        if (is_array($out->content)) {
+            foreach ( $out->content as &$rdoc ) {
+                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+            }
+        }
+        $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
     
@@ -256,6 +279,7 @@ class DomainSyncApi
      // $err = DocWaitManager::saveWaitingDoc($doc);
             }
         }
+        $this->domain->addLog(__METHOD__, $out);
         $out->error = $err;
         return $out;
     }
@@ -367,6 +391,21 @@ class DomainSyncApi
         } else {
             $out->error = _("push:no document found");
         }
+        if (!$waitDoc) {
+            $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
+        }
+        if ($waitDoc) {
+            $log = (object) $waitDoc->getValues();
+            unset($log->orivalues);
+            unset($log->values);
+        } else {
+            $log = '';
+        }
+        $log->error = $out->error;
+        if (is_array($out)) {
+            $log->message = $out["message"];
+        }
+        $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
     private function callHook($method, &$arg1 = null, &$arg2 = null, &$arg3 = null)
@@ -405,6 +444,21 @@ class DomainSyncApi
     }
     
     /**
+     * update report file 
+     * store file user folder
+     * @return string content of the file
+     */
+    public function getReport($config)
+    {
+        $report='';
+        $err = $this->domain->updateReport($this->domain->getSystemUserId(), &$report);
+        $out = '';
+        if (!$err) $out->report = $report;
+        $out->error = $err;
+        
+        return $out;
+    }
+    /**
      * Begin Transaction
      * @return object transactionId
      */
@@ -416,6 +470,7 @@ class DomainSyncApi
         if (!$err) {
             $out->transactionId = DocWaitManager::getTransaction();
         }
+        $this->domain->addLog(__METHOD__, $out);
         return $out;
     }
     
@@ -468,7 +523,7 @@ class DomainSyncApi
         }
     }*/
     
-    function numerizeAllId($s)
+    private function numerizeAllId($s)
     {
         return preg_replace("/(DLID-[a-f0-9-]+)/se", "\$this->numerizeId('\\1')", $s);
     }
@@ -477,7 +532,7 @@ class DomainSyncApi
      * @param string $s DLID-<uuid>
      * @return int
      */
-    function numerizeId($s)
+    private function numerizeId($s)
     {
         $u = crc32($s);
         if ($u < 0) return $u;
@@ -489,7 +544,7 @@ class DomainSyncApi
      * change local relation link by server document identificator
      * @param stdClass $results
      */
-    function updateLocalLink(&$results)
+    private function updateLocalLink(&$results)
     {
         $details = $results->detailStatus;
         $localIds = array();
@@ -598,6 +653,7 @@ class DomainSyncApi
             $out->error = _("endTransaction:no transaction identificator");
             $out->status = self::abortTransaction;
         }
+        $this->domain->addLog(__METHOD__, $out);
         $ufolder = $this->domain->getUserFolder();
         $out->manageWaitingUrl = getParam("CORE_EXTERNURL") . '?app=OFFLINE&action=OFF_ORGANIZER&domain=0&dirid=' . $ufolder->id . '&transaction=' . $config->transaction;
         return $out;
@@ -721,10 +777,11 @@ class DomainSyncApi
         return $out;
     }
     
-    private function afterSaveChangeState(Doc &$doc, $newState) {
+    private function afterSaveChangeState(Doc &$doc, $newState)
+    {
         
-       $err= $doc->setState($newState, sprintf(_("synchronize change state to %s"),$newState));
-       return $err;
+        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s"), $newState));
+        return $err;
     }
 }
 

@@ -220,6 +220,239 @@ class _OFFLINEDOMAIN extends Dir
         }
         return $famids;
     }
+    
+    /**
+     * Generate a report file based on log for a user
+     * @param int $userId 
+     * @return string error message (empty string if no errors)
+     */
+    public function updateReport($userId, &$report)
+    {
+        $userId = $this->getDomainUserId($userId);
+        $folder = $this->getUserFolder($userId);
+        $tmpfile = tempnam(getTmpDir(), 'syncReport');
+        $report=$this->generateReport($userId);
+        file_put_contents($tmpfile, $report);
+        
+        $folder->disableEditControl();
+        $err = $folder->storeFile("off_report", $tmpfile, sprintf(_("Sync report %s.html"), date('Y-m-d')));
+        if (!$err) $err = $folder->modify();
+        $folder->enableEditControl();
+        @unlink($tmpfile);
+        return $err;
+    }
+    
+    public function generateReport($userId)
+    {
+        global $action;
+        $lay = new Layout(getLayoutFile("OFFLINE", "syncreport.html"), $action);
+        $q = new QueryDb($this->dbaccess, "DocLog");
+        $q->addQuery(sprintf("initid=%d", $this->id));
+        $q->addQuery(sprintf("uid=%d", $userId));
+        $q->order_by = "date desc";
+        
+        $r = $q->query(0, 1000, "TABLE");
+        $tsync = array();
+        foreach ( $r as $k => $v ) {
+            
+            $v = (object) $v;
+            $v->arg = unserialize($v->arg);
+            
+            $tsync[] = array(
+                "oddClass" => ($k%2==0)?"even":"odd",
+                "syncDate" => $this->reportGetDate($v),
+                "syncCode" => substr($v->code, strlen('DomainSyncApi::')),
+                "syncAction" => $this->reportGetAction($v),
+                "syncMessage" => $this->reportGetMessage($v),
+                "syncStatus" => $this->reportGetStatus($v)
+            );
+        }
+        $lay->setBlockData("MSG", $tsync);
+        $lay->set("date", FrenchDateToLocaleDate($this->getTimeDate()));
+        $lay->set("domain", $this->getHTMLTitle());
+        $lay->set("username", User::getDisplayName($this->getSystemUserId()));
+        //print $lay->gen();
+        return $lay->gen();
+    }
+    
+    private function reportGetDate($sync) {
+        return FrenchDateToLocaleDate(strtok($sync->date,'.'));
+       
+    }
+    private function reportGetStatus($sync)
+    {
+        switch ($sync->code) {
+        case 'DomainSyncApi::endTransaction' :
+            switch ($sync->arg->status) {
+            case DomainSyncApi::successTransaction :
+                $status = "ok";
+                foreach ($sync->arg->detailStatus as $dstatus) {
+                    $dstatus=(object)$dstatus;
+                    if ($dstatus->saveInfo->onAfterSaveChangeState || $dstatus->saveInfo->onAfterSaveDocument) {
+                        $status="warn";
+                        break;
+                    }
+                }
+                break;
+            
+            case DomainSyncApi::partialTransaction :
+                $status = "partial";
+                break;
+            
+            case DomainSyncApi::abortTransaction :
+                $status = "ko";
+                break;
+            }
+            break;
+        default :
+            if ($sync->arg->error != '') {
+                $status = "ko";
+            } else {
+                $status = "ok";
+            }
+        }
+        return $status;
+    
+    }
+    private function reportGetAction($sync)
+    {
+        return _($sync->code); # _("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
+        
+    }
+    private function reportGetMessage($sync)
+    {
+        
+        switch ($sync->code) {
+        case 'DomainSyncApi::endTransaction' :
+            
+            $list = new DocumentList();
+            $list->addDocumentIdentificators(array_keys($sync->arg->detailStatus));
+            $msgdoc = array();
+            foreach ( $sync->arg->detailStatus as $docid => $status ) {
+                if ($docid < 0) {
+                    $msgdoc[$docid] = $this->reportFormatEndStatus((object) $status, _("new document"));
+                }
+            }
+            
+            foreach ( $list as $id => $doc ) {
+                $status = (object) $sync->arg->detailStatus[$doc->initid];
+                
+                $msgdoc[id] = $this->reportFormatEndStatus($status, sprintf("%s <span>%s</span>",$doc->getTitle(), $doc->initid));
+            
+            }
+            if (count($msgdoc) > 1) {
+                $message = '<ul><li>' . implode('</li><li>', $msgdoc) . '</li></ul>';
+            } elseif (count($msgdoc) == 1) {
+                $message = current($msgdoc);
+            } else {
+                $message.=_("no documents uploaded");
+            }
+            //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            break;
+        
+        case 'DomainSyncApi::pushDocument' :
+            if ($sync->arg->refererinitid < 0) $message = sprintf(_("document creation %s"), $message = $sync->arg->title);
+            elseif ($sync->arg->refererinitid == null) $message = sprintf(_("document creation failed"));
+            else $message = $sync->arg->title;
+            if ($sync->arg->error) $message .= ' : ' . $sync->arg->error;
+            if ($sync->arg->message) $message .= ' : ' . $sync->arg->message;
+            //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            break;
+        
+        case 'DomainSyncApi::beginTransaction' :
+            $message=$sync->arg->error;
+           
+            //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            break;
+        
+        case 'DomainSyncApi::revertDocument' :
+            
+            if ($sync->arg->error) $message = sprintf("%s : %s", $sync->arg->title, $sync->arg->error);
+            else $message = sprintf(_("%s has been downloaded"), sprintf("%s <span>%s</span>",$sync->arg->title, $sync->arg->initid));
+            //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            break;
+        case 'DomainSyncApi::getUserDocuments' :
+        case 'DomainSyncApi::getSharedDocuments' :
+            if (is_array($sync->arg->documentsToUpdate)) {
+                $list = new DocumentList();
+                $list->addDocumentIdentificators($sync->arg->documentsToUpdate);
+                $msgdoc=array();
+                foreach ( $list as $docid => $doc ) {
+                    $msgdoc[$docid] = sprintf("%s <span>%s</span>", $doc->getTitle(), $doc->initid);
+                }
+                if (count($msgdoc) > 1) {
+                    $updateMessage = _("download documents :") . '<ul><li>' . implode('</li><li>', $msgdoc) . '</li></ul>';
+                } elseif (count($msgdoc) == 1) {
+                    $updateMessage = sprintf(_("download document %s"), current($msgdoc));
+                } else {
+                    $updateMessage = '';
+                }
+            }
+            if (is_array($sync->arg->documentsToDelete)) {
+                $list = new DocumentList();
+                $list->addDocumentIdentificators($sync->arg->documentsToDelete);
+                $msgdoc=array();
+                foreach ( $list as $docid => $doc ) {
+                    $msgdoc[$docid] = $doc->getTitle();
+                }
+                if (count($msgdoc) > 1) {
+                    $deleteMessage = _("delete documents :") . '<ul><li>' . implode('</li><li>', $msgdoc) . '</li></ul>';
+                } elseif (count($msgdoc) == 1) {
+                    $deleteMessage = sprintf(_("delete document %s"), current($msgdoc));
+                } else {
+                    $deleteMessage = '';
+                }
+            }
+            $message='';
+            if ($sync->arg->error) $message = $sync->arg->error;
+            if ($updateMessage && $deleteMessage) $message.=nl2br($updateMessage."\n".$deleteMessage);
+            elseif ($updateMessage) $message.=$updateMessage;
+            elseif ($deleteMessage) $message.=$deleteMessage;
+            else $message.=_("no documents to retrieve");
+                // $message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
+            break;
+        default :
+        //$message = '<pre>' . print_r($sync->arg, true) . "</pre>";
+        $message="TODO";
+        }
+        return $message;
+    }
+    
+    private function reportFormatEndStatus($status, $title = '')
+    {
+        $status->saveInfo = (object) $status->saveInfo;
+        switch ($status->statusCode) {
+        case 'constraint' :
+            if (count($status->saveInfo->constraint) > 0) {
+                $msgConstraint = '';
+                
+                foreach ( $status->saveInfo->constraint as $aid => $constraint ) {
+                    $msgConstraint .= sprintf("%s : %s", $constraint["label"], $constraint["err"]);
+                }
+                $statusMessage = $msgConstraint;
+                $msgdoc = sprintf(_("%s following constraints are not validated: %s"), $title, $statusMessage);
+            }
+            break;
+        case 'uptodate' :
+            $msgdoc = sprintf(_("%s has been recorded"), $title);
+            break;
+        default :
+            $msgdoc = '';
+        }
+        $statusMessage = '';
+        if ($status->saveInfo->onAfterSaveDocument) {
+            $statusMessage .= sprintf(_("after save warning:%s\n"), $status->saveInfo->onAfterSaveDocument);
+        }
+        if ($status->saveInfo->onAfterSaveChangeState) {
+            $statusMessage .= sprintf(("%s\n"), $status->saveInfo->onAfterSaveChangeState);
+        }
+        if (!$msgConstraint) {
+          $statusMessage .= $status->statusMessage;
+        }
+        
+        return $statusMessage . $msgdoc;
+    }
+    
     /**
      * add new member in offline domain
      * @param integer $userId system identificator for a group or a single user. Can use also logical name of relative document or login

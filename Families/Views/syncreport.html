@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>[TEXT:Sync report] [date]</title>
+<style>
+tr[status=ok] {
+    color:green;
+    display:none;
+}
+tr[status=ko] {
+    color:red;
+}
+tr[status=partial] {
+    color:orange;
+}
+tr[status=warn] {
+    color:orange;
+}
+tr:nth-child(even) {
+    background-color:[COLOR_A4];
+}
+tr:nth-child(odd) {
+    background-color:[COLOR_A7];
+}
+tr[code=beginTransaction] td {
+    border-bottom:solid 4px  [COLOR_A0];
+    
+}
+</style>
+</head>
+<body>
+<h1>[TEXT:Sync report] [date]</h1>
+<h2><span class="username">[username]</span><span class="domain">[domain]</span></h2>
+
+<table id="synchro-result">
+    <thead>
+    <tr><th></th><th>[TEXT:syncAction]</th><th>[TEXT:syncMessage]</th><th>[TEXT:syncDate]</th></tr>
+    </thead>
+    <tbody>
+    [BLOCK MSG]<tr class="[syncStatus] [syncCode] [oddClass]" status="[syncStatus]" code="[syncCode]"><td class="syncStatus"></td><td class="syncAction">[syncAction]</td><td class="syncMessage">[syncMessage]</td><td class="syncDate">[syncDate]</td></tr>
+    [ENDBLOCK MSG]
+    </tbody>
+</table>
+</body>
+</html>
