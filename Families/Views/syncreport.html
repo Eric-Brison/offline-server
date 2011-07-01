@@ -4,42 +4,203 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>[TEXT:Sync report] [date]</title>
 <style>
-tr[status=ok] {
-    color:green;
-    display:none;
+@media screen, print {
+    body {
+        font-size: 9pt;
+        font-family: Trebuchet MS, Verdana, Tahoma, Arial, sans-serif;
+        color: #222;
+        background-color: #FFF;
+        margin: 0 10px 0 10px;
+    }
+    h1 {
+        background-color: #F6F6F6;
+        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#FFF),
+            to(#F6F6F6) );
+        background: -moz-linear-gradient(270deg, #FFF, #F6F6F6);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        -moz-box-shadow: 1px 1px 2px #CCC;
+        -webkit-box-shadow: 1px 1px 2px #CCC;
+        box-shadow: 1px 1px 2px #CCC;
+        border: 1px solid #CCC;
+        color: #666;
+        text-shadow: 1px 1px 1px #FFF;
+        padding: 15px 10px 15px 10px;
+        border: 1px solid #444;
+    }
+    h1 span.domain {
+    float: right;
+    font-size: 50%;
+    padding-top: 2em;
+    }
+    table {
+        border-spacing: 0px;
+        border-collapse: collapse;
+        border: 0px solid red;
+    }
+    td {
+        border: 0px solid red;
+    }
+    td {
+        border-bottom: 1px solid #AAA;
+        vertical-align: top;
+        padding: 2px 0 0 8px;
+    }
+    thead tr {
+        border-bottom: 1px solid #AAA;
+        background-color: #D2D2D2;
+        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#D2D2D2),
+            to(#F3F3F3) );
+        background: -moz-linear-gradient(270deg, #D2D2D2, #F3F3F3);
+    }
+    tr:hover {
+        background-color: #F6F6F1;
+    }
+    tr.beginTransaction {
+        border-left: 5px solid #CCC;
+        border-top: 10px solid transparent;
+        border-bottom: 1px solid #CCC;
+        background-color: #CCC;
+        color: #444;
+        text-shadow: 0 1px 0 #FFF;
+        font-weight: bold;
+        font-size: 110%;
+    }
+    tr.beginTransaction td.syncAction {
+        padding-left: 0px;
+    }
+    td.syncAction {
+        padding-left: 20px;
+    }
+    td.syncMessage span {
+        font-size: 80%;
+        font-style: italic;
+        color: #888;
+    }
+    td.syncAction {
+        white-space: nowrap;
+        font-weight: bold;
+    }
+    td.syncDate {
+        white-space: nowrap;
+        font-size: 80%;
+        color: #888;
+    }
+    td.syncStatus {
+        width: 10px;
+    }
+    tr.ok {
+        border-left: 5px solid #0F0;
+    }
+    tr.ko {
+        border-left: 5px solid #F00;
+    }
+    tr.ko:hover {
+        background-color: #FDD;
+    }
+    tr.warn,tr.partial {
+        border-left: 5px solid orange;
+    }
+    tr.warn:hover,tr.partial:hover {
+        background-color: #F83;
+    }
+    tr.beginTransaction td.syncDate {
+        color: #444;
+        text-shadow: 0 1px 0 #FFF;
+        font-weight: bold;
+        font-size: 100%;
+    }
+    ul {
+        list-style-type: none;
+    }
+    li {
+        padding: 0px 3px 0px 3px;
+        border-right: 1px solid #CCC;
+        float: left;
+    }
+    div.button {
+        margin: 20px 0;
+    }
+    div.button a {
+        text-decoration: none;
+        color: #222;
+        font-weight: bold;
+        text-shadow: 0 1px 0 #fff;
+        padding: 5px;
+        background-color: #F6F6F6;
+        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#FFF),
+            to(#F6F6F6) );
+        background: -moz-linear-gradient(270deg, #FFF, #F6F6F6);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        -moz-box-shadow: 1px 1px 2px #CCC;
+        -webkit-box-shadow: 1px 1px 2px #CCC;
+        box-shadow: 1px 1px 2px #CCC;
+        border: 1px solid #CCC;
+    }
 }
-tr[status=ko] {
-    color:red;
+
+@media print {
+    div.button {
+        display: none;
+    }
+    thead tr {
+        border-bottom: 3px solid #OOO;
+        border-top: 3px solid #OOO;
+    }
+    tr {
+        border-bottom: 1px solid #000;
+    }
+    td {
+        vertical-align: top;
+    }
 }
-tr[status=partial] {
-    color:orange;
-}
-tr[status=warn] {
-    color:orange;
-}
-tr:nth-child(even) {
-    background-color:[COLOR_A4];
-}
-tr:nth-child(odd) {
-    background-color:[COLOR_A7];
-}
-tr[code=beginTransaction] td {
-    border-bottom:solid 4px  [COLOR_A0];
-    
 }
 </style>
+<script>
+    allDisplayed = true;
+    function showAll() {
+        var tab = document.getElementById('synchro-result');
+        var elts = document.getElementsByTagName("tr");
+        for ( var i = 0; i < elts.length; i++) {
+            status = elts[i].getAttribute("status");
+            if (status == "ok") {
+                elts[i].style.display = (allDisplayed ? "none" : "table-row");
+            }
+        }
+        allDisplayed = (allDisplayed ? false : true);
+    }
+</script>
 </head>
 <body>
-<h1>[TEXT:Sync report] [date]</h1>
-<h2><span class="username">[username]</span><span class="domain">[domain]</span></h2>
-
+<h1>[TEXT:Sync report] [date]<span class="domain">[TEXT:Domain] : [domain]</span></h1>
+<h2><span class="username">[username]</span></h2>
+<div class="button" >
+<a href="#" onclick="showAll()">[TEXT:Hide OK status]</a>
+<a href="#" onclick="self.print()">[TEXT:syncPrint]</a></div>
 <table id="synchro-result">
     <thead>
-    <tr><th></th><th>[TEXT:syncAction]</th><th>[TEXT:syncMessage]</th><th>[TEXT:syncDate]</th></tr>
+        <tr>
+            <th></th>
+            <th>[TEXT:syncAction]</th>
+            <th>[TEXT:syncMessage]</th>
+            <th>[TEXT:syncDate]</th>
+        </tr>
     </thead>
     <tbody>
-    [BLOCK MSG]<tr class="[syncStatus] [syncCode] [oddClass]" status="[syncStatus]" code="[syncCode]"><td class="syncStatus"></td><td class="syncAction">[syncAction]</td><td class="syncMessage">[syncMessage]</td><td class="syncDate">[syncDate]</td></tr>
-    [ENDBLOCK MSG]
+        [BLOCK MSG]
+        <tr class="[syncStatus] [syncCode] [oddClass]"
+            status="[syncStatus]" code="[syncCode]">
+            <td class="syncStatus"></td>
+            <td class="syncAction">[syncAction]</td>
+            <td class="syncMessage">[syncMessage]</td>
+            <td class="syncDate">[syncDate]</td>
+        </tr>
+        [ENDBLOCK MSG]
     </tbody>
 </table>
 </body>

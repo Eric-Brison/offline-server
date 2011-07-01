@@ -72,6 +72,7 @@ class _OFFLINEDOMAIN extends Dir
         if (($doc->lockdomainid == $this->id) && ($doc->locked == $this->getSystemUserId())) {
             $wdoc = new_doc($this->dbaccess, $doc->wid);
             if (!$wdoc->isAlive()) return false;
+            if (! $this->canUseWorkflow($doc->fromid)) return false;
             try {
                 $wdoc->Set($doc);
                 $fs = $wdoc->getFollowingStates();
@@ -85,6 +86,7 @@ class _OFFLINEDOMAIN extends Dir
                         "transition" => _($tr["id"])
                     );
                 }
+                error_log("extra");
                 $this->addExtraData($doc, "followingStates", $fsout);
                 
                 return true;
@@ -219,6 +221,10 @@ class _OFFLINEDOMAIN extends Dir
             $this->enableEditControl();
         }
         return $famids;
+    }
+    
+    public function canUseWorkflow($familyId) {
+        return true;
     }
     
     /**
@@ -413,7 +419,7 @@ class _OFFLINEDOMAIN extends Dir
             break;
         default :
         //$message = '<pre>' . print_r($sync->arg, true) . "</pre>";
-        $message="TODO";
+        $message="-";
         }
         return $message;
     }
