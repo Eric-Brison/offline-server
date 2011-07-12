@@ -451,7 +451,7 @@ class DomainSyncApi
         if ($u < 0) return $u;
         $u = abs($u);
         if (($u >> 31) == 0) return -($u);
-        return -($u / 2);
+        return -round($u / 2);
     }
     /**
      * change local relation link by server document identificator
