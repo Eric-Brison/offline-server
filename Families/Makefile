@@ -3,7 +3,7 @@
 #
 # ============================================
 
-
+SUBDIR= Views
 include $(utildir)/PubRule
 
 pages_fdl = $(patsubst %.php,$(pubdir)/$(applib)/%.php,$(wildcard Method*.php))

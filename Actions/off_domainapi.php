@@ -61,7 +61,8 @@ function off_domainapi(Action &$action)
                     $out = call_user_func(array(
                         $apiDomain,
                         $method
-                    ), $config); 
+                    ), $config);  
+                   
                 }
             } catch ( Exception $e ) {
                 $out->error = sprintf("exception %s in method %s", $e->getMessage(), $method);

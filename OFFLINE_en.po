@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-14 11:14+0200\n"
-"PO-Revision-Date: 2011-06-07 16:03+0200\n"
+"POT-Creation-Date: 2011-07-01 17:23+0200\n"
+"PO-Revision-Date: 2011-07-01 17:23+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -30,6 +30,18 @@ msgstr ""
 msgid "%s Users folder"
 msgstr ""
 
+#, c-format
+msgid "%s following constraints are not validated: %s"
+msgstr ""
+
+#, c-format
+msgid "%s has been downloaded"
+msgstr ""
+
+#, c-format
+msgid "%s has been recorded"
+msgstr ""
+
 msgid "Book in my space"
 msgstr ""
 
@@ -46,7 +58,28 @@ msgstr ""
 msgid "Domain %s"
 msgstr ""
 
+msgid "DomainSyncApi::beginTransaction"
+msgstr "begin synchronization"
+
+msgid "DomainSyncApi::endTransaction"
+msgstr "upload end"
+
+msgid "DomainSyncApi::getSharedDocuments"
+msgstr "retrieve shared documents"
+
+msgid "DomainSyncApi::getUserDocuments"
+msgstr "retrieve user documents"
+
+msgid "DomainSyncApi::pushDocument"
+msgstr " document uploading"
+
+msgid "DomainSyncApi::revertDocument"
+msgstr "retrieve document"
+
 msgid "Download offline client application"
+msgstr ""
+
+msgid "Hide OK status"
 msgstr ""
 
 msgid "Insert the document to see it with offline application"
@@ -126,7 +159,18 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+msgid "Sync report"
+msgstr "Synchronization Report"
+
+#, c-format
+msgid "Sync report %s.html"
+msgstr ""
+
 msgid "access to documents of my space"
+msgstr ""
+
+#, c-format
+msgid "after save warning:%s\n"
 msgstr ""
 
 msgid "api domains of current user"
@@ -136,7 +180,21 @@ msgid "book the document to modify it with offline application"
 msgstr ""
 
 #, c-format
+msgid "delete document %s"
+msgstr ""
+
+msgid "delete documents :"
+msgstr ""
+
+#, c-format
 msgid "document %s not found"
+msgstr ""
+
+#, c-format
+msgid "document creation %s"
+msgstr ""
+
+msgid "document creation failed"
 msgstr ""
 
 #, c-format
@@ -148,6 +206,13 @@ msgid "document to book not exists %s"
 msgstr ""
 
 msgid "domain not set"
+msgstr ""
+
+#, c-format
+msgid "download document %s"
+msgstr ""
+
+msgid "download documents :"
 msgstr ""
 
 msgid "endTransaction:no transaction identificator"
@@ -172,6 +237,9 @@ msgstr ""
 msgid "icon"
 msgstr ""
 
+msgid "id"
+msgstr ""
+
 msgid "insert the document to see it with offline application"
 msgstr ""
 
@@ -183,6 +251,15 @@ msgstr ""
 
 #, c-format
 msgid "lock must be in domain %s"
+msgstr ""
+
+msgid "new document"
+msgstr ""
+
+msgid "no documents to retrieve"
+msgstr ""
+
+msgid "no documents uploaded"
 msgstr ""
 
 msgid "no privilege to create offline domain"
@@ -226,8 +303,24 @@ msgstr ""
 msgid "remove the document from my space"
 msgstr ""
 
+msgid "syncAction"
+msgstr "Action"
+
+msgid "syncDate"
+msgstr "Date"
+
+msgid "syncMessage"
+msgstr "Message"
+
+msgid "syncPrint"
+msgstr "Print"
+
 #, c-format
 msgid "synchro: %s"
+msgstr ""
+
+#, c-format
+msgid "synchronize change state to %s"
 msgstr ""
 
 msgid "title"

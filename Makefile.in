@@ -33,3 +33,7 @@ _static_dirs:
 	mkdir -p $(pubdir)/share/offline/clients $(pubdir)/share/offline/customize
 
 publish: _static_dirs
+
+clean:	
+	/bin/rm -f *.*~ config.* Makefile configure $(appname)_init.php info.xml $(PACKAGE)-*webinst
+	/bin/rm -fr autom4te.cache
