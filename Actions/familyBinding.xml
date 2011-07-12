@@ -9,14 +9,14 @@
         
         <content>
             <xul:vbox flex="1">
-                <dcpDocument xbl:inherits="initid" mode="view" fromname="[FAMNAME]" fromid="[FAMID]">
-                <dcpDocMenu/>
-                <dcpDocHeader/>
+                <xul:dcpDocument xbl:inherits="initid" mode="view" fromname="[FAMNAME]" fromid="[FAMID]">
+                <xul:dcpDocMenu/>
+                <xul:dcpDocHeader/>
 <!-- Begin generated content -->
 [viewContent]
 <!-- End generated content -->
-                <dcpDocFooter/>
-                </dcpDocument>
+                <xul:dcpDocFooter/>
+                </xul:dcpDocument>
             </xul:vbox>
         </content>
     </binding>
@@ -25,14 +25,14 @@
         
         <content>
             <xul:vbox flex="1">
-                <dcpDocument xbl:inherits="initid" mode="edit" fromname="[FAMNAME]" fromid="[FAMID]">
-                <dcpDocMenu/>
-                <dcpDocHeader/>
+                <xul:dcpDocument xbl:inherits="initid" mode="edit" fromname="[FAMNAME]" fromid="[FAMID]">
+                <xul:dcpDocMenu/>
+                <xul:dcpDocHeader/>
 <!-- Begin generated content -->
 [editContent]
 <!-- End generated content -->
-                <dcpDocFooter/>
-                </dcpDocument>
+                <xul:dcpDocFooter/>
+                </xul:dcpDocument>
             </xul:vbox>
         </content>
         
