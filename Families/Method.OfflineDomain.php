@@ -86,7 +86,6 @@ class _OFFLINEDOMAIN extends Dir
                         "transition" => _($tr["id"])
                     );
                 }
-                error_log("extra");
                 $this->addExtraData($doc, "followingStates", $fsout);
                 
                 return true;
@@ -671,7 +670,7 @@ class _OFFLINEDOMAIN extends Dir
                 foreach ( $users as $kg => $guser ) {
                     $g = new User($this->dbaccess, $guser["us_whatid"]);
                     if ($g->isAffected()) {
-                        if ($g->isMember($uid)) return true;
+                        if ($g->isMember($userId)) return true;
                     }
                 }
             }
