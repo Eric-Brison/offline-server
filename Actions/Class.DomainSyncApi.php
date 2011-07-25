@@ -183,7 +183,6 @@ class DomainSyncApi
                     return (empty($err) || ($err === true));
                 };
             } else {
-                if (count($stillRecorded) > 0) {
                     $domain = $this->domain;
                     $callback = function (&$doc) use($domain,$stillRecorded)
                     {
@@ -192,7 +191,6 @@ class DomainSyncApi
                         $domain->addFollowingStates($doc);
                         return true;
                     };
-                }
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
             $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
