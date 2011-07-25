@@ -1,8 +1,19 @@
 <?php
-// ---------------------------------------------------------------
-// $Id:  $
-// ---------------------------------------------------------------
 
+/**
+ * @mainpage Dynacase Offline Server Documentation
+ * @brief 
+ * @author Anakeen Dynacase Labs
+ * @version @VERSION@-@RELEASE@
+ * @date 2011
+ *
+ * 
+ * @par Wiki manual:
+ * The  Manual gives you all informations to install and configure offline server domains
+  *   ==> http://www.dynacase.org/modules/dynacase-offline/documentation
+ *
+ *
+ */
 
 global $app_const;
 
