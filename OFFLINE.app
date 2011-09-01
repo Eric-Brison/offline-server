@@ -22,7 +22,11 @@ $app_acl = array(
 	array(
 		"name" => "ADMIN",
 		"description" =>N_("OFFLINE:access client build"),
-		"group_default" =>"Y")
+		"group_default" =>"Y"),
+    array(
+        "name" => "OFF_UPDATE",
+        "description" =>N_("OFFLINE:access client update"),
+        "group_default" =>"Y")
 );
 
 $action_desc = array(
@@ -72,6 +76,13 @@ $action_desc = array(
         "name" => "ADMIN",
         "short_name" => N_("OFFLINE:build clients"),
         "acl" => "ADMIN",
+        "root" => "N"
+    ),
+    
+    array(
+        "name" => "OFF_UPDATE",
+        "short_name" => N_("OFFLINE:client update"),
+        "acl" => "OFF_UPDATE",
         "root" => "N"
     )
 );

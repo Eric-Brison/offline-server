@@ -67,6 +67,8 @@ function _main {
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dist/dynacase-offline.ico"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/LICENSE.txt" "$PKG_NAME/dist/LICENSE.txt"
 
+    # MAR file is made from the win/32_zip target
+
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/build.nsi" "$PKG_NAME/build.nsi"
     cp -pR "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/l10n" "$PKG_NAME/l10n"
     ( cd "$PKG_NAME/dist" && find . -maxdepth 1 -type f ) | sed -e 's:\./\(.*\)$:Delete "$INSTDIR\\\1":' > "$PKG_NAME/uninstall_files.nsi"

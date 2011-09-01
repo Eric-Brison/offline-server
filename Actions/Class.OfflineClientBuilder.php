@@ -5,6 +5,7 @@ class OfflineClientBuilder {
 	const xulruntimes_path = 'share/offline/xulruntimes';
 	const xulapp_path = 'share/offline/xulapp';
 	const xulapp_appini = 'share/offline/xulapp/application.ini';
+	const customize_release = 'share/offline/customize/RELEASE';
 
 	private $output_dir = '.';
 	private $opts = array();
@@ -32,21 +33,22 @@ class OfflineClientBuilder {
 		$this->xulruntimes_path = sprintf('%s/%s', $pubdir, self::xulruntimes_path);
 		$this->xulapp_path = sprintf('%s/%s', $pubdir, self::xulapp_path);
 		$this->xulapp_appini = sprintf('%s/%s', $pubdir, self::xulapp_appini);
+		$this->customize_release = sprintf('%s/%s', $pubdir, self::customize_release);
 
 		return true;
 	}
 
-	public function build($os, $arch, $prefix, $outputFile) {
+	public function build($os, $arch, $prefix, $outputFile, $mar_basename='') {
 		include_once('WHAT/Lib.Common.php');
 
 		global $pubdir;
 
 		if( strpos($os, '/') !== false ) {
-			$this->error = sprintf("Malformed OS '%s' (cannot contains '/').", $os);
+			$this->error = sprintf("Malformed OS '%s' (cannot contain '/').", $os);
 			return false;
 		}
 		if( strpos($arch, '/') !== false ) {
-			$this->error = sprintf("Marlformed architecture '%s' (cannot contains '/').", $arch);
+			$this->error = sprintf("Marlformed architecture '%s' (cannot contain '/').", $arch);
 			return false;
 		}
 
@@ -83,37 +85,48 @@ class OfflineClientBuilder {
 		$prefix = $this->expandFilename($prefix, array('OS' => $os, 'ARCH' => $arch));
 		$outputFile = sprintf('%s/%s', $this->output_dir, $this->expandFilename($outputFile, array('OS' => $os, 'ARCH' => $arch)));
 
-		$orig_wpub = getenv('wpub');
-		putenv(sprintf('wpub=%s', $pubdir));
-
-		$orig_customize_dir = false;
+		$envBackup = $this->getEnv(array('wpub', 'CUSTOMIZE_DIR', 'APP_VERSION', 'APP_BUILDID'));
+		$env = array();
+		$env['wpub'] = $pubdir;
 		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
-			$orig_customize_dir = getenv('CUSTOMIZE_DIR');
-			putenv(sprintf('CUSTOMIZE_DIR=%s', $this->opts['CUSTOMIZE_DIR']));
+		    $env['CUSTOMIZE_DIR'] = $this->opts['CUSTOMIZE_DIR'];
+		}
+		$env['APP_VERSION'] = $this->getOfflineInfo('Version.Customize');
+		$env['APP_BUILDID'] = $this->getOfflineInfo('BuildID');
+		$this->setEnv($env);
+
+		if( $updateXMLFile != '' ) {
+		    unlink($updateXMLFile);
 		}
 
-		$cmd = sprintf('%s %s %s > %s 2>&1', escapeshellarg($build_script), escapeshellarg($prefix), escapeshellarg($outputFile), escapeshellarg($tmpfile));
+		$cmd = sprintf('%s %s %s %s > %s 2>&1', escapeshellarg($build_script), escapeshellarg($prefix), escapeshellarg($outputFile), escapeshellarg($mar_basename), escapeshellarg($tmpfile));
 		$out = system($cmd, $ret);
 		if( $ret !== 0 ) {
-			$this->error = sprintf("Error building client for {os='%s', arch='%s', prefix='%s', outputFile='%s'}: %s", $os, $arch, $prefix, $outputFile, file_get_contents($tmpfile));
+			$this->error = sprintf("Error building client for {os='%s', arch='%s', prefix='%s', outputFile='%s', basename='%s'}: %s", $os, $arch, $prefix, $outputFile, $mar_basename, file_get_contents($tmpfile));
 		}
 
-		if( $orig_wpub === false ) {
-			putenv('wpub');
-		} else {
-			putenv(sprintf('wpub=%s', $orig_wpub));
-		}
-
-		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
-			if( $orig_customize_dir === false ) {
-				putenv('CUSTOMIZE_DIR');
-			} else {
-				putenv(sprintf('CUSTOMIZE_DIR=%s', $orig_customize_dir));
-			}
-		}
+		$this->setEnv($envBackup);
 
 		unlink($tmpfile);
 		return ($ret === 0) ? true : false;
+	}
+
+	private function getEnv($varList = array()) {
+	    $env = array();
+	    foreach( $varList as $var ) {
+	        $env []= array($var => getenv($var));
+	    }
+	    return $env;
+	}
+
+	private function setEnv($env = array()) {
+	    foreach( $env as $var => $value ) {
+	        if( $value === false ) {
+	            putenv($var);
+	        } else {
+	            putenv(sprintf('%s=%s', $var, $value));
+	        }
+	    }
 	}
 
 	public function buildAll() {
@@ -123,12 +136,13 @@ class OfflineClientBuilder {
 				0 => $spec['os'],
 				1 => $spec['arch'],
 				2 => $spec['prefix'],
-				3 => $spec['file']
+				3 => $spec['file'],
+				4 => $spec['mar_basename']
 			);
 
 			$ret = call_user_func_array(array($this, 'build'), $argv);
 			if( $ret === false ) {
-				$this->error = sprintf("Error building {os:'%s', arch:'%s'}: %s", $os, $arch, $this->error);
+				$this->error = sprintf("Error building {os:'%s', arch:'%s'}: %s", $spec['os'], $spec['arch'], $this->error);
 				return false;
 			}
 		}
@@ -147,7 +161,8 @@ class OfflineClientBuilder {
 				'arch' => 'i686',
 				'icon' => 'icon-linux.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-linux-i686.tar.gz'
+				'file' => 'dynacase-offline-linux-i686.tar.gz',
+			    'mar_basename' => 'dynacase-offline-linux-i686'
 			),
 			array(
 				'title' => 'Linux (x86_64)',
@@ -155,7 +170,8 @@ class OfflineClientBuilder {
 				'arch' => 'x86_64',
 				'icon' => 'icon-linux.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-linux-x86_64.tar.gz'
+				'file' => 'dynacase-offline-linux-x86_64.tar.gz',
+			    'mar_basename' => 'dynacase-offline-linux-x86_64'
 			),
 			array(
 				'title' => 'Mac OS X (universal)',
@@ -163,7 +179,8 @@ class OfflineClientBuilder {
 				'arch' => 'universal',
 				'icon' => 'icon-mac.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-mac-universal.zip'
+				'file' => 'dynacase-offline-mac-universal.zip',
+			    'mar_basename' => 'dynacase-offline-mac-universal'
 			),
 			array(
 				'title' => 'Windows XP/Vista/7 (EXE 32 bits)',
@@ -171,7 +188,8 @@ class OfflineClientBuilder {
 				'arch' => '32',
 				'icon' => 'icon-win.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-win-32.exe'
+				'file' => 'dynacase-offline-win-32.exe',
+			    'mar_basename' => 'dynacase-offline-win-32'
 			),
 			array(
 				'title' => 'Windows XP/Vista/7 (Zip 32 bits)',
@@ -179,7 +197,8 @@ class OfflineClientBuilder {
 				'arch' => '32_zip',
 				'icon' => 'icon-win.png',
 				'prefix' => 'dynacase-offline-%VERSION%',
-				'file' => 'dynacase-offline-win-32.zip'
+				'file' => 'dynacase-offline-win-32.zip',
+			    'mar_basename' => 'dynacase-offline-win-32'
 			)
 		);
 
@@ -192,7 +211,7 @@ class OfflineClientBuilder {
 	}
 
 	public function expandFilename($filename, $keymap = array()) {
-		$keymap['VERSION'] = $this->getOfflineInfo('Version');
+		$keymap['VERSION'] = $this->getOfflineInfo('Version.Customize');
 
 		foreach( $keymap as $k => $v ) {
 			$filename = str_replace(sprintf('%%%s%%', $k), $v, $filename);
@@ -211,7 +230,8 @@ class OfflineClientBuilder {
 				0 => $spec['os'],
 				1 => $spec['arch'],
 				2 => $spec['prefix'],
-				3 => $spec['file']
+				3 => $spec['file'],
+				4 => $spec['mar_basename']
 			);
 
 			print sprintf("Building %s/%s... ", $argv[0], $argv[1]);
@@ -228,8 +248,33 @@ class OfflineClientBuilder {
 
 	public function getOfflineInfo($info='Version') {
 		$conf = parse_ini_file($this->xulapp_appini, true);
-		if( is_array($conf) && isset($conf['App'][$info]) ) return  $conf['App'][$info];
+		if( ! is_array($conf) ) {
+		    return false;
+		}
+	    switch( $info ) {
+	        case 'Version.Customize':
+		        $customizeRelease = $this->getCustomizeRelease();
+	            if( isset($conf['App']['Version']) ) {
+	                return sprintf("%s.%d", $conf['App']['Version'], $customizeRelease);
+		        }
+		        break;
+	       default:
+		        if( isset($conf['App'][$info]) ) {
+		            return $conf['App'][$info];
+		        }
+		}
 		return false;
+	}
+
+	public function getCustomizeRelease() {
+		$customizeRelease = 0;
+		if( ! is_file($this->customize_release) ) {
+		    return $customizeRelease;
+		}
+		if( preg_match('/^\s*(?<release>\d+)/', file_get_contents($this->customize_release), $m) ) {
+		    $customizeRelease = $m['release'];
+		}
+	    return $customizeRelease;
 	}
 
 }

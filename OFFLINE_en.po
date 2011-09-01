@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-01 17:23+0200\n"
-"PO-Revision-Date: 2011-07-01 17:23+0200\n"
+"POT-Creation-Date: 2011-08-31 16:18+0200\n"
+"PO-Revision-Date: 2011-08-31 16:25+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -79,9 +79,6 @@ msgstr "retrieve document"
 msgid "Download offline client application"
 msgstr ""
 
-msgid "Hide OK status"
-msgstr ""
-
 msgid "Insert the document to see it with offline application"
 msgstr ""
 
@@ -116,11 +113,17 @@ msgstr "Directory where the Offline clients are stored"
 msgid "OFFLINE:access client build"
 msgstr "Access to offline client build process"
 
+msgid "OFFLINE:access client update"
+msgstr "Access to offline client updates"
+
 msgid "OFFLINE:access list of clients to download"
 msgstr "Access to list of clients available to download"
 
 msgid "OFFLINE:build clients"
 msgstr "Build offline clients"
+
+msgid "OFFLINE:client update"
+msgstr "Offline client updates distribution"
 
 msgid ""
 "OFFLINE:consult and modify your documents when your Dynacase server is "
@@ -158,9 +161,6 @@ msgstr ""
 
 msgid "Status"
 msgstr ""
-
-msgid "Sync report"
-msgstr "Synchronization Report"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -303,18 +303,6 @@ msgstr ""
 msgid "remove the document from my space"
 msgstr ""
 
-msgid "syncAction"
-msgstr "Action"
-
-msgid "syncDate"
-msgstr "Date"
-
-msgid "syncMessage"
-msgstr "Message"
-
-msgid "syncPrint"
-msgstr "Print"
-
 #, c-format
 msgid "synchro: %s"
 msgstr ""
@@ -334,3 +322,18 @@ msgstr ""
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Client build failed with error: %s"
+
+#~ msgid "Sync report"
+#~ msgstr "Synchronization Report"
+
+#~ msgid "syncAction"
+#~ msgstr "Action"
+
+#~ msgid "syncDate"
+#~ msgstr "Date"
+
+#~ msgid "syncMessage"
+#~ msgstr "Message"
+
+#~ msgid "syncPrint"
+#~ msgstr "Print"

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-01 17:23+0200\n"
-"PO-Revision-Date: 2011-07-01 17:23+0200\n"
+"POT-Creation-Date: 2011-08-31 16:18+0200\n"
+"PO-Revision-Date: 2011-08-31 16:32+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -79,9 +79,6 @@ msgstr "récupération d'un document"
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
 
-msgid "Hide OK status"
-msgstr "Masquer les status OK"
-
 msgid "Insert the document to see it with offline application"
 msgstr "Insérer le document pour le voir avec l'application offline"
 
@@ -116,11 +113,17 @@ msgstr "Répertoire où sont générés les clients Offline"
 msgid "OFFLINE:access client build"
 msgstr "Accès à la construction des clients offline"
 
+msgid "OFFLINE:access client update"
+msgstr "Accès à la mise-à-jour des clients offline"
+
 msgid "OFFLINE:access list of clients to download"
 msgstr "Accès à la liste des clients disponible en téléchargement"
 
 msgid "OFFLINE:build clients"
 msgstr "Construction des clients offline"
+
+msgid "OFFLINE:client update"
+msgstr "Mise-à-jour des clients offline"
 
 msgid ""
 "OFFLINE:consult and modify your documents when your Dynacase server is "
@@ -162,9 +165,6 @@ msgstr "Mettre dans mon espace"
 
 msgid "Status"
 msgstr "Status"
-
-msgid "Sync report"
-msgstr "Rapport de synchronisation"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -307,18 +307,6 @@ msgstr "enlever de mon espace"
 msgid "remove the document from my space"
 msgstr "enlever le document de mon espace"
 
-msgid "syncAction"
-msgstr "Action"
-
-msgid "syncDate"
-msgstr "Date"
-
-msgid "syncMessage"
-msgstr "Message"
-
-msgid "syncPrint"
-msgstr "Imprimer"
-
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
@@ -336,5 +324,23 @@ msgstr "vérifié"
 msgid "view my space"
 msgstr "voir mon espace"
 
+#~ msgid "Hide OK status"
+#~ msgstr "Masquer les status OK"
+
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Echec de la construction du client: %s"
+
+#~ msgid "Sync report"
+#~ msgstr "Rapport de synchronisation"
+
+#~ msgid "syncAction"
+#~ msgstr "Action"
+
+#~ msgid "syncDate"
+#~ msgstr "Date"
+
+#~ msgid "syncMessage"
+#~ msgstr "Message"
+
+#~ msgid "syncPrint"
+#~ msgstr "Imprimer"
