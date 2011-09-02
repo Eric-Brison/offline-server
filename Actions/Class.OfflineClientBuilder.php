@@ -38,7 +38,7 @@ class OfflineClientBuilder {
 		return true;
 	}
 
-	public function build($os, $arch, $prefix, $outputFile, $mar_basename='') {
+	public function build($buildid, $os, $arch, $prefix, $outputFile, $mar_basename='') {
 		include_once('WHAT/Lib.Common.php');
 
 		global $pubdir;
@@ -85,19 +85,17 @@ class OfflineClientBuilder {
 		$prefix = $this->expandFilename($prefix, array('OS' => $os, 'ARCH' => $arch));
 		$outputFile = sprintf('%s/%s', $this->output_dir, $this->expandFilename($outputFile, array('OS' => $os, 'ARCH' => $arch)));
 
-		$envBackup = $this->getEnv(array('wpub', 'CUSTOMIZE_DIR', 'APP_VERSION', 'APP_BUILDID'));
+		$envBackup = $this->getEnv(array('wpub', 'CUSTOMIZE_DIR', 'APP_VERSION', 'APP_BUILDID', 'CLIENTS_DIR', 'APP_UPDATE_ENABLED'));
 		$env = array();
 		$env['wpub'] = $pubdir;
 		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
 		    $env['CUSTOMIZE_DIR'] = $this->opts['CUSTOMIZE_DIR'];
 		}
 		$env['APP_VERSION'] = $this->getOfflineInfo('Version.Customize');
-		$env['APP_BUILDID'] = $this->getOfflineInfo('BuildID');
+		$env['APP_BUILDID'] = $buildid;
+		$env['CLIENTS_DIR'] = $this->output_dir;
+		$env['APP_UPDATE_ENABLED'] = getParam('OFFLINE_CLIENT_UPDATE_ENABLED');
 		$this->setEnv($env);
-
-		if( $updateXMLFile != '' ) {
-		    unlink($updateXMLFile);
-		}
 
 		$cmd = sprintf('%s %s %s %s > %s 2>&1', escapeshellarg($build_script), escapeshellarg($prefix), escapeshellarg($outputFile), escapeshellarg($mar_basename), escapeshellarg($tmpfile));
 		$out = system($cmd, $ret);
@@ -129,15 +127,19 @@ class OfflineClientBuilder {
 	    }
 	}
 
-	public function buildAll() {
+	public function buildAll($buildid='') {
+	    if( $buildid == '' ) {
+	        $buildid = strftime("%Y%m%d%H%M%S");
+	    }
 		foreach( $this->getOsArchList() as $spec ) {
 
 			$argv = array(
-				0 => $spec['os'],
-				1 => $spec['arch'],
-				2 => $spec['prefix'],
-				3 => $spec['file'],
-				4 => $spec['mar_basename']
+			    0 => $buildid,
+				1 => $spec['os'],
+				2 => $spec['arch'],
+				3 => $spec['prefix'],
+				4 => $spec['file'],
+				5 => $spec['mar_basename']
 			);
 
 			$ret = call_user_func_array(array($this, 'build'), $argv);
@@ -223,15 +225,17 @@ class OfflineClientBuilder {
 	public static function test() {
 		$outputDir = '/tmp';
 		$ocb = new OfflineClientBuilder($outputDir);
+        $buildid = strftime("%Y%m%d%H%M%S");
 
 		foreach( $ocb->getOsArchList() as $spec ) {
 
 			$argv = array(
-				0 => $spec['os'],
-				1 => $spec['arch'],
-				2 => $spec['prefix'],
-				3 => $spec['file'],
-				4 => $spec['mar_basename']
+			    0 => $buildid,
+				1 => $spec['os'],
+				2 => $spec['arch'],
+				3 => $spec['prefix'],
+				4 => $spec['file'],
+				5 => $spec['mar_basename']
 			);
 
 			print sprintf("Building %s/%s... ", $argv[0], $argv[1]);

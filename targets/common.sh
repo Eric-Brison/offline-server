@@ -24,6 +24,14 @@ function _check_env {
 	exit 1
     fi
 
+    if [ -z "$CLIENTS_DIR" ]; then
+	CLIENTS_DIR="$wpub/share/offline/clients"
+    fi
+    if [ ! -d "$CLIENTS_DIR" ]; then
+	echo "Error: CLIENTS_DIR '$CLIENTS_DIR' is not a valid directory."
+	exit 1
+    fi
+
     if [ -z "$MAR" ]; then
 	for MAR in $(type -p mar) "$UPDATE_PACKAGING_DIR/mar"; do
 	    if [ -x "$MAR" ]; then
@@ -92,18 +100,33 @@ function _prepare_xulapp {
 	CUSTOMIZE_RELEASE=$(head -1 "$CUSTOMIZE_DIR/RELEASE")
     fi
     sed -i'' -e "s/^\(Version=.*\)/\1.${CUSTOMIZE_RELEASE}/" "$DEST_DIR/application.ini"
+    sed -i'' -e "s/^\(BuildID=\).*/\1${APP_BUILDID}/" "$DEST_DIR/application.ini"
 
     # -- Set auto-update URL --
+    cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
+
+/* auto-update set by build.sh */
+EOF
+
     local CORE_EXTERNURL=$("$wpub/wsh.php" --api=get_param --param=CORE_EXTERNURL 2> /dev/null)
     if [ -n "$CORE_EXTERNURL" ]; then
 	cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
-
-/* auto-update URL set by build.sh */
-pref("app.update.url", "${CORE_EXTERNURL}guest.php?app=OFFLINE&action=OFF_UPDATE&download=update&version=%VERSION%&os=${BUILD_OS}&arch=${BUILD_ARCH}");
+pref("app.update.url", "${CORE_EXTERNURL}guest.php?app=OFFLINE&action=OFF_UPDATE&download=update&version=%VERSION%&buildid=%BUILD_ID%&os=${BUILD_OS}&arch=${BUILD_ARCH}");
 pref("app.update.url.manual", "${CORE_EXTERNURL}?app=OFFLINE&action=OFF_DLCLIENT&os=${BUILD_OS}&arch=${BUILD_ARCH}");
-
 EOF
     fi
+
+    local UPDATE_ENABLED="false";
+    if [ "$APP_UPDATE_ENABLED" = "yes" ]; then
+	UPDATE_ENABLED="true";
+    fi
+    cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
+pref("app.update.enabled", ${UPDATE_ENABLED});
+EOF
+
+    cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
+pref("app.update.mode", 3);
+EOF
 }
 
 function _sha512 {
@@ -112,6 +135,24 @@ function _sha512 {
 
 function _filesize {
     ls -l -- "$1" | head -1 | awk '{print $5}'
+}
+
+function _infoGet {
+    local INFO_FILE=$1
+    local KEY=$2
+
+    if [ -z "$INFO_FILE" ]; then
+	return 0
+    fi
+    if [ ! -f "$INFO_FILE" ]; then
+	return 0
+    fi
+
+    if [ -z "$KEY" ]; then
+	return 0
+    fi
+
+    grep "^$KEY" "$INFO_FILE" | head -1 | awk -F= '{print $2}'
 }
 
 function _make_precomplete {
@@ -146,17 +187,28 @@ function _make_complete_mar {
 
     "$UPDATE_PACKAGING_DIR/make_full_update.sh" "$MAR_FILE.tmp" "$DEST_DIR"
 
-    local HASH_OLD=""
-    if [ -f "$MAR_FILE.old" ]; then
-	HASH_OLD=$(_sha512 "$MAR_FILE.old")
+    local HASH_PREV=""
+    if [ -f "$MAR_FILE.prev" ]; then
+	HASH_PREV=$(_sha512 "$MAR_FILE.prev")
     fi
     local HASH_NEW=$(_sha512 "$MAR_FILE.tmp")
 
-    if [ "$HASH_OLD" != "$HASH_NEW" ]; then
+    if [ "$HASH_PREV" != "$HASH_NEW" ]; then
 	if [ -f "$MAR_FILE" ]; then
-	    mv "$MAR_FILE" "$MAR_FILE.old"
+	    mv "$MAR_FILE" "$MAR_FILE.prev"
+	    mv "$MAR_FILE.info" "$MAR_FILE.info.prev" || /bin/true
 	fi
 	mv "$MAR_FILE.tmp" "$MAR_FILE"
+
+	local MAR_FILE_SIZE=$(_filesize "$MAR_FILE")
+
+	cat <<EOF > "$MAR_FILE.info"
+version=${APP_VERSION}
+buildid=${APP_BUILDID}
+hashfunction=sha512
+hashvalue=${HASH_NEW}
+size=${MAR_FILE_SIZE}
+EOF
     else
 	rm "$MAR_FILE.tmp"
     fi
@@ -165,7 +217,9 @@ function _make_complete_mar {
 function _make_partial_mar {
     local PARTIAL_MAR_FILE=$1
     local COMPLETE_MAR_1=$2
-    local COMPLETE_MAR_2=$3
+    local COMPLETE_INFO_1=$3
+    local COMPLETE_MAR_2=$4
+    local COMPLETE_INFO_2=$5
 
     if [ -z "$COMPLETE_MAR_1" ]; then
 	echo "Warning: undefined or empty COMPLETE_MAR_1 in _make_partial_mar."
@@ -204,6 +258,22 @@ function _make_partial_mar {
     "$UPDATE_PACKAGING_DIR/make_incremental_update.sh" "$PARTIAL_MAR_FILE" "$UNPACK_DIR/1" "$UNPACK_DIR/2"
 
     rm -Rf "$UNPACK_DIR"
+
+    local MAR_FILE_HASH=$(_sha512 "$PARTIAL_MAR_FILE")
+    local MAR_FILE_SIZE=$(_filesize "$PARTIAL_MAR_FILE")
+
+    local APP_VERSION_FROM=$(_infoGet "$COMPLETE_INFO_1" "version")
+    local APP_BUILDID_FROM=$(_infoGet "$COMPLETE_INFO_1" "buildid")
+
+    cat <<EOF > "$PARTIAL_MAR_FILE.info"
+version_from=${APP_VERSION_FROM}
+buildid_from=${APP_BUILDID_FROM}
+version_to=${APP_VERSION}
+buildid_to=${APP_BUILDID}
+hashfunction=sha512
+hashvalue=${MAR_FILE_HASH}
+size=${MAR_FILE_SIZE}
+EOF
 }
 
 function _make_update_xml {
@@ -283,20 +353,13 @@ function _make_mar {
 
     _make_precomplete "$APP_DIR"
 
-    _make_complete_mar "$wpub/share/offline/clients/${MAR_BASENAME}.complete.mar" \
+    _make_complete_mar "${CLIENTS_DIR}/${MAR_BASENAME}.complete.mar" \
 	"$APP_DIR"
 
-#    _make_partial_mar "$wpub/share/offline/clients/${MAR_BASENAME}.partial.mar" \
-#	"$wpub/share/offline/clients/${MAR_BASENAME}.complete.mar.old" \
-#	"$wpub/share/offline/clients/${MAR_BASENAME}.complete.mar"
+    _make_partial_mar "${CLIENTS_DIR}/${MAR_BASENAME}.partial.mar" \
+	"${CLIENTS_DIR}/${MAR_BASENAME}.complete.mar.prev" \
+	"${CLIENTS_DIR}/${MAR_BASENAME}.complete.mar.info.prev" \
+	"${CLIENTS_DIR}/${MAR_BASENAME}.complete.mar" \
+	"${CLIENTS_DIR}/${MAR_BASENAME}.complete.mar.info"
 
-#    _make_update_xml "$wpub/share/offline/clients/${MAR_BASENAME}.update.xml" \
-#	"$wpub/share/offline/clients/${MAR_BASENAME}.complete.mar" \
-#	"${CORE_EXTERNURL}guest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=complete&amp;version=%VERSION%&amp;os=$BUILD_OS&amp;arch=$BUILD_ARCH" \
-#	"$wpub/share/offline/clients/${MAR_BASENAME}.partial.mar" \
-#	"${CORE_EXTERNURL}guest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=partial&amp;version=%VERSION%&amp;os=$BUILD_OS&amp;arch=$BUILD_ARCH"
-
-    _make_update_xml "$wpub/share/offline/clients/${MAR_BASENAME}.update.xml" \
-	"$wpub/share/offline/clients/${MAR_BASENAME}.complete.mar" \
-	"${CORE_EXTERNURL}guest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=complete&amp;version=%VERSION%&amp;os=$BUILD_OS&amp;arch=$BUILD_ARCH"
 }

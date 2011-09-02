@@ -30,6 +30,12 @@ $app_const= array(
 			  "val" => "share/offline/customize",
 			  "global" => "Y",
 			  "descr" => N_("OFFLINE:Offline client additional customize dir")
+		  ),
+		  "OFFLINE_CLIENT_UPDATE_ENABLED" => array(
+		      "val" => "yes",
+		      "descr" => N_("OFFLINE:Offline client update enabled"),
+		      "kind" => "enum(yes|no)",
+		      "global" => "Y"
 		  )
 );
 
