@@ -39,6 +39,7 @@ function _main {
 
     local PKG_NAME=$1
     local OUTPUT=$2
+    local MAR_BASENAME=$3
 
     if [ -z "$PKG_NAME" ]; then
 	echo "Missing or undefined PKG_NAME."
@@ -60,6 +61,8 @@ function _main {
     cp "$PKG_NAME/xulrunner/xulrunner-stub.exe" "$PKG_NAME/dynacase-offline.exe"
     cp "$PKG_NAME/xulrunner/mozcrt19.dll" "$PKG_NAME/mozcrt19.dll"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dynacase-offline.ico"
+
+    _make_mar "$PKG_NAME"
 
     if [ -f "$OUTPUT" ]; then
 	rm "$OUTPUT"

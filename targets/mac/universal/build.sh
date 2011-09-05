@@ -39,6 +39,7 @@ function _main {
 
     local PKG_NAME=$1
     local OUTPUT=$2
+    local MAR_BASENAME=$3
 
     if [ -z "$PKG_NAME" ]; then
 	echo "Missing or undefined PKG_NAME."
@@ -63,6 +64,8 @@ function _main {
 
     mkdir -p "$APP/Contents/MacOS"
     cp "$APP/Contents/Frameworks/XUL.framework/Versions/Current/xulrunner" "$APP/Contents/MacOS/xulrunner"
+
+    _make_mar "$APP"
 
     if [ -f "$OUTPUT" ]; then
 	rm "$OUTPUT"

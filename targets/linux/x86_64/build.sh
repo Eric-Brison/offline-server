@@ -39,6 +39,7 @@ function _main {
 
     local PKG_NAME=$1
     local OUTPUT=$2
+    local MAR_BASENAME=$3
 
     if [ -z "$PKG_NAME" ]; then
 	echo "Missing or undefined PKG_NAME."
@@ -58,6 +59,8 @@ function _main {
     tar -C "$XULRUNTIMES_DIR/$BUILD_OS/$BUILD_ARCH" -cf - "xulrunner" | tar -C "$PKG_NAME" -xf -
 
     cp "$PKG_NAME/xulrunner/xulrunner-stub" "$PKG_NAME/dynacase-offline"
+
+    _make_mar "$PKG_NAME"
 
     tar -zcf "$OUTPUT" "$PKG_NAME"
 
