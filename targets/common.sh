@@ -122,11 +122,15 @@ EOF
     fi
     cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
 pref("app.update.enabled", ${UPDATE_ENABLED});
+pref("app.update.mode", 3);
 EOF
 
     cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
-pref("app.update.mode", 3);
+pref("dcpoffline.online.url", "${CORE_EXTERNURL}");
+pref("offline.user.applicationURL", "${CORE_EXTERNURL}");
+pref("offline.server.version", "${OFFLINE_SERVER_VERSION}");
 EOF
+
 }
 
 function _sha512 {
