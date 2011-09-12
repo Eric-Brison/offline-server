@@ -1,6 +1,6 @@
 include $(utildir)/PubRule
 
-SUBDIR = linux mac win
+SUBDIR = linux mac win update-packaging
 
 export targets_dir = $(pubdir)/share/offline/targets
 
