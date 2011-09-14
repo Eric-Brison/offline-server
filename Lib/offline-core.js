@@ -47,24 +47,27 @@ Fdl.OfflineCore.prototype = {
 	 * @return {Fdl.DocumentList} list of domain documents
 	 */
 	getOfflineDomains : function() {
-		if (!this.context)
-			return null;
+	    if (!this.context)
+	        return null;
 
-	
-		var data = this.context.retrieveData({
-			app : 'OFFLINE',
-			action : 'OFF_DOMAINAPI',
-			method : 'getDomains'
-		});
-		if (data) {
-			if (!data.error) {
-				data.context = this.context;
-				return new Fdl.DocumentList(data);
-			} else {
-				this.context.setErrorMessage(data.error);
-			}
-		}
-		return null;
+	    try {
+	        var data = this.context.retrieveData({
+	            app : 'OFFLINE',
+	            action : 'OFF_DOMAINAPI',
+	            method : 'getDomains'
+	        });
+	        if (data) {
+	            if (!data.error) {
+	                data.context = this.context;
+	                return new Fdl.DocumentList(data);
+	            } else {
+	                this.context.setErrorMessage(data.error);
+	            }
+	        }
+	    } catch (ex) {
+	        this.context.setErrorMessage('cannot access');
+	    }
+	    return null;
 	},
 	/**
 	 * version like 1.0.6-3
