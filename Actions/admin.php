@@ -22,6 +22,12 @@ function admin(&$action) {
 function _admin_build(&$action) {
 	include_once('OFFLINE/Class.OfflineClientBuilder.php');
 
+	$core_urlindex = $action->getParam('CORE_URLINDEX', '');
+	if( $core_urlindex == '' ) {
+	    $action->ExitError(sprintf(_("OFFLINE:Parameter %s must be set"), 'CORE_URLINDEX'));
+	    return;
+	}
+
 	$dest_dir = $action->parent->getParam('OFFLINE_CLIENT_BUILD_OUTPUT_DIR', '');
 	if( ! is_dir($dest_dir) ) {
 		$action->ExitError(sprintf(_("OFFLINE:%s directory not found"), $dest_dir));
