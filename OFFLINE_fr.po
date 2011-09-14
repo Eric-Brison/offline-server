@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-02 15:22+0200\n"
-"PO-Revision-Date: 2011-09-02 15:30+0200\n"
+"POT-Creation-Date: 2011-09-14 14:18+0200\n"
+"PO-Revision-Date: 2011-09-14 13:34+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -112,6 +112,10 @@ msgstr "Répertoire où sont générés les clients Offline"
 
 msgid "OFFLINE:Offline client update enabled"
 msgstr "Activer la vérification des mises à jour du client Offline"
+
+#, c-format
+msgid "OFFLINE:Parameter %s must be set"
+msgstr "Le paramètre %s doit être renseigné"
 
 msgid "OFFLINE:access client build"
 msgstr "Accès à la construction des clients offline"
@@ -332,6 +336,9 @@ msgstr "voir mon espace"
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Echec de la construction du client: %s"
+
+#~ msgid "Parameter %s must be set."
+#~ msgstr "Le paramètre %s doit être renseigné."
 
 #~ msgid "Sync report"
 #~ msgstr "Rapport de synchronisation"
