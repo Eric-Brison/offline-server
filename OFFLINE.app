@@ -22,7 +22,7 @@ $app_acl = array(
 	array(
 		"name" => "ADMIN",
 		"description" =>N_("OFFLINE:access client build"),
-		"group_default" =>"Y"),
+		"group_default" =>"N"),
     array(
         "name" => "OFF_UPDATE",
         "description" =>N_("OFFLINE:access client update"),
