@@ -50,8 +50,11 @@ class DomainSyncApi
      */
     public static function isUpToDate(Doc &$doc, array &$stillRecorded)
     {
+       
         if (!$stillRecorded[$doc->initid]) return false;
-        if ($stillRecorded[$doc->initid] == $doc->revdate) return true;
+        if (intval($stillRecorded[$doc->initid]->locked) != intval($doc->locked)) return false;
+        if (intval($stillRecorded[$doc->initid]->lockdomainid) != intval($doc->lockdomainid)) return false;
+        if ($stillRecorded[$doc->initid]->revdate >= $doc->revdate) return true;
         return false;
     }
     
@@ -68,10 +71,10 @@ class DomainSyncApi
             if (is_array($config->stillRecorded)) {
                 
                 foreach ( $config->stillRecorded as $record ) {
-                    $stillRecorded[$record->initid] = $record->revdate;
+                    $stillRecorded[$record->initid] = $record;
                 }
             }
-            
+ 
             if ($this->domain->hook()) {
                 $domain = $this->domain;
                 $callback = function (&$doc) use($domain, $stillRecorded)
@@ -163,7 +166,7 @@ class DomainSyncApi
             $stillRecorded = array();
             if (is_array($config->stillRecorded)) {
                 foreach ( $config->stillRecorded as $record ) {
-                    $stillRecorded[$record->initid] = $record->revdate;
+                    $stillRecorded[$record->initid] = $record;
                 }
             }
             if ($this->domain->hook()) {
@@ -675,10 +678,14 @@ class DomainSyncApi
                 
                 $eExtra = $waitDoc->getExtraData();
                 $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument(), $eExtra);
+                $savectxerr='';
                 if (!$saveerr) {
                     if ($waitDoc->getRefererDocument()) {
                         $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                        $savectxerr="getRefererDocument";
                     }
+                } else {
+                    $savectxerr="onBeforeSaveDocument";
                 }
                 if ($saveerr == "") {
                     $saveInfo = null;
@@ -719,6 +726,7 @@ class DomainSyncApi
                 } else {
                     $out[$waitDoc->refererinitid] = array(
                         "statusMessage" => $saveerr,
+                        "statusContext" => $savectxerr,
                         "statusCode" => self::documentNotRecorded,
                         "isValid" => false
                     );
