@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-06 09:57+0200\n"
+"POT-Creation-Date: 2011-10-06 16:46+0200\n"
 "PO-Revision-Date: 2011-09-02 15:30+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -80,9 +80,6 @@ msgid "Download offline client application"
 msgstr ""
 
 msgid "Hide OK status"
-msgstr ""
-
-msgid "Insert the document to see it with offline application"
 msgstr ""
 
 msgid "Modification Date Menu"
@@ -167,6 +164,9 @@ msgid "Set in %s"
 msgstr ""
 
 msgid "Set in my space to read it"
+msgstr ""
+
+msgid "Share the document to see it with offline application"
 msgstr ""
 
 msgid "Status"
