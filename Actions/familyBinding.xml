@@ -11,11 +11,15 @@
             <xul:vbox flex="1">
                 <xul:dcpDocument xbl:inherits="initid" mode="view" fromname="[FAMNAME]" fromid="[FAMID]">
                 <xul:dcpDocMenu/>
+                <xul:dcpDocContainer>
                 <xul:dcpDocHeader/>
+                <xul:dcpDocBody>
 <!-- Begin generated content -->
 [viewContent]
 <!-- End generated content -->
                 <xul:dcpDocFooter/>
+                </xul:dcpDocBody>
+                </xul:dcpDocContainer>
                 </xul:dcpDocument>
             </xul:vbox>
         </content>
@@ -27,11 +31,15 @@
             <xul:vbox flex="1">
                 <xul:dcpDocument xbl:inherits="initid" mode="edit" fromname="[FAMNAME]" fromid="[FAMID]">
                 <xul:dcpDocMenu/>
+                <xul:dcpDocContainer>
                 <xul:dcpDocHeader/>
+                <xul:dcpDocBody>
 <!-- Begin generated content -->
 [editContent]
 <!-- End generated content -->
                 <xul:dcpDocFooter/>
+                </xul:dcpDocBody>
+                </xul:dcpDocContainer>
                 </xul:dcpDocument>
             </xul:vbox>
         </content>
