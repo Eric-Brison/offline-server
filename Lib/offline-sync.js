@@ -287,6 +287,61 @@ Fdl.OfflineSync.prototype = {
         }
         return null;
     },
+
+    /**
+     * retrieve server document and replace local document
+     * 
+     * @param {Object}
+     *            config
+     *            <ul>
+     *            <li><b>document : </b>{Fdl.Document} the document to book</li>
+     *            </ul>
+     * @return {Fdl.Document} reverted document (null if error)
+     */
+    bookDocument : function(config) {
+        if (config && config.document) {
+            config.method = 'bookDocument';
+            config.docid = config.document.id;
+            var data = this.callSyncMethod(config);
+
+            if (data) {
+                if (!data.error) {
+                    return this.context.getDocument({
+                        data : data
+                    });
+                }
+            }
+        }
+        return null;
+    },
+    
+
+    /**
+     * unbook document
+     * 
+     * @param {Object}
+     *            config
+     *            <ul>
+     *            <li><b>document : </b>{Fdl.Document} the document to book</li>
+     *            </ul>
+     * @return {Fdl.Document} reverted document (null if error)
+     */
+    unbookDocument : function(config) {
+        if (config && config.document) {
+            config.method = 'unbookDocument';
+            config.docid = config.document.id;
+            var data = this.callSyncMethod(config);
+
+            if (data) {
+                if (!data.error) {
+                    return this.context.getDocument({
+                        data : data
+                    });
+                }
+            }
+        }
+        return null;
+    },
     /**
      * retrieve server document and replace local document
      * 

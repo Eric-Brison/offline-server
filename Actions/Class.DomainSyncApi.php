@@ -127,7 +127,7 @@ class DomainSyncApi
     }
     
     /**
-     * unbook document into user space
+     * revert document into user space
      * @return Fdl_Document
      */
     public function revertDocument($config)
@@ -153,7 +153,61 @@ class DomainSyncApi
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
+
+    /**
+     * book document into user space
+     * @return Fdl_Document
+     */
+    public function bookDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {
+                $this->domain->addFollowingStates($doc);
+                
+                $out = $this->domainApi->bookDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
     
+
+    /**
+     * unbook document from user space
+     * @return Fdl_Document
+     */
+    public function unbookDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {
+                $this->domain->addFollowingStates($doc);
+                
+                $out = $this->domainApi->unbookDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
     /**
      * get user folder documents
      * @return DocumentList
