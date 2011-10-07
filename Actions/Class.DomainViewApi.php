@@ -50,6 +50,8 @@ class DomainViewApi
             $maskId = $domain->getOfflineMask($family->id);
             if ($maskId) {
                 $family->applyMask($maskId, true);
+            } else {
+                $family->applyMask();
             }
         };
         $list->listMap($callback); // apply specific offline mask
