@@ -155,6 +155,30 @@ class DomainSyncApi
     }
 
     /**
+     * unlink document from user space
+     * @return Fdl_Document
+     */
+    public function removeUserDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {                
+                $out = $this->domainApi->removeUserDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
+    /**
      * book document into user space
      * @return Fdl_Document
      */

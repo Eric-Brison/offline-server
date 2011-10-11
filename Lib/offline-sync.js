@@ -288,8 +288,37 @@ Fdl.OfflineSync.prototype = {
         return null;
     },
 
+
     /**
-     * retrieve server document and replace local document
+     * delete document from user folder
+     * 
+     * @param {Object}
+     *            config
+     *            <ul>
+     *            <li><b>document : </b>{Fdl.Document} the document to delete</li>
+     *            </ul>
+     * @return {Fdl.Document} reverted document (null if error)
+     */
+    unlinkDocument : function(config) {
+        if (config && config.document) {
+            config.method = 'removeUserDocument';
+            config.docid = config.document.id;
+            var data = this.callSyncMethod(config);
+
+            if (data) {
+                if (!data.error) {
+                    return this.context.getDocument({
+                        data : data
+                    });
+                }
+            }
+        }
+        return null;
+    },
+    
+    
+    /**
+     * book document and replace local document
      * 
      * @param {Object}
      *            config
