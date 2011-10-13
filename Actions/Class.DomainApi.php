@@ -71,7 +71,10 @@ class DomainApi
         $out = '';
         if ($this->domain) {
             $docid = $config->docid;
-            $err = $this->domain->insertUserDocument($docid, $this->domain->getSystemUserId(), true);
+            
+            $doc = new_doc($this->dbaccess, $docid, true);
+            $err = $doc->CanLockFile();
+            if (!$err) $err = $this->domain->insertUserDocument($docid, $this->domain->getSystemUserId(), true);
             if ($err) $this->setError($err);
             $fdoc = new Fdl_Document($docid);
             $out = $fdoc->getDocument(true, false);

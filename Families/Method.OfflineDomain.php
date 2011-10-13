@@ -332,7 +332,7 @@ class _OFFLINEDOMAIN extends Dir
     }
     private function reportGetAction($sync)
     {
-        return _($sync->code); # _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
+        return _($sync->code); #  _("DomainSyncApi::bookDocument");_("DomainSyncApi::unbookDocument"); _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
     
 
     }
@@ -382,6 +382,8 @@ class _OFFLINEDOMAIN extends Dir
             //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
         
+        case 'DomainSyncApi::bookDocument' :
+        case 'DomainSyncApi::unbookDocument' :
         case 'DomainSyncApi::revertDocument' :
             
             if ($sync->arg->error) $message = sprintf("%s : %s", $sync->arg->title, $sync->arg->error);

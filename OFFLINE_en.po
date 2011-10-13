@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-11 14:21+0200\n"
-"PO-Revision-Date: 2011-10-11 14:22+0200\n"
+"POT-Creation-Date: 2011-10-13 14:49+0200\n"
+"PO-Revision-Date: 2011-10-13 14:50+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -61,6 +61,9 @@ msgstr ""
 msgid "DomainSyncApi::beginTransaction"
 msgstr "begin synchronization"
 
+msgid "DomainSyncApi::bookDocument"
+msgstr "lock document"
+
 msgid "DomainSyncApi::endTransaction"
 msgstr "upload end"
 
@@ -78,6 +81,9 @@ msgstr "unlink document"
 
 msgid "DomainSyncApi::revertDocument"
 msgstr "retrieve document"
+
+msgid "DomainSyncApi::unbookDocument"
+msgstr "unlock document"
 
 msgid "Download offline client application"
 msgstr ""
