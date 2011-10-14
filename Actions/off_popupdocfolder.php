@@ -126,7 +126,7 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
                             $inDomain = in_array($share->name, $docDomainsId);
                             $tlink["sharebookread" . $domain->id] = array(
                                 "descr" => sprintf(_("Set in %s"), $share->getHtmlTitle()),
-                                "title" => _("Insert the document to see it with offline application"),
+                                "title" => _("Share the document to see it with offline application"),
                                 "url" => "?app=OFFLINE&action=OFF_DOMAINAPI&htmlRedirect=" . $doc->initid . "&docid=" . $doc->initid . "&id=" . $domain->initid . '&method=insertSharedDocument',
                                 "confirm" => "false",
                                 "control" => "false",

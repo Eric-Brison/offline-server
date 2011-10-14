@@ -50,8 +50,11 @@ class DomainSyncApi
      */
     public static function isUpToDate(Doc &$doc, array &$stillRecorded)
     {
+       
         if (!$stillRecorded[$doc->initid]) return false;
-        if ($stillRecorded[$doc->initid] == $doc->revdate) return true;
+        if (intval($stillRecorded[$doc->initid]->locked) != intval($doc->locked)) return false;
+        if (intval($stillRecorded[$doc->initid]->lockdomainid) != intval($doc->lockdomainid)) return false;
+        if ($stillRecorded[$doc->initid]->revdate >= $doc->revdate) return true;
         return false;
     }
     
@@ -68,10 +71,10 @@ class DomainSyncApi
             if (is_array($config->stillRecorded)) {
                 
                 foreach ( $config->stillRecorded as $record ) {
-                    $stillRecorded[$record->initid] = $record->revdate;
+                    $stillRecorded[$record->initid] = $record;
                 }
             }
-            
+ 
             if ($this->domain->hook()) {
                 $domain = $this->domain;
                 $callback = function (&$doc) use($domain, $stillRecorded)
@@ -124,7 +127,7 @@ class DomainSyncApi
     }
     
     /**
-     * unbook document into user space
+     * revert document into user space
      * @return Fdl_Document
      */
     public function revertDocument($config)
@@ -150,7 +153,85 @@ class DomainSyncApi
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
+
+    /**
+     * unlink document from user space
+     * @return Fdl_Document
+     */
+    public function removeUserDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {                
+                $out = $this->domainApi->removeUserDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
+    /**
+     * book document into user space
+     * @return Fdl_Document
+     */
+    public function bookDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {
+                $this->domain->addFollowingStates($doc);
+                
+                $out = $this->domainApi->bookDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
     
+
+    /**
+     * unbook document from user space
+     * @return Fdl_Document
+     */
+    public function unbookDocument($config)
+    {
+        $docid = $config->docid;
+        $doc = new_doc(getDbaccess(), $docid, true);
+        if ($doc->isAlive()) {
+            if ($err == "" || $err === true) {
+                $this->domain->addFollowingStates($doc);
+                
+                $out = $this->domainApi->unbookDocument($config);
+            } else {
+                $out->error = $err;
+            }
+        } else {
+            $out->error = sprintf(_("document %s not found"), $docid);
+        }
+        $log = "";
+        $log->initid = $doc->initid;
+        $log->title = $doc->getTitle();
+        $log->error = $out->error;
+        $this->domain->addLog(__METHOD__, $log);
+        return $out;
+    }
     /**
      * get user folder documents
      * @return DocumentList
@@ -163,7 +244,7 @@ class DomainSyncApi
             $stillRecorded = array();
             if (is_array($config->stillRecorded)) {
                 foreach ( $config->stillRecorded as $record ) {
-                    $stillRecorded[$record->initid] = $record->revdate;
+                    $stillRecorded[$record->initid] = $record;
                 }
             }
             if ($this->domain->hook()) {
@@ -675,10 +756,14 @@ class DomainSyncApi
                 
                 $eExtra = $waitDoc->getExtraData();
                 $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument(), $eExtra);
+                $savectxerr='';
                 if (!$saveerr) {
                     if ($waitDoc->getRefererDocument()) {
                         $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                        $savectxerr="getRefererDocument";
                     }
+                } else {
+                    $savectxerr="onBeforeSaveDocument";
                 }
                 if ($saveerr == "") {
                     $saveInfo = null;
@@ -719,6 +804,7 @@ class DomainSyncApi
                 } else {
                     $out[$waitDoc->refererinitid] = array(
                         "statusMessage" => $saveerr,
+                        "statusContext" => $savectxerr,
                         "statusCode" => self::documentNotRecorded,
                         "isValid" => false
                     );

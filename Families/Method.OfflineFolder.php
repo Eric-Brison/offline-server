@@ -92,7 +92,7 @@ class _OFFLINEFOLDER extends Dir
             $docuid = $this->getValue("off_user");
             if ($docuid) {
                 $uid = 0;
-                $err = simpleQuery($this->dbaccess, sprintf("select fid from users where id=%d", $uid), $docuid, true, true);
+                $err = simpleQuery($this->dbaccess, sprintf("select id from users where fid=%d", $docuid), $uid, true, true);
                 if ($uid) {
                     include_once ("FDL/Class.DocWait.php");
                     $w = new DocWait($this->dbaccess, array(

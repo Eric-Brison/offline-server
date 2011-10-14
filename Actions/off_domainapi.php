@@ -65,7 +65,8 @@ function off_domainapi(Action &$action)
                    
                 }
             } catch ( Exception $e ) {
-                $out->error = sprintf("exception %s in method %s", $e->getMessage(), $method);
+                $out->error = $e->getMessage();
+                $out->errorContext=sprintf("exception in method %s",  $method);
             }
         }
     } else {

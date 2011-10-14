@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-14 14:18+0200\n"
-"PO-Revision-Date: 2011-09-14 13:34+0200\n"
+"POT-Creation-Date: 2011-10-13 14:49+0200\n"
+"PO-Revision-Date: 2011-10-13 14:50+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -61,6 +61,9 @@ msgstr "Domaine %s"
 msgid "DomainSyncApi::beginTransaction"
 msgstr "début de synchronisation"
 
+msgid "DomainSyncApi::bookDocument"
+msgstr "Verrouillage du document"
+
 msgid "DomainSyncApi::endTransaction"
 msgstr "fin des téléversements"
 
@@ -73,14 +76,20 @@ msgstr "récupération des documents utilisateur"
 msgid "DomainSyncApi::pushDocument"
 msgstr "téléversement d'un document"
 
+msgid "DomainSyncApi::removeUserDocument"
+msgstr "détachement d'un document"
+
 msgid "DomainSyncApi::revertDocument"
 msgstr "récupération d'un document"
+
+msgid "DomainSyncApi::unbookDocument"
+msgstr "Déverrouillage du document"
 
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
 
-msgid "Insert the document to see it with offline application"
-msgstr "Insérer le document pour le voir avec l'application offline"
+msgid "Hide OK status"
+msgstr "Masquer les status OK"
 
 msgid "Modification Date Menu"
 msgstr "Date de modification"
@@ -158,10 +167,10 @@ msgstr "Raison"
 
 #, c-format
 msgid "Remove from %s"
-msgstr "Supprimer depuis %s"
+msgstr "Enlever du %s"
 
 msgid "Remove the document from share space"
-msgstr "Supprimer le document de l'espace partagé"
+msgstr "Enlever le document de l'espace partagé"
 
 #, c-format
 msgid "Set in %s"
@@ -170,8 +179,14 @@ msgstr "Mettre dans %s"
 msgid "Set in my space to read it"
 msgstr "Mettre dans mon espace"
 
+msgid "Share the document to see it with offline application"
+msgstr "Partager le document sur les applications offline"
+
 msgid "Status"
 msgstr "Status"
+
+msgid "Sync report"
+msgstr "Rapport de synchronisation"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -243,7 +258,7 @@ msgstr "le fichier %s n'existe pas"
 
 #, c-format
 msgid "file %s not implement DomainHook"
-msgstr "le fichier %s doit implenter l'interface DomainHook"
+msgstr "le fichier %s doit implanter l'interface DomainHook"
 
 msgid "icon"
 msgstr "icone"
@@ -314,6 +329,18 @@ msgstr "enlever de mon espace"
 msgid "remove the document from my space"
 msgstr "enlever le document de mon espace"
 
+msgid "syncAction"
+msgstr "Action"
+
+msgid "syncDate"
+msgstr "Date"
+
+msgid "syncMessage"
+msgstr "Message"
+
+msgid "syncPrint"
+msgstr "Imprimer"
+
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
@@ -331,26 +358,11 @@ msgstr "vérifié"
 msgid "view my space"
 msgstr "voir mon espace"
 
-#~ msgid "Hide OK status"
-#~ msgstr "Masquer les status OK"
+#~ msgid "Insert the document to see it with offline application"
+#~ msgstr "Insérer le document pour le voir avec l'application offline"
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Echec de la construction du client: %s"
 
 #~ msgid "Parameter %s must be set."
 #~ msgstr "Le paramètre %s doit être renseigné."
-
-#~ msgid "Sync report"
-#~ msgstr "Rapport de synchronisation"
-
-#~ msgid "syncAction"
-#~ msgstr "Action"
-
-#~ msgid "syncDate"
-#~ msgstr "Date"
-
-#~ msgid "syncMessage"
-#~ msgstr "Message"
-
-#~ msgid "syncPrint"
-#~ msgstr "Imprimer"
