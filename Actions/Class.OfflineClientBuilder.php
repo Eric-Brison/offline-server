@@ -85,7 +85,18 @@ class OfflineClientBuilder {
 		$prefix = $this->expandFilename($prefix, array('OS' => $os, 'ARCH' => $arch));
 		$outputFile = sprintf('%s/%s', $this->output_dir, $this->expandFilename($outputFile, array('OS' => $os, 'ARCH' => $arch)));
 
-		$envBackup = $this->getEnv(array('wpub', 'CUSTOMIZE_DIR', 'APP_VERSION', 'APP_BUILDID', 'CLIENTS_DIR', 'APP_UPDATE_ENABLED', 'OFFLINE_SERVER_VERSION'));
+		$envBackup = $this->getEnv(array(
+			'wpub',
+			'CUSTOMIZE_DIR',
+			'APP_VERSION',
+			'APP_BUILDID',
+			'CLIENTS_DIR',
+			'APP_UPDATE_ENABLED',
+			'OFFLINE_SERVER_VERSION',
+			'DCPOFFLINE_URL_BROWSER',
+			'DCPOFFLINE_URL_DATA',
+			'DCPOFFLINE_URL_UPDATE')
+		);
 		$env = array();
 		$env['wpub'] = $pubdir;
 		if( isset($this->opts['CUSTOMIZE_DIR']) ) {
@@ -96,6 +107,9 @@ class OfflineClientBuilder {
 		$env['CLIENTS_DIR'] = $this->output_dir;
 		$env['APP_UPDATE_ENABLED'] = getParam('OFFLINE_CLIENT_UPDATE_ENABLED');
 		$env['OFFLINE_SERVER_VERSION'] = $this->getOfflineServerVersion();
+		$env['DCPOFFLINE_URL_BROWSER'] = getParam('DCPOFFLINE_URL_BROWSER');
+		$env['DCPOFFLINE_URL_DATA'] = getParam('DCPOFFLINE_URL_DATA');
+		$env['DCPOFFLINE_URL_UPDATE'] = getParam('DCPOFFLINE_URL_UPDATE');
 		$this->setEnv($env);
 
 		$cmd = sprintf('%s %s %s %s > %s 2>&1', escapeshellarg($build_script), escapeshellarg($prefix), escapeshellarg($outputFile), escapeshellarg($mar_basename), escapeshellarg($tmpfile));

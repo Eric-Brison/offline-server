@@ -9,7 +9,7 @@
 <body>
 
 <div id="header">
-<a class="button" id="build" href="[CORE_EXTERNURL]?app=OFFLINE&action=ADMIN&command=build">Build clients</a>
+<a class="button" id="build" href="[CORE_STANDURL]&app=OFFLINE&action=ADMIN&command=build">Build clients</a>
 </div>
 
 <div id="status">
@@ -18,7 +18,7 @@
 </div>
 
 <div id="footer">
-<a class="link" href="[CORE_EXTERNURL]?app=OFFLINE&action=OFF_DLCLIENT">View clients</a>
+<a class="link" href="[CORE_STANDURL]&app=OFFLINE&action=OFF_DLCLIENT">View clients</a>
 </div>
 
 </body>

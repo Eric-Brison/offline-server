@@ -109,13 +109,8 @@ function _prepare_xulapp {
 EOF
 
     local CORE_EXTERNURL=$("$wpub/wsh.php" --api=get_param --param=CORE_EXTERNURL 2> /dev/null)
-    if [ -n "$CORE_EXTERNURL" ]; then
-	cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
-pref("app.update.url", "${CORE_EXTERNURL}guest.php?app=OFFLINE&action=OFF_UPDATE&download=update&version=%VERSION%&buildid=%BUILD_ID%&os=${BUILD_OS}&arch=${BUILD_ARCH}");
-pref("app.update.url.manual", "${CORE_EXTERNURL}?app=OFFLINE&action=OFF_DLCLIENT&os=${BUILD_OS}&arch=${BUILD_ARCH}");
-EOF
-    fi
 
+    # -- enable/disable app update
     local UPDATE_ENABLED="false";
     if [ "$APP_UPDATE_ENABLED" = "yes" ]; then
 	UPDATE_ENABLED="true";
@@ -125,10 +120,53 @@ pref("app.update.enabled", ${UPDATE_ENABLED});
 pref("app.update.mode", 3);
 EOF
 
+    # -- set update URL
+    if [ -z "${DCPOFFLINE_URL_UPDATE}" ]; then
+	DCPOFFLINE_URL_UPDATE=${CORE_EXTERNURL}
+    fi
+    if [ -n "${DCPOFFLINE_URL_UPDATE}" ]; then
+	# -- remove trailing slashes
+	DCPOFFLINE_URL_UPDATE=$(echo "$DCPOFFLINE_URL_UPDATE" | sed -e 's:/*$::')
+	cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
+pref("app.update.url", "${DCPOFFLINE_URL_UPDATE}/guest.php?app=OFFLINE&action=OFF_UPDATE&download=update&version=%VERSION%&buildid=%BUILD_ID%&os=${BUILD_OS}&arch=${BUILD_ARCH}");
+pref("app.update.url.manual", "${DCPOFFLINE_URL_UPDATE}/?app=OFFLINE&action=OFF_DLCLIENT&os=${BUILD_OS}&arch=${BUILD_ARCH}");
+EOF
+    else
+	# -- only throw an error if update was enabled
+	if [ "${UPDATE_ENABLED}" = "true" ]; then
+	    echo "Error: undefined or empty DCPOFFLINE_URL_UPDATE parameter."
+	    return 1
+	fi
+    fi
+
+    # -- set browser and data URL
+    if [ -z "${DCPOFFLINE_URL_BROWSER}" ]; then
+	DCPOFFLINE_URL_BROWSER=${CORE_EXTERNURL}
+    fi
+    if [ -z "${DCPOFFLINE_URL_DATA}" ]; then
+	DCPOFFLINE_URL_DATA=${CORE_EXTERNURL}
+    fi
+    if [ -z "${DCPOFFLINE_URL_BROWSER}" ]; then
+	echo "Error: undefined or empty DCPOFFLINE_URL_BROWSER parameter."
+	return 1
+    fi
+    if [ -z "${DCPOFFLINE_URL_DATA}" ]; then
+	echo "Error: undefined or empty DCPOFFLINE_URL_DATA parameter."
+	return 1
+    fi
     cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
-pref("dcpoffline.online.url", "${CORE_EXTERNURL}");
-pref("offline.user.applicationURL", "${CORE_EXTERNURL}");
+pref("dcpoffline.url.browser", "${DCPOFFLINE_URL_BROWSER}");
+pref("dcpoffline.url.data", "${DCPOFFLINE_URL_DATA}");
+EOF
+
+    # -- set offline server version
+    cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
 pref("offline.server.version", "${OFFLINE_SERVER_VERSION}");
+EOF
+
+    cat <<EOF >> "$DEST_DIR/defaults/preferences/ZZ_prefs.js"
+/* end set by build.sh */
+
 EOF
 
 }

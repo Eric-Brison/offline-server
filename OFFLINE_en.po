@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-13 14:49+0200\n"
-"PO-Revision-Date: 2011-10-13 14:50+0200\n"
+"POT-Creation-Date: 2011-10-17 11:55+0200\n"
+"PO-Revision-Date: 2011-10-17 11:55+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -88,9 +88,6 @@ msgstr "unlock document"
 msgid "Download offline client application"
 msgstr ""
 
-msgid "Hide OK status"
-msgstr ""
-
 msgid "Modification Date Menu"
 msgstr ""
 
@@ -113,6 +110,9 @@ msgstr "File not found for '%s'"
 msgid "OFFLINE:Hello"
 msgstr ""
 
+msgid "OFFLINE:Offline browser URL"
+msgstr "Offline browser URL"
+
 msgid "OFFLINE:Offline client additional customize dir"
 msgstr "Optional customization directory for offline client"
 
@@ -121,6 +121,12 @@ msgstr "Directory where the Offline clients are stored"
 
 msgid "OFFLINE:Offline client update enabled"
 msgstr "Enable checking for Offline client updates"
+
+msgid "OFFLINE:Offline data URL"
+msgstr "Offline data URL"
+
+msgid "OFFLINE:Offline update URL"
+msgstr "Offline update URL"
 
 #, c-format
 msgid "OFFLINE:Parameter %s must be set"
@@ -180,9 +186,6 @@ msgstr ""
 
 msgid "Status"
 msgstr ""
-
-msgid "Sync report"
-msgstr "Synchronization Report"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -325,18 +328,6 @@ msgstr ""
 msgid "remove the document from my space"
 msgstr ""
 
-msgid "syncAction"
-msgstr "Action"
-
-msgid "syncDate"
-msgstr "Date"
-
-msgid "syncMessage"
-msgstr "Message"
-
-msgid "syncPrint"
-msgstr "Print"
-
 #, c-format
 msgid "synchro: %s"
 msgstr ""
@@ -356,3 +347,18 @@ msgstr ""
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Client build failed with error: %s"
+
+#~ msgid "Sync report"
+#~ msgstr "Synchronization Report"
+
+#~ msgid "syncAction"
+#~ msgstr "Action"
+
+#~ msgid "syncDate"
+#~ msgstr "Date"
+
+#~ msgid "syncMessage"
+#~ msgstr "Message"
+
+#~ msgid "syncPrint"
+#~ msgstr "Print"

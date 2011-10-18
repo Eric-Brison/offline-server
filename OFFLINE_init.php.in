@@ -36,7 +36,22 @@ $app_const= array(
 		      "descr" => N_("OFFLINE:Offline client update enabled"),
 		      "kind" => "enum(yes|no)",
 		      "global" => "Y"
-		  )
+		  ),
+		  "DCPOFFLINE_URL_BROWSER" => array(
+		      "val" => "",
+		      "global" => "Y",
+		      "descr" => N_("OFFLINE:Offline browser URL")
+		  ),
+		  "DCPOFFLINE_URL_DATA" => array(
+		      "val" => "",
+		      "global" => "Y",
+		      "descr" => N_("OFFLINE:Offline data URL")
+		  ),
+		  "DCPOFFLINE_URL_UPDATE" => array(
+		      "val" => "",
+		      "global" => "Y",
+		      "descr" => N_("OFFLINE:Offline update URL")
+          )
 );
 
 ?>
