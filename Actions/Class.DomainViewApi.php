@@ -70,7 +70,6 @@ class DomainViewApi
         $lay->set("FAMNAME", $family->name);
         $lay->set("FAMID", $family->id);
         $oas = $family->getAttributes();
-        
         // need cause defval is not declared as attribute
         simpleQuery($family->dbaccess, sprintf("select defval from docfam where id=%d", $family->id), $defval, true, true);
         $family->defval=$defval;
@@ -156,7 +155,7 @@ class DomainViewApi
         }
         return intval($noa->ordered);
     }
-    private function bindingViewNodeAttribute(array $node, array &$oas, BasicAttribute &$oa = null)
+    private function bindingViewNodeAttribute(array &$node, array &$oas, BasicAttribute &$oa = null)
     {
         $out = '';
         if ($oa) {
@@ -169,7 +168,7 @@ class DomainViewApi
                 $out .= sprintf('<xul:dcpAttribute label="%s" type="%s" attrid="%s" mode="view">', $label, $oa->type, $oa->id);
             
             }
-            $callback = function ($a, $b) use($oas)
+            $callback = function ($a, $b) use(&$oas)
             {
                 //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
                 if ($oas[$a]->type=="tab" && $oas[$b]->type!="tab") return 1;
@@ -179,6 +178,7 @@ class DomainViewApi
                 return 0;
             };
             uksort($node, $callback);
+            
             $tabbox = false;
             /*
             print_r2(array_keys($node));
@@ -232,7 +232,7 @@ class DomainViewApi
         return $out;
     }
     
-    private function bindingEditNodeAttribute(array $node, array &$oas, BasicAttribute &$oa = null)
+    private function bindingEditNodeAttribute(array &$node, array &$oas, BasicAttribute &$oa = null)
     {
         $out = '';
         $visibility = "";
@@ -244,7 +244,7 @@ class DomainViewApi
                 $label = $oa->encodeXml($oa->getLabel(), true);
                 $out = sprintf('<xul:dcpAttribute label="%s" type="%s" attrid="%s" mode="edit" visibility="%s">', $label, $oa->type, $oa->id, $visibility);
             }
-            $callback = function ($a, $b) use($oas)
+            $callback = function ($a, $b) use(&$oas)
             {
                 //print "\n$a:".$oas[$a]->ordered. " - $b:".$oas[$b]->ordered;
                 if ($oas[$a]->type=="tab" && $oas[$b]->type!="tab") return 1;
