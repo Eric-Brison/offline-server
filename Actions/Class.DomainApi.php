@@ -317,9 +317,21 @@ class DomainApi
         if ($this->domain) {
             $folder = $this->domain->getUserFolder();
             if ($folder) {
-            $out = $this->getFolderDocuments($folder, $date, $callback);
+                $out = $this->getFolderDocuments($folder, $date, $callback);
             } else {
-                $this->setError(_("user folder not found"));
+                $this->domain->disableEditControl();
+                $err = $this->domain->createSubDirectories();
+                $this->domain->enableEditControl();
+                if ($err) {
+                    $this->setError(_("user folder not found:").$err);
+                } else {
+                    $folder = $this->domain->getUserFolder();
+                    if ($folder) {
+                        $out = $this->getFolderDocuments($folder, $date, $callback);
+                    } else {
+                        $this->setError(_("user folder not found"));
+                    }
+                }
             }
         } else {
             $this->setError(_("domain not set"));
