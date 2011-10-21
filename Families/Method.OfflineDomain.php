@@ -1207,7 +1207,7 @@ class _OFFLINEDOMAIN extends Dir
         return sprintf("offuser_%s_%s", $this->name, $login);
     }
     
-    private function createSubDirectories()
+    public function createSubDirectories()
     {
         $err = "";
         if (!$this->name) {
