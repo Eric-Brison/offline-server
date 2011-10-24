@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-17 11:55+0200\n"
-"PO-Revision-Date: 2011-10-17 11:56+0200\n"
+"POT-Creation-Date: 2011-10-24 13:44+0200\n"
+"PO-Revision-Date: 2011-10-24 14:41+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -87,6 +87,9 @@ msgstr "Déverrouillage du document"
 
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
+
+msgid "Hide OK status"
+msgstr "Masquer les status OK"
 
 msgid "Modification Date Menu"
 msgstr "Date de modification"
@@ -190,6 +193,9 @@ msgstr "Partager le document sur les applications offline"
 
 msgid "Status"
 msgstr "Status"
+
+msgid "Sync report"
+msgstr "Rapport de synchronisation"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -332,6 +338,18 @@ msgstr "enlever de mon espace"
 msgid "remove the document from my space"
 msgstr "enlever le document de mon espace"
 
+msgid "syncAction"
+msgstr "Action"
+
+msgid "syncDate"
+msgstr "Date"
+
+msgid "syncMessage"
+msgstr "Message"
+
+msgid "syncPrint"
+msgstr "Imprimer"
+
 #, c-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
@@ -343,14 +361,17 @@ msgstr "changement d'état par synchronisation vers %s"
 msgid "title"
 msgstr "titre"
 
+msgid "user folder not found"
+msgstr "dossier utilisateur non trouvé"
+
+msgid "user folder not found:"
+msgstr "dossier utilisateur non trouvé : "
+
 msgid "verified"
 msgstr "vérifié"
 
 msgid "view my space"
 msgstr "voir mon espace"
-
-#~ msgid "Hide OK status"
-#~ msgstr "Masquer les status OK"
 
 #~ msgid "Insert the document to see it with offline application"
 #~ msgstr "Insérer le document pour le voir avec l'application offline"
@@ -360,18 +381,3 @@ msgstr "voir mon espace"
 
 #~ msgid "Parameter %s must be set."
 #~ msgstr "Le paramètre %s doit être renseigné."
-
-#~ msgid "Sync report"
-#~ msgstr "Rapport de synchronisation"
-
-#~ msgid "syncAction"
-#~ msgstr "Action"
-
-#~ msgid "syncDate"
-#~ msgstr "Date"
-
-#~ msgid "syncMessage"
-#~ msgstr "Message"
-
-#~ msgid "syncPrint"
-#~ msgstr "Imprimer"

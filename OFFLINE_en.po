@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-17 11:55+0200\n"
+"POT-Creation-Date: 2011-10-24 13:44+0200\n"
 "PO-Revision-Date: 2011-10-17 11:55+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -86,6 +86,9 @@ msgid "DomainSyncApi::unbookDocument"
 msgstr "unlock document"
 
 msgid "Download offline client application"
+msgstr ""
+
+msgid "Hide OK status"
 msgstr ""
 
 msgid "Modification Date Menu"
@@ -186,6 +189,9 @@ msgstr ""
 
 msgid "Status"
 msgstr ""
+
+msgid "Sync report"
+msgstr "Synchronization Report"
 
 #, c-format
 msgid "Sync report %s.html"
@@ -328,6 +334,18 @@ msgstr ""
 msgid "remove the document from my space"
 msgstr ""
 
+msgid "syncAction"
+msgstr "Action"
+
+msgid "syncDate"
+msgstr "Date"
+
+msgid "syncMessage"
+msgstr "Message"
+
+msgid "syncPrint"
+msgstr "Print"
+
 #, c-format
 msgid "synchro: %s"
 msgstr ""
@@ -339,6 +357,12 @@ msgstr ""
 msgid "title"
 msgstr ""
 
+msgid "user folder not found"
+msgstr ""
+
+msgid "user folder not found:"
+msgstr ""
+
 msgid "verified"
 msgstr ""
 
@@ -347,18 +371,3 @@ msgstr ""
 
 #~ msgid "OFFLINE:client build failed with error: %s"
 #~ msgstr "Client build failed with error: %s"
-
-#~ msgid "Sync report"
-#~ msgstr "Synchronization Report"
-
-#~ msgid "syncAction"
-#~ msgstr "Action"
-
-#~ msgid "syncDate"
-#~ msgstr "Date"
-
-#~ msgid "syncMessage"
-#~ msgstr "Message"
-
-#~ msgid "syncPrint"
-#~ msgstr "Print"
