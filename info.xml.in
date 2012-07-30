@@ -3,14 +3,13 @@
   <description>Dynacase Offline is the component to access to Dynacase in offline mode</description>
 
   <replaces>
-        <module name="freedom-offline" />
   </replaces>
 
   <requires>
     <module name="dynacase-workspace" />
     <module name="dynacase-offline-client" />
-    <module name="dynacase-offline-xulruntimes" />
-    <module name="dynacase-htmledit" />
+    <module name="dynacase-offline-xulruntimes-installer" />
+    <module name="dynacase-htmledit-installer" />
   </requires>
 
   <pre-install>
