@@ -32,10 +32,10 @@
   <post-install>
     <process command="programs/record_application @APPNAME@" />
     
-     <process command="./wsh.php --api=freedom_import --file=./@APPNAME@/offlineFamilies.ods">
+     <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/offlineFamilies.ods">
             <label lang="en">Create offline families</label>
         </process>
-     <process command="./wsh.php --api=freedom_import --file=./@APPNAME@/offlineProfils.ods">
+     <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/offlineProfils.ods">
             <label lang="en">Create offline profils</label>
         </process>
     <process command="programs/update_catalog" />
