@@ -23,7 +23,8 @@ function off_domainapi(Action &$action)
     $id = $action->getArgument("id");
     $use = $action->getArgument("use");
     $redirect = $action->getArgument("htmlRedirect");
-    
+
+    $out = new stdClass();
     $out->error = '';
     if (method_exists("DomainApi", $use ? $use : $method)) {
         if ($id) {
@@ -52,7 +53,8 @@ function off_domainapi(Action &$action)
                 if (!$out->error) {
                     $aconfig=array_merge($_GET, $_POST);
                     $config=new stdClass();
-                    $strip=(ini_get("magic_quotes_gpc")=="On"); 
+                    $magic_quote = ini_get("magic_quotes_gpc");
+                    $strip=($magic_quote === "On" || $magic_quote === 1);
                     foreach ($aconfig as $k=>$v) {
                         if ($strip) $v=stripslashes($v);
                         $vd=json_decode($v);
@@ -61,7 +63,7 @@ function off_domainapi(Action &$action)
                     $out = call_user_func(array(
                         $apiDomain,
                         $method
-                    ), $config);  
+                    ), $config);
                    
                 }
             } catch ( Exception $e ) {
@@ -80,4 +82,3 @@ function off_domainapi(Action &$action)
     $action->lay->noparse = true; // no need to parse after - increase performances
     }
 }
-?>
