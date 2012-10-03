@@ -54,6 +54,10 @@
         <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/DATA_PROFIL.csv">
             <label lang="en">Import DATA_PROFIL</label>
         </process>
+
+        <process command="./wsh.php --api=updateclass --class=DocWait --appc=FDL">
+            <label lang="en">Generate Table DocWait</label>
+        </process>
         <process command="programs/update_catalog"/>
     </post-install>
 
