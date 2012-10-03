@@ -1,0 +1,21 @@
+//FAM;profil de dossier(PDIR);<specid>;<fldid>;titre;description;family id;famille;;;;;;;;;
+ORDER;PDIR;;;ba_title;prf_desc;dpdoc_famid;dpdoc_fam;;;;;;;;;
+DOC;PDIR;PRF_OFFGLOBFOLDERUSER;-;Offline main folders for all users;;OFFLINEGLOBALFOLDER;Dossier général offline;;;;;;;;;
+PROFIL;PRF_OFFGLOBFOLDERUSER;;;view=GADMIN;edit=GADMIN;open=GADMIN;modify=GADMIN;viewacl=GADMIN;view=off_admins;edit=off_admins;open=off_admins;modify=off_admins;view=off_users;open=off_users;modify=off_users;
+DOC;PDIR;PRF_OFFFOLDER;-;Offline folder;;OFFLINEFOLDER;Espace offline;;;;;;;;;
+PROFIL;PRF_OFFFOLDER;;;view=off_user;open=off_user;modify=off_advanceduser;view=GADMIN;edit=GADMIN;delete=GADMIN;open=GADMIN;modify=GADMIN;viewacl=GADMIN;modifyacl=GADMIN;;;
+DOC;PDIR;PRF_OFFDOMAIN;-;Offline Domain;;OFFLINEDOMAIN;Domaine offline;;;;;;;;;
+PROFIL;PRF_OFFDOMAIN;;;view=GADMIN;edit=GADMIN;delete=GADMIN;open=GADMIN;modify=GADMIN;viewacl=GADMIN;modifyacl=GADMIN;view=off_admins;edit=off_admins;open=off_admins;modify=off_admins;view=off_group_members;view=off_user_members
+DOC;PDIR;PRF_OFFGLOBFOLDERADMIN;-;Offline main folders for admin;;OFFLINEGLOBALFOLDER;Dossier général offline;;;;;;;;;
+PROFIL;PRF_OFFGLOBFOLDERADMIN;;;view=GADMIN;edit=GADMIN;open=GADMIN;modify=GADMIN;viewacl=GADMIN;view=off_admins;edit=off_admins;open=off_admins;modify=off_admins;view=off_users;open=off_users;;
+BEGIN;;;;;OFFLINEDOMAIN;;;;;;;;;;;
+CPROFID;PRF_OFFDOMAIN;;;;;;;;;;;;;;;
+END;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+BEGIN;;;;;OFFLINEFOLDER;;;;;;;;;;;
+CPROFID;PRF_OFFFOLDER;;;;;;;;;;;;;;;
+END;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+BEGIN;;;;;OFFLINEGLOBALFOLDER;;;;;;;;;;;
+CPROFID;PRF_OFFGLOBFOLDER;;;;;;;;;;;;;;;
+END;;;;;;;;;;;;;;;;

@@ -1,0 +1,35 @@
+// famille;;;id;class;name;;;;;;;;;;
+BEGIN;DIR;Domaine offline;;;OFFLINEDOMAIN;;;;;;;;;;
+//;idattr;idframe;label;T;A;type;ord;vis;need;link;phpfile;phpfunc;elink;constraint;option
+ATTR;OFF_REF;FR_BASIC;Référence;N;N;text;30;W;Y;;;;;::isString(OFF_REF,"[A-Z_]{3,20}");
+;;;;;;;;;;;;;;;
+ATTR;OFF_FR_CONFIG;;Configuration;N;N;frame;100;W;;;;;;;
+ATTR;OFF_T_FAMILIES;OFF_FR_FAMCONG;Familles;N;N;array;110;W;;;;;;;
+ATTR;OFF_FAMILIES;OFF_T_FAMILIES;Familles utilisables;N;N;docid("-1");120;W;;;;;;;
+ATTR;OFF_SUBFAMILIES;OFF_T_FAMILIES;Inclusion sous-familles;N;N;enum;130;W;;;;yes|Oui,no|Non;;;system=yes|bmenu=no
+ATTR;OFF_USEWORKFLOW;OFF_T_FAMILIES;Prise en compte du cycle de vie;N;N;enum;140;W;;;;no|Non,yes|Oui;;;system=yes|bmenu=no
+ATTR;OFF_ALLFAMILIES;OFF_FR_CONFIG;Familles utilisables (cache);N;N;docid("-1");150;H;;;;;;;multiple=yes
+ATTR;OFF_ADMINS;OFF_FR_CONFIG;Administrateurs;N;N;docid("IUSER");160;W;;;;;;;multiple=yes|isuser=yes
+ATTR;OFF_TRANSACTIONPOLICY;OFF_FR_CONFIG;Politique de synchronisation;N;N;enum;170;W;;;;global|Synchronisation globale seulement,partial|Synchronisation partielle,one|Autoriser la synchronisation unitaire;;;system=yes|bmenu=no
+ATTR;OFF_SHAREPOLICY;OFF_FR_CONFIG;Gestion espace partagé;N;N;enum;180;W;;;;none|Pas de partage,admin|Limité aux administrateurs,users|Modifiable par tous;;;system=yes|bmenu=no
+ATTR;OFF_HOOKPATH;OFF_FR_CONFIG;Hameçons (PHP);N;N;text;190;W;;;;;;::isPHPfile(OFF_HOOKPATH);
+ATTR;OFF_FR_MEMBERS;;Membres;N;N;frame;200;W;;;;;;;
+ATTR;OFF_T_GROUPMEMBERS;OFF_FR_MEMBERS;Groupes Membres;N;N;array;210;W;;;;;;;
+ATTR;OFF_GROUP_MEMBERS;OFF_T_GROUPMEMBERS;Groupes;N;N;docid("IGROUP");220;W;;;;;;;isuser=yes
+ATTR;OFF_GROUP_MODE;OFF_T_GROUPMEMBERS;Mode;N;N;enum;230;W;;;;standard|Standard,advanced|Avancé;;;system=yes|bmenu=no
+ATTR;OFF_T_USERMEMBERS;OFF_FR_MEMBERS;Utilisateurs Membres;N;N;array;240;W;;;;;;;
+ATTR;OFF_USER_MEMBERS;OFF_T_USERMEMBERS;Utilisateurs;N;N;docid("IUSER");250;W;;;;;;;isuser=yes
+ATTR;OFF_USER_MODE;OFF_T_USERMEMBERS;Mode;N;N;enum;260;W;;;;standard|Standard,advanced|Avancé;;;system=yes|bmenu=no
+;;;;;;;;;;;;;;;
+PARAM;OFF_FR_FAMCONG;;Configuration;;;frame;100;W;;;;;;;
+PARAM;OFF_T_MSKFAMILIES;OFF_FR_FAMCONG;Familles;N;N;array;110;W;;;;;;;
+PARAM;OFF_MSKFAMILIES;OFF_T_MSKFAMILIES;Familles utilisables;N;N;docid("-1");120;W;;;;;;;
+PARAM;OFF_MSKSUBFAMILIES;OFF_T_MSKFAMILIES;Inclusion sous-familles;N;N;enum;130;W;;;;yes|Oui,no|Non;;;system=yes|bmenu=no
+PARAM;OFF_MASKS;OFF_T_MSKFAMILIES;Masque;N;N;docid("MASK");140;W;;;;;?app=GENERIC&action=GENERIC_EDIT&famid=MASK&msk_famid=%OFF_FAMILIES%&id=%OFF_MASKS%;;
+;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;
+MODATTR;FLD_OPEN;;;;;;;;;%S%app=OFFLINE&action=OFF_ORGANIZER&domain=%I%;;;;;
+DEFAULT;FLD_ALLBUT;1;;;;;;;;;;;;;
+DEFAULT;FLD_FAMIDS;DIR\nOFFLINEGLOBALFOLDER;;;;;;;;;;;;;
+DEFAULT;FLD_SUBFAM;no\nno;;;;;;;;;;;;;
+END;;;;;;;;;;;;;;;
