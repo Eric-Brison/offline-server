@@ -83,7 +83,7 @@ class _OFFLINEDOMAIN extends Dir
                         "label" => _($state),
                         "color" => $wdoc->getColor($state),
                         "activity" => $wdoc->getActivity($state),
-                        "transition" => _($tr["id"])
+                        "transition" => isset($tr["id"]) ? _($tr["id"]) : sprintf(_("OFFLINE:Transition non authorized from %s to %s"), _($doc->state), _($state))
                     );
                 }
                 $this->addExtraData($doc, "followingStates", $fsout);

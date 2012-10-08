@@ -1,53 +1,93 @@
 <?xml version="1.0"?>
 <module name="@PACKAGE@" disabled="no" version="@VERSION@" release="@RELEASE@">
-  <description>Dynacase Offline is the component to access to Dynacase in offline mode</description>
+    <description>Dynacase Offline is the component to access to Dynacase in offline mode</description>
 
-  <replaces>
-        <module name="freedom-offline" />
-  </replaces>
+    <replaces>
+        <module name="freedom-offline"/>
+    </replaces>
 
-  <requires>
-    <module name="dynacase-workspace" />
-    <module name="dynacase-offline-client" />
-    <module name="dynacase-offline-xulruntimes" />
-    <module name="dynacase-htmledit" />
-  </requires>
+    <requires>
+        <module name="dynacase-workspace"/>
+        <module name="dynacase-offline-client"/>
+        <module name="dynacase-offline-xulruntimes"/>
+        <module name="dynacase-htmledit"/>
+    </requires>
 
-  <pre-install>
-    <check type="syscommand" command="gunzip" />
-    <check type="syscommand" command="tar" />
-    <check type="syscommand" command="patch" />
-    <check type="syscommand" command="zip" />
-    <check type="syscommand" command="makensis" optional="yes" />
-  </pre-install>
+    <pre-install>
+        <check type="syscommand" command="gunzip"/>
+        <check type="syscommand" command="tar"/>
+        <check type="syscommand" command="patch"/>
+        <check type="syscommand" command="zip"/>
+        <check type="syscommand" command="makensis" optional="yes"/>
+    </pre-install>
 
-  <pre-upgrade>
-    <check type="syscommand" command="gunzip" />
-    <check type="syscommand" command="tar" />
-    <check type="syscommand" command="patch" />
-    <check type="syscommand" command="zip" />
-    <check type="syscommand" command="makensis" optional="yes" />
-  </pre-upgrade>
-  
-  <post-install>
-    <process command="programs/record_application @APPNAME@" />
-    
-     <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/offlineFamilies.ods">
-            <label lang="en">Create offline families</label>
+    <pre-upgrade>
+        <check type="syscommand" command="gunzip"/>
+        <check type="syscommand" command="tar"/>
+        <check type="syscommand" command="patch"/>
+        <check type="syscommand" command="zip"/>
+        <check type="syscommand" command="makensis" optional="yes"/>
+    </pre-upgrade>
+
+    <post-install>
+        <process command="programs/record_application @APPNAME@"/>
+
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_STRUCT.csv">
+            <label lang="en">Import OFFLINEDOMAIN_STRUCT</label>
         </process>
-     <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/offlineProfils.ods">
-            <label lang="en">Create offline profils</label>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_PARAM.csv">
+            <label lang="en">Import OFFLINEDOMAIN_PARAM</label>
         </process>
-    <process command="programs/update_catalog" />
-  </post-install>
- 
-  <post-upgrade>
-    <process command="programs/pre_migration @APPNAME@" />
-    <process command="programs/record_application @APPNAME@" />
-     <process command="./wsh.php --api=freedom_import --reinitattr=no --file=./@APPNAME@/offlineFamilies.ods">
-            <label lang="en">Update offline families</label>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEFOLDER_STRUCT.csv">
+            <label lang="en">Import OFFLINEFOLDER_STRUCT</label>
         </process>
-    <process command="programs/post_migration @APPNAME@" />
-    <process command="programs/update_catalog" />
-  </post-upgrade>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEFOLDER_PARAM.csv">
+            <label lang="en">Import OFFLINEFOLDER_PARAM</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEGLOBALFOLDER_STRUCT.csv">
+            <label lang="en">Import OFFLINEGLOBALFOLDER_STRUCT</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEGLOBALFOLDER_PARAM.csv">
+            <label lang="en">Import OFFLINEGLOBALFOLDER_PARAM</label>
+        </process>
+
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/DATA_PROFIL.csv">
+            <label lang="en">Import DATA_PROFIL</label>
+        </process>
+
+        <process command="./wsh.php --api=updateclass --class=DocWait --appc=FDL">
+            <label lang="en">Generate Table DocWait</label>
+        </process>
+        <process command="programs/update_catalog"/>
+    </post-install>
+
+    <post-upgrade>
+        <process command="programs/pre_migration @APPNAME@"/>
+        <process command="programs/record_application @APPNAME@"/>
+
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_STRUCT.csv">
+            <label lang="en">Import OFFLINEDOMAIN_STRUCT</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_PARAM.csv">
+            <label lang="en">Import OFFLINEDOMAIN_PARAM</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEFOLDER_STRUCT.csv">
+            <label lang="en">Import OFFLINEFOLDER_STRUCT</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEFOLDER_PARAM.csv">
+            <label lang="en">Import OFFLINEFOLDER_PARAM</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEGLOBALFOLDER_STRUCT.csv">
+            <label lang="en">Import OFFLINEGLOBALFOLDER_STRUCT</label>
+        </process>
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEGLOBALFOLDER_PARAM.csv">
+            <label lang="en">Import OFFLINEGLOBALFOLDER_PARAM</label>
+        </process>
+
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/DATA_PROFIL.csv">
+            <label lang="en">Import DATA_PROFIL</label>
+        </process>
+        <process command="programs/post_migration @APPNAME@"/>
+        <process command="programs/update_catalog"/>
+    </post-upgrade>
 </module>

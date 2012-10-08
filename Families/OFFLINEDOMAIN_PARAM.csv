@@ -1,0 +1,8 @@
+//;Father ;Title;Id;Classe;Logical Name
+BEGIN;DIR;Domaine offline;;;OFFLINEDOMAIN
+METHOD;Method.OfflineDomain.php;;;;
+TYPE;C;;;;
+DFLDID;auto;;;;
+SCHAR;S;;;;
+ICON;offlinedomain.png;;;;
+END;;;;;

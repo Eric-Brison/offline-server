@@ -1,0 +1,7 @@
+//;Father ;Title;Id;Classe;Logical Name
+BEGIN;OFFLINEFOLDER;Dossier partagé offline;;;OFFLINEGLOBALFOLDER
+TYPE;C;;;;
+METHOD;Method.OfflineGlobalFolder.php;;;;
+SCHAR;S;;;;
+ICON;offlineglobalfolder.png;;;;
+END;;;;;

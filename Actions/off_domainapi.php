@@ -53,8 +53,7 @@ function off_domainapi(Action &$action)
                 if (!$out->error) {
                     $aconfig=array_merge($_GET, $_POST);
                     $config=new stdClass();
-                    $magic_quote = ini_get("magic_quotes_gpc");
-                    $strip=($magic_quote === "On" || $magic_quote === 1);
+                    $strip = get_magic_quotes_gpc();
                     foreach ($aconfig as $k=>$v) {
                         if ($strip) $v=stripslashes($v);
                         $vd=json_decode($v);
