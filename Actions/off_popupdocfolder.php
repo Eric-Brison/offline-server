@@ -7,61 +7,49 @@
  * @version $Id: ws_popupdocfolder.php,v 1.11 2007/02/12 10:52:00 eric Exp $
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package OFFLINE
- * @subpackage 
+ * @subpackage
  */
 /**
  */
+
+/** @noinspection PhpIncludeInspection */
 include_once ("FDL/popupdoc.php");
+/** @noinspection PhpIncludeInspection */
 include_once ("FDL/popupdocdetail.php");
 
-// -----------------------------------
-function off_popupdocfolder(&$action) {
-    // -----------------------------------
-    // define accessibility
-    $docid = GetHttpVars("id");
-    $dirid = GetHttpVars("dirid");
-    $abstract = (GetHttpVars("abstract", 'N') == "Y");
-    $zone = GetHttpVars("zone"); // special zone
 
+function off_popupdocfolder(Action &$action)
+{
+    $usage = new ActionUsage($action);
+    $docid = $usage->addNeeded("id", "id");
+    $usage->verify();
 
-    $dbaccess = $action->GetParam("FREEDOM_DB");
-    $doc = new_Doc($dbaccess, $docid);
-    $fld = new_Doc($dbaccess, $dirid);
-
-    //  if ($doc->doctype=="C") return; // not for familly
-
+    $doc = new_Doc("", $docid);
 
     $tsubmenu = array();
-    $islink = ($doc->prelid != $fld->initid);
-
-    // -------------------- Menu menu ------------------
-
-
-    $surl = $action->getParam("CORE_STANDURL");
     $tlink = array();
     addOfflinePopup($tlink, $doc, $target = "nresume", "");
 
-                
     unset($tlink[""]);
- 
 
-    //  addFamilyPopup($tlink,$doc);
     popupdoc($action, $tlink, $tsubmenu);
 }
 
-function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline') {
+function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline')
+{
+    /** @noinspection PhpIncludeInspection */
     include_once ("OFFLINE/Class.DomainManager.php");
-    $onlysub = getHttpVars("submenu");
-    $docDomainsId = $doc->getDomainIds();
     $allDomains = DomainManager::getDomains();
-    $canDownload=false;
+    $canDownload = false;
     foreach ($allDomains as $domain) {
-        if ($domain->isAlive()) {
+        /* @var $domain _OFFLINEDOMAIN */
+        if ($domain->isAlive() && $domain->hasManagePrivilege(Doc::getSystemUserId())) {
             $families = $domain->getFamilies();
-            if (!in_array($doc->fromid, $families))
+            if (!in_array($doc->fromid, $families)) {
                 continue;
+            }
             if ($domain->isMember($doc->getSystemUserId())) {
-                $canDownload=true;
+                $canDownload = true;
                 $tlink["dom" . $domain->id] = array(
                     "descr" => sprintf(_("Domain %s"), $domain->getTitle()),
                     "url" => "",
@@ -170,7 +158,7 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
             }
         }
     }
-    
+
     if ($canDownload) {
         $tlink["offdownload"] = array(
             "descr" => sprintf(_("Download offline client application")),
@@ -187,4 +175,3 @@ function addOfflinePopup(&$tlink, Doc &$doc, $target = "_self", $menu = 'offline
     }
 }
 
-?>
