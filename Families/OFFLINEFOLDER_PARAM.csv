@@ -1,7 +1,6 @@
 //;Father ;Title;Id;Classe;Logical Name
 BEGIN;DIR;Espace offline;;;OFFLINEFOLDER
 TYPE;C;;;;
-METHOD;Method.OfflineFolder.php;;;;
 SCHAR;S;;;;
 ICON;offlinefolder.png;;;;
 END;;;;;
