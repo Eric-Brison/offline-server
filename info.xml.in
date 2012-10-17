@@ -32,6 +32,9 @@
     <post-install>
         <process command="programs/record_application @APPNAME@"/>
 
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/ACCESS.csv">
+            <label lang="en">Import ACCESS</label>
+        </process>
         <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_STRUCT.csv">
             <label lang="en">Import OFFLINEDOMAIN_STRUCT</label>
         </process>
@@ -65,6 +68,9 @@
         <process command="programs/pre_migration @APPNAME@"/>
         <process command="programs/record_application @APPNAME@"/>
 
+        <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/ACCESS.csv">
+            <label lang="en">Import ACCESS</label>
+        </process>
         <process command="./wsh.php --api=importDocuments --file=./@APPNAME@/OFFLINEDOMAIN_STRUCT.csv">
             <label lang="en">Import OFFLINEDOMAIN_STRUCT</label>
         </process>
