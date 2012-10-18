@@ -55,4 +55,3 @@ class _OFFLINEGLOBALFOLDER extends _OFFLINEFOLDER
 /*
  * @end-method-ignore
  */
-?>

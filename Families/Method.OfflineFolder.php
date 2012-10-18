@@ -24,8 +24,7 @@ class _OFFLINEFOLDER extends Dir
     /*
      * @end-method-ignore
      */
-    
-    
+
     public function hookBeforeInsert($docid)
     {
         $err = $this->callHookDocument($docid, "onBeforeInsertIntoUserFolder");
@@ -69,6 +68,7 @@ class _OFFLINEFOLDER extends Dir
     
     public function postInsertDoc($docid)
     {
+        $err = "";
         $doc = new_doc($this->dbaccess, $docid, true);
         if ($doc->isAlive()) {
             $doc->updateDomains();
@@ -78,6 +78,7 @@ class _OFFLINEFOLDER extends Dir
             */
             $err=$this->hookAfterInsert($docid);
             if (method_exists($doc, "onAfterInsertIntoDomain")) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $err = $doc->onAfterInsertIntoDomain();
             }
         }
@@ -85,25 +86,30 @@ class _OFFLINEFOLDER extends Dir
     }
     public function postUnlinkDoc($docid)
     {
-        
+        $err = '';
+
         $doc = new_doc($this->dbaccess, $docid, true);
         if ($doc->isAlive()) {
             $doc->updateDomains();
             $docuid = $this->getValue("off_user");
             if ($docuid) {
-                $uid = 0;
-                $err = simpleQuery($this->dbaccess, sprintf("select id from users where fid=%d", $docuid), $uid, true, true);
+                $uid = array();
+                $err .= simpleQuery($this->dbaccess, sprintf("select id from users where fid=%d", $docuid), $uid, true, true);
                 if ($uid) {
-                    include_once ("FDL/Class.DocWait.php");
-                    $w = new DocWait($this->dbaccess, array(
+                    /** @noinspection PhpIncludeInspection */
+                    require_once "FDL/Class.DocWait.php";
+                    $docWait = new DocWait($this->dbaccess, array(
                         $doc->initid,
                         $uid
                     ));
-                    if ($w->isAffected()) $w->delete();
+                    if ($docWait->isAffected()) {
+                        $err .= $docWait->delete();
+                    }
                 }
             }
-            $err=$this->hookAfterRemove($docid);
+            $err .= $this->hookAfterRemove($docid);
         }
+        return $err;
     }
     
     
@@ -121,4 +127,3 @@ class _OFFLINEFOLDER extends Dir
 /*
  * @end-method-ignore
  */
-?>
