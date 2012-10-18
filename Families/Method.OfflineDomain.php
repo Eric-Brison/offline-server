@@ -86,7 +86,7 @@ class _OFFLINEDOMAIN extends Dir
             }
             try {
                 $wdoc->Set($doc);
-                $fs = $wdoc->getFollowingStates();
+                $fs = $wdoc->getFollowingStates(true);
                 $fsout = array();
                 foreach ($fs as $state) {
                     $tr = $wdoc->getTransition($doc->state, $state);
