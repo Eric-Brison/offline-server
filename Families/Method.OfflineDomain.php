@@ -395,8 +395,7 @@ class _OFFLINEDOMAIN extends Dir
             case 'DomainSyncApi::pushDocument' :
                 if ($sync->arg->refererinitid < 0) {
                     $message = sprintf(_("document creation %s"), $message = $sync->arg->title);
-                }
-                elseif ($sync->arg->refererinitid == null) {
+                } elseif ($sync->arg->refererinitid == null) {
                     $message = sprintf(_("document creation failed"));
                 } else $message = $sync->arg->title;
                 if ($sync->arg->error) $message .= ' : ' . $sync->arg->error;
@@ -412,8 +411,7 @@ class _OFFLINEDOMAIN extends Dir
             case 'DomainSyncApi::revertDocument' :
                 if ($sync->arg->error) {
                     $message = sprintf("%s : %s", $sync->arg->title, $sync->arg->error);
-                }
-                else $message = sprintf(_("%s has been downloaded"), sprintf("%s <span>%s</span>", $sync->arg->title, $sync->arg->initid));
+                } else $message = sprintf(_("%s has been downloaded"), sprintf("%s <span>%s</span>", $sync->arg->title, $sync->arg->initid));
                 break;
 
             case 'DomainSyncApi::getUserDocuments' :
@@ -453,8 +451,7 @@ class _OFFLINEDOMAIN extends Dir
                 if ($sync->arg->error) $message = $sync->arg->error;
                 if ($updateMessage && $deleteMessage) {
                     $message .= nl2br($updateMessage . "\n" . $deleteMessage);
-                }
-                elseif ($updateMessage) {
+                } elseif ($updateMessage) {
                     $message .= $updateMessage;
                 } elseif ($deleteMessage) {
                     $message .= $deleteMessage;
@@ -1132,21 +1129,35 @@ class _OFFLINEDOMAIN extends Dir
     /**
      * get user folder
      * @param int $userId user identificator (system id/or logical name)
-     * @code
-     * @endcode
+     *
+     * @throws Exception
+     *
      * @return Dir the folder document (null is user is not recorded)
      */
     public function getUserFolder($userId = 0)
     {
         $userId = $this->getDomainUserId($userId);
         $user = new User($this->dbaccess, $userId);
+        $userFolder = null;
         if ($user->isAffected()) {
             /** @noinspection PhpUndefinedFieldInspection */
             $login = $user->login;
-            $userFolder = new_doc($this->dbaccess, $this->getUserFolderId($login));
-            if ($userFolder->isAlive()) return $userFolder;
+            $userFolderId = $this->getUserFolderId($login);
+            $userFolder = new_doc($this->dbaccess, $userFolderId);
+            if (!$userFolder->isAlive()) {
+                /* Quircks to handle old user notation*/
+                /** @noinspection PhpUndefinedFieldInspection */
+                $userArray = array("id" => $user->id,
+                    "docid" => $user->fid,
+                    "displayName" => trim($user->firstname . " " . $user->lasttname),
+                    "login" => $user->login);
+                $usersFolder = $this->getUsersFolder();
+                $userFolder = $this->generateUserFolder($userFolderId, $userArray, $usersFolder);
+            }
+        } else {
+            throw new Exception(__METHOD__ . " user $userId is not affected");
         }
-        return null;
+        return $userFolder;
     }
 
     /**
@@ -1166,7 +1177,7 @@ class _OFFLINEDOMAIN extends Dir
             $s->addFilter("locked = %d", $userId);
             $s->addFilter("lockdomainid = %d", $this->id);
             $dl = $s->search()->getDocumentList();
-            foreach ($dl as $k => $v) {
+            foreach ($dl as $v) {
                 $ids[] = $v->initid;
             }
         }
@@ -1179,7 +1190,7 @@ class _OFFLINEDOMAIN extends Dir
             $s->addFilter("locked = %d", $userId);
             $s->addFilter("lockdomainid = %d", $this->id);
             $dl = $s->search()->getDocumentList();
-            foreach ($dl as $k => $v) {
+            foreach ($dl as $v) {
                 $ids[] = $v->initid;
             }
         }
@@ -1301,104 +1312,168 @@ class _OFFLINEDOMAIN extends Dir
     {
         $err = "";
         if (!$this->name) {
-            $err = $this->setLogicalIdentificator($this->getValue("off_ref"));
+            $err .= $this->setLogicalIdentificator($this->getValue("off_ref"));
         }
         if (($this->getValue("off_sharepolicy") == "admin") || ($this->getValue("off_sharepolicy") == "users")) {
             $sharedID = $this->getShareId();
-            $shared = new_doc($this->dbaccess, $sharedID);
-            if (!$shared->isAlive()) {
-                $shared = createDoc($this->dbaccess, "OFFLINEGLOBALFOLDER", false);
-                $shared->setValue("ba_title", sprintf(_("%s Share folder"), $this->getTitle()));
-                $shared->setValue("off_domain", $this->id);
-                $err .= $shared->add();
-                $err .= $shared->setLogicalIdentificator($sharedID);
-                $err .= $this->addFile($shared->initid);
+            $sharedFolder = new_doc($this->dbaccess, $sharedID);
+            if (!$sharedFolder->isAlive()) {
+                $sharedFolder = createDoc($this->dbaccess, "OFFLINEGLOBALFOLDER", false);
+                $sharedFolder->setValue("ba_title", sprintf(_("%s Share folder"), $this->getTitle()));
+                $sharedFolder->setValue("off_domain", $this->id);
+                $err .= $sharedFolder->add();
+                $err .= $sharedFolder->setLogicalIdentificator($sharedID);
+                $err .= $this->addFile($sharedFolder->initid);
 
             } else {
-                $shared = new_doc($this->dbaccess, $sharedID);
-                $err .= $this->addFile($shared->initid);
+                $sharedFolder = new_doc($this->dbaccess, $sharedID);
+                $err .= $this->addFile($sharedFolder->initid);
             }
-            $shared->disableEditControl();
-            $shared->setValue("off_admins", $this->getValue("off_admins"));
-            $shared->setValue("off_users", array_merge($this->getTValue("off_group_members"), $this->getTValue("off_user_members")));
-            $shared->setValue("fld_allbut", "1"); // add restrictions
-            $shared->setValue("fld_famids", $this->getValue("off_families"));
-            $shared->setValue("fld_subfam", $this->getValue("off_subfamilies"));
-            $err .= $shared->modify();
+            $sharedFolder->disableEditControl();
+            $sharedFolder->setValue("off_admins", $this->getValue("off_admins"));
+            $sharedFolder->setValue("off_users", array_merge($this->getTValue("off_group_members"), $this->getTValue("off_user_members")));
+            $sharedFolder->setValue("fld_allbut", "1"); // add restrictions
+            $sharedFolder->setValue("fld_famids", $this->getValue("off_families"));
+            $sharedFolder->setValue("fld_subfam", $this->getValue("off_subfamilies"));
+            $err .= $sharedFolder->modify();
             if ($this->getValue("off_sharepolicy") == "admin") {
-                $shared->setProfil("PRF_OFFGLOBFOLDERADMIN");
+                $sharedFolder->setProfil("PRF_OFFGLOBFOLDERADMIN");
             } elseif ($this->getValue("off_sharepolicy") == "users") {
-                $shared->setProfil("PRF_OFFGLOBFOLDERUSER");
+                $sharedFolder->setProfil("PRF_OFFGLOBFOLDERUSER");
             }
-            $shared->enableEditControl();
+            $sharedFolder->enableEditControl();
         } else {
             $sharedID = $this->getShareId();
-            $shared = new_doc($this->dbaccess, $sharedID);
-            if ($shared->isAlive()) {
+            $sharedFolder = new_doc($this->dbaccess, $sharedID);
+            if ($sharedFolder->isAlive()) {
                 // need to delete it
                 $err .= $this->clearSharedFolder();
                 if ($err == "") {
-                    $shared->delete();
+                    $sharedFolder->delete();
                 }
             }
         }
-        $usersID = sprintf("offusers_%s", $this->name);
-        $users = new_doc($this->dbaccess, $usersID);
-        if (!$users->isAlive()) {
-            $users = createDoc($this->dbaccess, "DIR", false);
-            $users->setValue("ba_title", sprintf(_("%s Users folder"), $this->getTitle()));
-            $users->setValue("off_domain", $this->id);
-
-            $err .= $users->add();
-            $err .= $users->setLogicalIdentificator($usersID);
-            $err .= $this->addFile($users->initid);
-
-        } else {
-            $users = new_doc($this->dbaccess, $usersID);
-            $err .= $this->addFile($users->initid);
-        }
-        $users->disableEditControl();
-        $users->setValue("fld_allbut", "1"); // add restrictions
-        $users->setValue("fld_famids", getFamIdFromName($this->dbaccess, "OFFLINEFOLDER"));
-        $users->setValue("fld_subfam", "no");
-        $users->setValue("off_admins", $this->getValue("off_admins"));
-        $users->setValue("off_users", array_merge($this->getTValue("off_group_members"), $this->getTValue("off_user_members")));
-        $err .= $users->modify();
-
-        $users->enableEditControl();
-        $members = $this->getUserMembersInfo(true);
-        foreach ($members as $member) {
-            $userFolderID = $this->getUserFolderId($member["login"]);
-            $userfolder = new_doc($this->dbaccess, $userFolderID);
-            if (!$userfolder->isAlive()) {
-                $userfolder = createDoc($this->dbaccess, "OFFLINEFOLDER", false);
-                $userfolder->setValue("ba_title", sprintf(_("%s User folder"), $member["login"]));
-                $userfolder->setValue("off_domain", $this->id);
-                $userfolder->setValue("off_user", $member["docid"]);
-
-                $err .= $userfolder->add();
-                $err .= $userfolder->setLogicalIdentificator($userFolderID);
-                $err .= $users->addFile($userfolder->initid);
-
-            } else {
-                $userfolder = new_doc($this->dbaccess, $userFolderID);
-                $err .= $users->addFile($userfolder->initid);
-
+        $usersID = $this->getUsersFolderId();
+        try {
+            $usersFolder = $this->generateUsersFolder($usersID);
+            $members = $this->getUserMembersInfo(true);
+            foreach ($members as $member) {
+                $userFolderID = $this->getUserFolderId($member["login"]);
+                $this->generateUserFolder($userFolderID, $member, $usersFolder);
             }
-            $userfolder->disableEditControl();
-            if ($this->hasManagePrivilege($member["id"])) {
-                $userfolder->setValue("off_advanceduser", $member["docid"]);
-            } else {
-                $userfolder->deleteValue("off_advanceduser");
-            }
-            $userfolder->setValue("fld_allbut", "1"); // add restrictions
-            $userfolder->setValue("fld_famids", $this->getValue("off_families"));
-            $userfolder->setValue("fld_subfam", $this->getValue("off_subfamilies"));
-            $err .= $userfolder->modify();
-            $userfolder->enableEditControl();
+        } catch (Exception $e) {
+            $err .= $e->getMessage();
         }
 
         return $err;
+    }
+
+    /**
+     * Return or generateUser Folder
+     *
+     * @param string $usersID users folder Id
+     *
+     * @return DIR
+     *
+     * @throws Exception
+     */
+    public function generateUsersFolder($usersID)
+    {
+        $err = "";
+        $usersFolder = new_doc($this->dbaccess, $usersID);
+        /* @var $usersFolder DIR */
+        if (!$usersFolder->isAlive()) {
+            $usersFolder = createDoc($this->dbaccess, "DIR", false);
+            $usersFolder->setValue("ba_title", sprintf(_("%s Users folder"), $this->getTitle()));
+            $usersFolder->setValue("off_domain", $this->id);
+
+            $err .= $usersFolder->add();
+            $err .= $usersFolder->setLogicalIdentificator($usersID);
+            $err .= $this->addFile($usersFolder->initid);
+
+        } else {
+            $usersFolder = new_doc($this->dbaccess, $usersID);
+            $err .= $this->addFile($usersFolder->initid);
+        }
+        $usersFolder->disableEditControl();
+        $usersFolder->setValue("fld_allbut", "1"); // add restrictions
+        $usersFolder->setValue("fld_famids", getFamIdFromName($this->dbaccess, "OFFLINEFOLDER"));
+        $usersFolder->setValue("fld_subfam", "no");
+        $usersFolder->setValue("off_admins", $this->getValue("off_admins"));
+        $usersFolder->setValue("off_users", array_merge($this->getTValue("off_group_members"), $this->getTValue("off_user_members")));
+        $err .= $usersFolder->modify();
+        $usersFolder->enableEditControl();
+        if ($err) {
+            throw new Exception(__METHOD__ . $err);
+        }
+        return $usersFolder;
+    }
+
+    protected function getUsersFolderId()
+    {
+        $usersID = sprintf("offusers_%s", $this->name);
+        return $usersID;
+    }
+
+    /**
+     * getUsersFolder
+     *
+     * @return Dir
+     * @throws Exception
+     */
+    protected function getUsersFolder()
+    {
+        $usersFolderId = $this->getUsersFolderId();
+        $usersFolder = new_Doc("", $usersFolderId);
+        if (!$usersFolder->isAlive()) {
+            throw new Exception(__METHOD__." usersFolder : $usersFolderId");
+        }
+        return $usersFolder;
+    }
+
+    /**
+     * Generate a userFolder
+     *
+     * @param String $userFolderID
+     * @param Array $member
+     * @param Dir $usersFolder
+     *
+     * @throws Exception
+     *
+     * @return Dir
+     */
+    protected function generateUserFolder($userFolderID, $member, Dir $usersFolder)
+    {
+        $err = "";
+        $userFolder = new_doc($this->dbaccess, $userFolderID);
+        if (!$userFolder->isAlive()) {
+            $userFolder = createDoc($this->dbaccess, "OFFLINEFOLDER", false);
+            $userFolder->setValue("ba_title", sprintf(_("%s User folder"), $member["login"]));
+            $userFolder->setValue("off_domain", $this->id);
+            $userFolder->setValue("off_user", $member["docid"]);
+
+            $err .= $userFolder->add();
+            $err .= $userFolder->setLogicalIdentificator($userFolderID);
+            $err .= $usersFolder->addFile($userFolder->initid);
+        } else {
+            $userFolder = new_doc($this->dbaccess, $userFolderID);
+            $err .= $usersFolder->addFile($userFolder->initid);
+        }
+        $userFolder->disableEditControl();
+        if ($this->hasManagePrivilege($member["id"])) {
+            $userFolder->setValue("off_advanceduser", $member["docid"]);
+        } else {
+            $userFolder->deleteValue("off_advanceduser");
+        }
+        $userFolder->setValue("fld_allbut", "1"); // add restrictions
+        $userFolder->setValue("fld_famids", $this->getValue("off_families"));
+        $userFolder->setValue("fld_subfam", $this->getValue("off_subfamilies"));
+        $err .= $userFolder->modify();
+        $userFolder->enableEditControl();
+        if ($err) {
+            throw new Exception(__METHOD__.' ' . $err);
+        }
+        return $userFolder;
     }
 
     /**
@@ -1480,7 +1555,7 @@ class _OFFLINEDOMAIN extends Dir
             $searchDoc->setObjectReturn();
             $searchDoc->search();
             while ($doc = $searchDoc->nextDoc()) {
-               $doc->delete();
+                $doc->delete();
             }
         }
 
