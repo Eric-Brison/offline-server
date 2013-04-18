@@ -803,7 +803,7 @@ class _OFFLINEDOMAIN extends Dir
         $sfolder = $this->getSharedFolder();
         $doc = new_doc($this->dbaccess, $documentId, true);
         
-        return $this->insertDocument($sfolder, $doc, $reservedBy, ($reservedBy > 0));
+        return $this->domainInsertDocument($sfolder, $doc, $reservedBy, ($reservedBy > 0));
     }
     /**
      * remove document of share folder
@@ -837,7 +837,7 @@ class _OFFLINEDOMAIN extends Dir
         $ufolder = $this->getUserFolder($userId);
         $doc = new_doc($this->dbaccess, $documentId, true);
         
-        return $this->insertDocument($ufolder, $doc, $userId, $reserve);
+        return $this->domainInsertDocument($ufolder, $doc, $userId, $reserve);
     }
     /**
      * add new document into folder
@@ -850,13 +850,13 @@ class _OFFLINEDOMAIN extends Dir
      *
      * @return string error message (empty string if no errors)
      */
-    private function insertDocument(Dir $folder, Doc & $doc, $userId = 0, $reserve = true)
+    private function domainInsertDocument(Dir $folder, Doc & $doc, $userId = 0, $reserve = true)
     {
         if ($doc->isAlive()) {
             if ($reserve && ($doc->lockdomainid > 0) && ($doc->lockdomainid != $this->id)) {
                 $err = sprintf(_("document is already book in other domain : %s") , $this->getTitle($doc->lockdomainid));
             } else {
-                $point = "insertDocument" . $doc->id;
+                $point = "domainInsertDocument" . $doc->id;
                 $this->savePoint($point);
                 $err = $folder->AddFile($doc->initid);
                 if (!$err) {
@@ -945,7 +945,7 @@ class _OFFLINEDOMAIN extends Dir
     {
         $err = '';
         foreach ($collection as $doc) {
-            $err.= $this->insertDocument($folder, $doc, $userId, $reserve);
+            $err.= $this->domainInsertDocument($folder, $doc, $userId, $reserve);
         }
         return $err;
     }
