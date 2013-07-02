@@ -1,4 +1,9 @@
 <?php
+/*
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package FDL
+*/
 /**
  * Return offline domains where current user is affected
  *
@@ -31,7 +36,7 @@ class DomainSyncApi
      * @var DomainApi
      */
     private $domainApi = null;
-    public function __construct(Dir &$domain = null, DomainApi &$domainApi = null)
+    public function __construct(Dir & $domain = null, DomainApi & $domainApi = null)
     {
         $this->domain = $domain;
         $this->domainApi = $domainApi;
@@ -40,24 +45,22 @@ class DomainSyncApi
     {
         throw new Exception($err);
     }
-    
     /**
      * test if document must be returned to the client
-     * 
+     *
      * @param Doc $doc
      * @param array $stillRecorded
      * @return true is client document is uptodate
      */
-    public static function isUpToDate(Doc &$doc, array &$stillRecorded)
+    public static function isUpToDate(Doc & $doc, array & $stillRecorded)
     {
-       
+        
         if (!$stillRecorded[$doc->initid]) return false;
         if (intval($stillRecorded[$doc->initid]->locked) != intval($doc->locked)) return false;
         if (intval($stillRecorded[$doc->initid]->lockdomainid) != intval($doc->lockdomainid)) return false;
         if ($stillRecorded[$doc->initid]->revdate >= $doc->revdate) return true;
         return false;
     }
-    
     /**
      * get share folder documents
      * @return DocumentList
@@ -70,30 +73,28 @@ class DomainSyncApi
             $stillRecorded = array();
             if (is_array($config->stillRecorded)) {
                 
-                foreach ( $config->stillRecorded as $record ) {
+                foreach ($config->stillRecorded as $record) {
                     $stillRecorded[$record->initid] = $record;
                 }
             }
- 
+            
             if ($this->domain->hook()) {
                 $domain = $this->domain;
-                $callback = function (&$doc) use($domain, $stillRecorded)
+                $callback = function (&$doc) use ($domain, $stillRecorded)
                 {
                     $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                     if ($isUpToDate) return false;
                     $err = call_user_func_array(array(
-                        $domain->hook(),
+                        $domain->hook() ,
                         $method = "onPullDocument"
-                    ), array(
-                        &$domain,
-                        &$doc
+                    ) , array(&$domain, &$doc
                     ));
                     
                     return (empty($err) || ($err === true));
                 };
             } else {
                 if (count($stillRecorded) > 0) {
-                    $callback = function (&$doc) use($stillRecorded)
+                    $callback = function (&$doc) use ($stillRecorded)
                     {
                         $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                         if ($isUpToDate) return false;
@@ -102,8 +103,7 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getSharedDocuments($config, $callback);
-            $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder(), $stillRecorded);
-        
+            $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder() , $stillRecorded);
         } else {
             $out->error = $err;
         }
@@ -111,7 +111,7 @@ class DomainSyncApi
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
-            foreach ( $out->content as &$rdoc ) {
+            foreach ($out->content as & $rdoc) {
                 $log->documentsToUpdate[] = $rdoc["properties"]["id"];
             }
         }
@@ -119,13 +119,12 @@ class DomainSyncApi
         return $out;
     }
     
-    private function getIntersect(Dir &$folder, array &$stillRecorded)
+    private function getIntersect(Dir & $folder, array & $stillRecorded)
     {
         $serverInitids = $folder->getContentInitid();
         $clientInitids = array_keys($stillRecorded);
         return array_values(array_diff($clientInitids, $serverInitids));
     }
-    
     /**
      * revert document into user space
      * @return Fdl_Document
@@ -133,7 +132,7 @@ class DomainSyncApi
     public function revertDocument($config)
     {
         $docid = $config->docid;
-        $doc = new_doc(getDbaccess(), $docid, true);
+        $doc = new_doc(getDbaccess() , $docid, true);
         if ($doc->isAlive()) {
             $err = $this->callHook("onPullDocument", $doc);
             if ($err == "" || $err === true) {
@@ -144,7 +143,7 @@ class DomainSyncApi
                 $out->error = $err;
             }
         } else {
-            $out->error = sprintf(_("document %s not found"), $docid);
+            $out->error = sprintf(_("document %s not found") , $docid);
         }
         $log = "";
         $log->initid = $doc->initid;
@@ -153,7 +152,6 @@ class DomainSyncApi
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
-
     /**
      * unlink document from user space
      * @return Fdl_Document
@@ -161,15 +159,15 @@ class DomainSyncApi
     public function removeUserDocument($config)
     {
         $docid = $config->docid;
-        $doc = new_doc(getDbaccess(), $docid, true);
+        $doc = new_doc(getDbaccess() , $docid, true);
         if ($doc->isAlive()) {
-            if ($err == "" || $err === true) {                
+            if ($err == "" || $err === true) {
                 $out = $this->domainApi->removeUserDocument($config);
             } else {
                 $out->error = $err;
             }
         } else {
-            $out->error = sprintf(_("document %s not found"), $docid);
+            $out->error = sprintf(_("document %s not found") , $docid);
         }
         $log = "";
         $log->initid = $doc->initid;
@@ -185,7 +183,7 @@ class DomainSyncApi
     public function bookDocument($config)
     {
         $docid = $config->docid;
-        $doc = new_doc(getDbaccess(), $docid, true);
+        $doc = new_doc(getDbaccess() , $docid, true);
         if ($doc->isAlive()) {
             if ($err == "" || $err === true) {
                 $this->domain->addFollowingStates($doc);
@@ -195,7 +193,7 @@ class DomainSyncApi
                 $out->error = $err;
             }
         } else {
-            $out->error = sprintf(_("document %s not found"), $docid);
+            $out->error = sprintf(_("document %s not found") , $docid);
         }
         $log = "";
         $log->initid = $doc->initid;
@@ -204,8 +202,6 @@ class DomainSyncApi
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
-    
-
     /**
      * unbook document from user space
      * @return Fdl_Document
@@ -213,7 +209,7 @@ class DomainSyncApi
     public function unbookDocument($config)
     {
         $docid = $config->docid;
-        $doc = new_doc(getDbaccess(), $docid, true);
+        $doc = new_doc(getDbaccess() , $docid, true);
         if ($doc->isAlive()) {
             if ($err == "" || $err === true) {
                 $this->domain->addFollowingStates($doc);
@@ -223,7 +219,7 @@ class DomainSyncApi
                 $out->error = $err;
             }
         } else {
-            $out->error = sprintf(_("document %s not found"), $docid);
+            $out->error = sprintf(_("document %s not found") , $docid);
         }
         $log = "";
         $log->initid = $doc->initid;
@@ -243,38 +239,36 @@ class DomainSyncApi
             $callback = null;
             $stillRecorded = array();
             if (is_array($config->stillRecorded)) {
-                foreach ( $config->stillRecorded as $record ) {
+                foreach ($config->stillRecorded as $record) {
                     $stillRecorded[$record->initid] = $record;
                 }
             }
             if ($this->domain->hook()) {
                 $domain = $this->domain;
-                $callback = function (&$doc) use($domain, $stillRecorded)
+                $callback = function (&$doc) use ($domain, $stillRecorded)
                 {
                     $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
                     if ($isUpToDate) return false;
                     $domain->addFollowingStates($doc);
                     $err = call_user_func_array(array(
-                        $domain->hook(),
+                        $domain->hook() ,
                         $method = "onPullDocument"
-                    ), array(
-                        &$domain,
-                        &$doc
+                    ) , array(&$domain, &$doc
                     ));
                     return (empty($err) || ($err === true));
                 };
             } else {
-                    $domain = $this->domain;
-                    $callback = function (&$doc) use($domain,$stillRecorded)
-                    {
-                        $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
-                        if ($isUpToDate) return false;
-                        $domain->addFollowingStates($doc);
-                        return true;
-                    };
+                $domain = $this->domain;
+                $callback = function (&$doc) use ($domain, $stillRecorded)
+                {
+                    $isUpToDate = DomainSyncApi::isUpToDate($doc, $stillRecorded);
+                    if ($isUpToDate) return false;
+                    $domain->addFollowingStates($doc);
+                    return true;
+                };
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
-            $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder(), $stillRecorded);
+            $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder() , $stillRecorded);
         } else {
             $out->error = $err;
         }
@@ -282,14 +276,13 @@ class DomainSyncApi
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
-            foreach ( $out->content as &$rdoc ) {
+            foreach ($out->content as & $rdoc) {
                 $log->documentsToUpdate[] = $rdoc["properties"]["id"];
             }
         }
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
-    
     /**
      * get Acknowledgement after user folder documents
      * @return string
@@ -300,7 +293,6 @@ class DomainSyncApi
         $out->acknowledgement = $this->callHook("onAfterPullUserDocuments");
         return $out;
     }
-    
     /**
      * get Acknowledgement after user folder documents
      * @return string
@@ -320,14 +312,14 @@ class DomainSyncApi
         //print_r($config);
         $docid = $config->docid;
         $aid = $config->aid;
-        $index = -1;
+        $index = - 1;
         if (preg_match('/(.*)\[([0-9]+)\]$/', $aid, $reg)) {
             $index = $reg[2];
             $aid = trim($reg[1]);
         }
         $path = 'php://input';
         $out = '';
-        $tmpfile = tempnam(getTmpDir(), 'pushFile');
+        $tmpfile = tempnam(getTmpDir() , 'pushFile');
         if ($tmpfile == false) {
             $err = sprintf("cannot create temporay file %s", $tmpfile);
         } else {
@@ -356,8 +348,8 @@ class DomainSyncApi
                     @unlink($tmpfile);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
                 }
-            
-     // $err = DocWaitManager::saveWaitingDoc($doc);
+                // $err = DocWaitManager::saveWaitingDoc($doc);
+                
             }
         }
         $this->domain->addLog(__METHOD__, $out);
@@ -365,15 +357,15 @@ class DomainSyncApi
         return $out;
     }
     /**
-     * 
+     *
      * Enter description here ...
      * @param unknown_type $rawdoc
-     * 
+     *
      */
     private function raw2doc($rawdoc, &$doc)
     {
         $fromid = $rawdoc->properties->fromid;
-        $doc = createDoc(getDbAccess(), $fromid, false, false, false); // no default values
+        $doc = createDoc(getDbAccess() , $fromid, false, false, false); // no default values
         $err = '';
         if (!$doc) {
             $err = sprintf("cannot create document %s", $fromid);
@@ -384,12 +376,12 @@ class DomainSyncApi
                 $rawdoc->properties->initid = $this->numerizeId($rawdoc->properties->id);
                 $rawdoc->properties->id = 0;
             }
-            foreach ( $rawdoc->properties as $k => $v ) {
+            foreach ($rawdoc->properties as $k => $v) {
                 if (is_array($v)) $v = implode("\n", $v);
                 $props[$k] = $v;
             }
             $doc->affect($props);
-            foreach ( $rawdoc->values as $k => $v ) {
+            foreach ($rawdoc->values as $k => $v) {
                 
                 $oa = $doc->getAttribute($k);
                 if ($oa) {
@@ -399,14 +391,14 @@ class DomainSyncApi
                     if ($v == '') $v = " ";
                     $serr = $doc->setValue($k, $v);
                     if ($serr) {
-                        $err .= sprintf("%s : %s", $oa->getLabel(), $serr);
+                        $err.= sprintf("%s : %s", $oa->getLabel() , $serr);
                     }
                 }
             }
-            $doc->locked = -1; // to not be updated
+            $doc->locked = - 1; // to not be updated
+            
         }
         return $err;
-    
     }
     
     private function isNewDocument($rawdoc)
@@ -418,10 +410,9 @@ class DomainSyncApi
         if (preg_match('/^' . $this::newPrefix . '/', $id)) return true;
         return false;
     }
-    
     /**
      * Modify waiting doc
-     * @return Fdl_Document document 
+     * @return Fdl_Document document
      */
     public function pushDocument($config)
     {
@@ -433,7 +424,7 @@ class DomainSyncApi
             
             $extraData = $rawdoc->properties->pushextradata;
             if (!$this->isNewDocument($rawdoc)) {
-                $refdoc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
+                $refdoc = new_doc(getDbAccess() , $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
             }
             if ($err == "") {
@@ -459,7 +450,7 @@ class DomainSyncApi
             } else {
                 $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
                 if (!$waitDoc) {
-                    $doc = new_doc(getDbAccess(), $rawdoc->properties->id, true);
+                    $doc = new_doc(getDbAccess() , $rawdoc->properties->id, true);
                     $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
                 } else {
                     $waitDoc->transaction = $config->transaction;
@@ -467,7 +458,7 @@ class DomainSyncApi
                     $waitDoc->statusmessage = $err;
                     $waitDoc->modify();
                 }
-                $out->error = sprintf(_("push:invalid document : %s"), $err);
+                $out->error = sprintf(_("push:invalid document : %s") , $err);
             }
         } else {
             $out->error = _("push:no document found");
@@ -476,7 +467,7 @@ class DomainSyncApi
             $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
         }
         if ($waitDoc) {
-            $log = (object) $waitDoc->getValues();
+            $log = (object)$waitDoc->getValues();
             unset($log->orivalues);
             unset($log->values);
         } else {
@@ -493,21 +484,16 @@ class DomainSyncApi
     {
         
         if ($this->domain->hook()) {
-            if (method_exists($this->domain->hook(), $method)) {
+            if (method_exists($this->domain->hook() , $method)) {
                 return call_user_func_array(array(
-                    $this->domain->hook(),
+                    $this->domain->hook() ,
                     $method
-                ), array(
-                    &$this->domain,
-                    &$arg1,
-                    &$arg2,
-                    &$arg3
+                ) , array(&$this->domain, &$arg1, &$arg2, &$arg3
                 ));
             }
         }
         return null;
     }
-    
     /**
      * reset all waitings Transaction
      * @return object transactionId
@@ -523,16 +509,15 @@ class DomainSyncApi
         
         return $out;
     }
-    
     /**
-     * update report file 
+     * update report file
      * store file user folder
      * @return string content of the file
      */
     public function getReport($config)
     {
-        $report='';
-        $err = $this->domain->updateReport($this->domain->getSystemUserId(), &$report);
+        $report = '';
+        $err = $this->domain->updateReport($this->domain->getSystemUserId() , &$report);
         $out = '';
         if (!$err) $out->report = $report;
         $out->error = $err;
@@ -554,19 +539,18 @@ class DomainSyncApi
         $this->domain->addLog(__METHOD__, $out);
         return $out;
     }
-    
     /**
      * Verify all document in list to computeStatus
      * @param DbObjectList $waitings
      * @param stdClass $out
      */
-    private function verifyAllConflict(DbObjectList &$waitings, &$out)
+    private function verifyAllConflict(DbObjectList & $waitings, &$out)
     {
         $err = '';
-        foreach ( $waitings as $k => $waitDoc ) {
+        foreach ($waitings as $k => $waitDoc) {
             $status = $waitDoc->computeStatus();
             $out->detailStatus[$waitDoc->refererinitid] = array(
-                "statusMessage" => $waitDoc->statusmessage ? $waitDoc->statusmessage : _("verified"),
+                "statusMessage" => $waitDoc->statusmessage ? $waitDoc->statusmessage : _("verified") ,
                 "statusCode" => $waitDoc->status
             );
             if (!$waitDoc->isValid()) {
@@ -576,15 +560,14 @@ class DomainSyncApi
         return $err;
     }
     
-    public function verifyPrivilege(Doc &$doc)
+    public function verifyPrivilege(Doc & $doc)
     {
         if (!$this->domain->isMember()) return _("not a member domain");
         $err = $doc->canEdit(false);
         
         if (!$err) {
             // verify domain lock
-            if ($doc->lockdomainid != $this->domain->id) $err = sprintf(_("lock must be in domain %s"), $this->domain->getTitle());
-        
+            if ($doc->lockdomainid != $this->domain->id) $err = sprintf(_("lock must be in domain %s") , $this->domain->getTitle());
         }
         
         return $err;
@@ -630,7 +613,7 @@ class DomainSyncApi
         $details = $results->detailStatus;
         $localIds = array();
         $serverIds = array();
-        foreach ( $details as $k => $v ) {
+        foreach ($details as $k => $v) {
             $lid = $v['localId'];
             if ($lid) {
                 $localIds[] = $this->numerizeId($lid);
@@ -640,10 +623,10 @@ class DomainSyncApi
         
         $list = new DocumentList();
         $list->addDocumentIdentificators($serverIds);
-        foreach ( $list as $id => $doc ) {
+        foreach ($list as $id => $doc) {
             $oas = $doc->getNormalAttributes();
             $needModify = false;
-            foreach ( $oas as $aid => $oa ) {
+            foreach ($oas as $aid => $oa) {
                 if ($oa->type == "docid") {
                     $value = $doc->getValue($aid);
                     if ($value) {
@@ -660,7 +643,7 @@ class DomainSyncApi
     }
     /**
      * End transaction
-     * @return object 
+     * @return object
      */
     public function endTransaction($config)
     {
@@ -685,14 +668,12 @@ class DomainSyncApi
                 if ($policy == "global") {
                     $this->domain->savePoint($beforeSavePoint);
                 }
-                
                 // main save is here
                 $out->detailStatus = $this->saveWaitings($waitings);
-                
                 // analyze results
                 $completeSuccess = true;
                 $allFailure = true;
-                foreach ( $out->detailStatus as $aStatus ) {
+                foreach ($out->detailStatus as $aStatus) {
                     
                     if ($aStatus['isValid']) {
                         $allFailure = false;
@@ -741,109 +722,107 @@ class DomainSyncApi
     }
     
     private function saveWaitings(&$waitings)
-        {
-            $out = array();
-            foreach ( $waitings as $k => $waitDoc ) {
-                if ($waitDoc->status == $waitDoc::invalid) {
+    {
+        $out = array();
+        foreach ($waitings as $k => $waitDoc) {
+            if ($waitDoc->status == $waitDoc::invalid) {
+                $out[$waitDoc->refererinitid] = array(
+                    "statusMessage" => $waitDoc->statusmessage,
+                    "statusCode" => $waitDoc->status,
+                    "isValid" => false
+                );
+            } else {
+                $waitPoint = "docw" . $k;
+                $this->domain->savePoint($waitPoint);
+                $needToRollback = false;
+                
+                $eExtra = $waitDoc->getExtraData();
+                $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument() , $waitDoc->getRefererDocument() , $eExtra);
+                $savectxerr = '';
+                if (!$saveerr) {
+                    if ($waitDoc->getRefererDocument()) {
+                        $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                        $savectxerr = "getRefererDocument";
+                    }
+                } else {
+                    $savectxerr = "onBeforeSaveDocument";
+                }
+                if ($saveerr == "") {
+                    $saveInfo = null;
+                    $saveerr = $waitDoc->save($saveInfo);
                     $out[$waitDoc->refererinitid] = array(
                         "statusMessage" => $waitDoc->statusmessage,
+                        "saveInfo" => $saveInfo,
                         "statusCode" => $waitDoc->status,
-                        "isValid" => false
+                        "localId" => $waitDoc->localid,
+                        "isValid" => $waitDoc->isValid()
                     );
-                } else {
-                    $waitPoint = "docw" . $k;
-                    $this->domain->savePoint($waitPoint);
-                    $needToRollback = false;
-
-                    $eExtra = $waitDoc->getExtraData();
-                    $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument(), $waitDoc->getRefererDocument(), $eExtra);
-                    $savectxerr='';
-                    if (!$saveerr) {
-                        if ($waitDoc->getRefererDocument()) {
-                            $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
-                            $savectxerr="getRefererDocument";
+                    if ($saveerr == '') {
+                        if ($waitDoc->localid) {
+                            $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId() , true);
+                            $morelinks = $this->resolveLocalLinks($waitDoc->localid, $waitDoc->refererinitid);
+                            foreach ($morelinks as $mid => $link) {
+                                if (!$out[$mid]) $out[$mid] = $link;
+                            }
+                        }
+                        $message = $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument() , $eExtra);
+                        $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveDocument = $message;
+                        if ($eExtra->changeState) {
+                            $refererDocument = $waitDoc->getRefererDocument();
+                            $beforeChangeStateReferId = $refererDocument->getProperty("id");
+                            $message = $this->afterSaveChangeState($refererDocument, $eExtra->changeState);
+                            if ($message && $beforeChangeStateReferId === $refererDocument->getProperty("id")) {
+                                $needToRollback = true;
+                            }
+                            $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveChangeState = $message;
                         }
                     } else {
-                        $savectxerr="onBeforeSaveDocument";
-                    }
-                    if ($saveerr == "") {
-                        $saveInfo = null;
-                        $saveerr = $waitDoc->save($saveInfo);
-                        $out[$waitDoc->refererinitid] = array(
-                            "statusMessage" => $waitDoc->statusmessage,
-                            "saveInfo" => $saveInfo,
-                            "statusCode" => $waitDoc->status,
-                            "localId" => $waitDoc->localid,
-                            "isValid" => $waitDoc->isValid()
-                        );
-                        if ($saveerr == '') {
-                            if ($waitDoc->localid) {
-                                $this->domain->insertUserDocument($waitDoc->refererinitid, $this->domain->getSystemUserId(), true);
-                                $morelinks = $this->resolveLocalLinks($waitDoc->localid, $waitDoc->refererinitid);
-                                foreach ( $morelinks as $mid => $link ) {
-                                    if (!$out[$mid]) $out[$mid] = $link;
-                                }
-                            }
-                            $message = $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument(), $eExtra);
-                            $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveDocument = $message;
-                            if ($eExtra->changeState) {
-                                $refererDocument = $waitDoc->getRefererDocument();
-                                $beforeChangeStateReferId = $refererDocument->getProperty("id");
-                                $message = $this->afterSaveChangeState($refererDocument, $eExtra->changeState);
-                                if ($message && $beforeChangeStateReferId === $refererDocument->getProperty("id")) {
-                                    $needToRollback = true;
-                                }
-                                $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveChangeState = $message;
-                            }
-                        } else {
-                            $needToRollback = true;
-                        }
-                    }else {
                         $needToRollback = true;
                     }
-                    if (!$needToRollback) {
-                        $waitDoc->getRefererDocument()->addComment("synchronised");
-                        $this->domain->commitPoint($waitPoint);
-                    }else {
-                        $failOut = array(
-                            "statusMessage" => $saveerr,
-                            "statusContext" => $savectxerr,
-                            "statusCode" => self::documentNotRecorded,
-                            "isValid" => false
-                        );
-                        if (is_array($out[$waitDoc->refererinitid])) {
-                            $out[$waitDoc->refererinitid] = array_merge($out[$waitDoc->refererinitid],$failOut);
-                        }else {
-                            $out[$waitDoc->refererinitid] =$failOut;
-                        }
-                        $this->domain->rollbackPoint($waitPoint);
-
-                        // need to redo modify cause rollback
-                        $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
-                        $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
-                        $waitDoc->modify();
-                        $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s"), $waitDoc->statusmessage), HISTO_ERROR);
-                    }
+                } else {
+                    $needToRollback = true;
                 }
-
+                if (!$needToRollback) {
+                    $waitDoc->getRefererDocument()->addComment("synchronised");
+                    $this->domain->commitPoint($waitPoint);
+                } else {
+                    $failOut = array(
+                        "statusMessage" => $saveerr,
+                        "statusContext" => $savectxerr,
+                        "statusCode" => self::documentNotRecorded,
+                        "isValid" => false
+                    );
+                    if (is_array($out[$waitDoc->refererinitid])) {
+                        $out[$waitDoc->refererinitid] = array_merge($out[$waitDoc->refererinitid], $failOut);
+                    } else {
+                        $out[$waitDoc->refererinitid] = $failOut;
+                    }
+                    $this->domain->rollbackPoint($waitPoint);
+                    // need to redo modify cause rollback
+                    $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
+                    $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
+                    $waitDoc->modify();
+                    $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s") , $waitDoc->statusmessage) , HISTO_ERROR);
+                }
             }
-
-            return $out;
         }
+        
+        return $out;
+    }
     
     private function resolveLocalLinks($localId, $serverId)
     {
         $numLocalId = $this->numerizeId($localId);
         $waitings = DocWaitManager::getWaitingDocsByDomain($this->domain->id);
         $out = array();
-        foreach ( $waitings as $k => $waitDoc ) {
+        foreach ($waitings as $k => $waitDoc) {
             if ($waitDoc->status == $waitDoc::upToDate) {
                 
                 $doc = $waitDoc->getRefererDocument();
                 if ($doc) {
                     $oas = $doc->getNormalAttributes();
                     $needModify = false;
-                    foreach ( $oas as $aid => $oa ) {
+                    foreach ($oas as $aid => $oa) {
                         if ($oa->type == "docid") {
                             $value = $doc->getValue($aid);
                             if ($value) {
@@ -871,13 +850,46 @@ class DomainSyncApi
         return $out;
     }
     
-    private function afterSaveChangeState(Doc &$doc, $newState)
+    private function afterSaveChangeState(Doc & $doc, $newState)
     {
         
-        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s"), $newState));
+        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s") , $newState));
         if ($doc->canEdit(false) === '') {
-            $err .= $doc->lockToDomain($this->domain->getProperty("id"), DOC::getSystemUserId());
+            $err.= $doc->lockToDomain($this->domain->getProperty("id") , DOC::getSystemUserId());
         }
         return $err;
+    }
+}
+
+class ReserveInfo
+{
+    /**
+     * @var int document id
+     */
+    public $id;
+    /**
+     * @var string document title
+     */
+    public $title;
+    /**
+     * @var string status of document (reserved, inserted or error)
+     */
+    public $status;
+    /**
+     * @var string error message
+     */
+    public $errorMessage;
+    /**
+     * @var string status error message (return of canEdit())
+     */
+    public $statusErrorMessage;
+    
+    public function __construct($id, $title, $status, $errorMessage, $statusErrorMessage)
+    {
+        $this->id = $id;
+        $this->title = $title;
+        $this->status = $status;
+        $this->errorMessage = $errorMessage;
+        $this->statusErrorMessage = $statusErrorMessage;
     }
 }
