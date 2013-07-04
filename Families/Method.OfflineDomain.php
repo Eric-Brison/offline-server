@@ -828,16 +828,17 @@ class _OFFLINEDOMAIN extends Dir
      * @param integer $documentId document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
+     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    public function insertUserDocument($documentId, $userId = 0, $reserve = true)
+    public function insertUserDocument($documentId, $userId = 0, $reserve = true, &$documentstatus = array())
     {
         
         $userId = $this->getDomainUserId($userId);
         $ufolder = $this->getUserFolder($userId);
         $doc = new_doc($this->dbaccess, $documentId, true);
         
-        return $this->domainInsertDocument($ufolder, $doc, $userId, $reserve);
+        return $this->domainInsertDocument($ufolder, $doc, $userId, $reserve, $documentstatus);
     }
     /**
      * add new document into folder
@@ -847,11 +848,13 @@ class _OFFLINEDOMAIN extends Dir
      * @param Doc $doc
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
-     *
+     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    private function domainInsertDocument(Dir $folder, Doc & $doc, $userId = 0, $reserve = true)
+    private function domainInsertDocument(Dir $folder, Doc & $doc, $userId = 0, $reserve = true, &$documentstatus = array())
     {
+        $status = "";
+        $statusErrorMessage = "";
         if ($doc->isAlive()) {
             if ($reserve && ($doc->lockdomainid > 0) && ($doc->lockdomainid != $this->id)) {
                 $err = sprintf(_("document is already book in other domain : %s") , $this->getTitle($doc->lockdomainid));
@@ -860,10 +863,12 @@ class _OFFLINEDOMAIN extends Dir
                 $this->savePoint($point);
                 $err = $folder->AddFile($doc->initid);
                 if (!$err) {
+                    $status = "inserted";
                     if ($reserve) {
-                        $err = $doc->lockToDomain($this->id);
-                        if ($err != '') {
-                            return $err;
+                        $statusErrorMessage = $doc->canEdit(false);
+                        if ($statusErrorMessage == "") {
+                            $err = $doc->lockToDomain($this->id);
+                            $status = "reserved";
                         }
                     }
                 }
@@ -873,6 +878,7 @@ class _OFFLINEDOMAIN extends Dir
                     $this->sendEvents($doc);
                 }
             }
+            $documentstatus[$doc->id] = new ReserveInfo($doc->id, $doc->getTitle() , $err ? "error" : $status, $err ? $err : "", $statusErrorMessage);
         } else {
             $err = sprintf(_("document to book not exists %s") , $doc->id);
         }
@@ -901,13 +907,14 @@ class _OFFLINEDOMAIN extends Dir
      * @endcode
      * @param DocumentList $collection document identificator
      * @param int $reservedBy user identificator which reserved document
+     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    public function insertShareCollection(DocumentList $collection, $reservedBy = 0)
+    public function insertShareCollection(DocumentList $collection, $reservedBy = 0, &$documentstatus = array())
     {
         $sfolder = $this->getSharedFolder();
         if ($sfolder) {
-            $err = $this->insertCollection($sfolder, $collection, $reservedBy, ($reservedBy > 0));
+            $err = $this->insertCollection($sfolder, $collection, $reservedBy, ($reservedBy > 0) , $documentstatus);
         } else {
             $err = sprintf("share folder not found");
         }
@@ -919,14 +926,15 @@ class _OFFLINEDOMAIN extends Dir
      * @param DocumentList $collection document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
+     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    public function insertUserCollection(DocumentList $collection, $userId, $reserve = true)
+    public function insertUserCollection(DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
     {
         $userId = $this->getDomainUserId($userId);
         $ufolder = $this->getUserFolder($userId);
         if ($ufolder) {
-            $err = $this->insertCollection($ufolder, $collection, $userId, $reserve);
+            $err = $this->insertCollection($ufolder, $collection, $userId, $reserve, $documentstatus);
         } else {
             $err = sprintf("user folder %s noy found", $userId);
         }
@@ -939,13 +947,14 @@ class _OFFLINEDOMAIN extends Dir
      * @param DocumentList $collection document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
+     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    private function insertCollection(Dir & $folder, DocumentList $collection, $userId, $reserve = true)
+    private function insertCollection(Dir & $folder, DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
     {
         $err = '';
         foreach ($collection as $doc) {
-            $err.= $this->domainInsertDocument($folder, $doc, $userId, $reserve);
+            $err.= $this->domainInsertDocument($folder, $doc, $userId, $reserve, $documentstatus);
         }
         return $err;
     }
