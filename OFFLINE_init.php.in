@@ -1,57 +1,60 @@
 <?php
-
+/*
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package FDL
+ */
 /**
  * @mainpage Dynacase Offline Server Documentation
- * @brief 
+ * @brief
  * @author Anakeen Dynacase Labs
  * @version @VERSION@-@RELEASE@
  * @date 2011
  *
- * 
+ *
  * @par Wiki manual:
  * The  Manual gives you all informations to install and configure offline server domains
-  *   ==> http://www.dynacase.org/modules/dynacase-offline/documentation
+ *   ==> http://docs.anakeen.com/
  *
  *
  */
 
 global $app_const;
 
-$app_const= array(
-		  "INIT" => "yes",
-		  "VERSION" => "@VERSION@-@RELEASE@",
-		  "ONEFAM_MIDS"=>"OFFLINEDOMAIN",
-		  "OFFLINE_CLIENT_BUILD_OUTPUT_DIR" => array(
-			  "val" => "share/offline/clients",
-			  "global" => "Y",
-			  "descr" => N_("OFFLINE:Offline client build output dir")
-		  ),
-		  "OFFLINE_CLIENT_CUSTOMIZE_DIR" => array(
-			  "val" => "share/offline/customize",
-			  "global" => "Y",
-			  "descr" => N_("OFFLINE:Offline client additional customize dir")
-		  ),
-		  "OFFLINE_CLIENT_UPDATE_ENABLED" => array(
-		      "val" => "yes",
-		      "descr" => N_("OFFLINE:Offline client update enabled"),
-		      "kind" => "enum(yes|no)",
-		      "global" => "Y"
-		  ),
-		  "DCPOFFLINE_URL_BROWSER" => array(
-		      "val" => "",
-		      "global" => "Y",
-		      "descr" => N_("OFFLINE:Offline browser URL")
-		  ),
-		  "DCPOFFLINE_URL_DATA" => array(
-		      "val" => "",
-		      "global" => "Y",
-		      "descr" => N_("OFFLINE:Offline data URL")
-		  ),
-		  "DCPOFFLINE_URL_UPDATE" => array(
-		      "val" => "",
-		      "global" => "Y",
-		      "descr" => N_("OFFLINE:Offline update URL")
-          )
+$app_const = array(
+    "INIT" => "yes",
+    "VERSION" => "@VERSION@-@RELEASE@",
+    "ONEFAM_MIDS" => "OFFLINEDOMAIN",
+    "OFFLINE_CLIENT_BUILD_OUTPUT_DIR" => array(
+        "val" => "share/offline/clients",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:Offline client build output dir")
+    ) ,
+    "OFFLINE_CLIENT_CUSTOMIZE_DIR" => array(
+        "val" => "share/offline/customize",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:Offline client additional customize dir")
+    ) ,
+    "OFFLINE_CLIENT_UPDATE_ENABLED" => array(
+        "val" => "yes",
+        "descr" => N_("OFFLINE:Offline client update enabled") ,
+        "kind" => "enum(yes|no)",
+        "global" => "Y"
+    ) ,
+    "DCPOFFLINE_URL_BROWSER" => array(
+        "val" => "",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:Offline browser URL")
+    ) ,
+    "DCPOFFLINE_URL_DATA" => array(
+        "val" => "",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:Offline data URL")
+    ) ,
+    "DCPOFFLINE_URL_UPDATE" => array(
+        "val" => "",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:Offline update URL")
+    )
 );
-
 ?>
