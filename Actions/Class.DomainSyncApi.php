@@ -853,9 +853,9 @@ class DomainSyncApi
     private function afterSaveChangeState(Doc & $doc, $newState)
     {
         
-        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s") , $newState));
-        if ($doc->canEdit(false) === '') {
-            $err.= $doc->lockToDomain($this->domain->getProperty("id") , DOC::getSystemUserId());
+        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s"), $newState));
+        if ($doc->canEdit(false) === '' && $doc->isInDomain()) {
+            $err .= $doc->lockToDomain($this->domain->getProperty("id"), DOC::getSystemUserId());
         }
         return $err;
     }
