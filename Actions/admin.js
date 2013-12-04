@@ -14,7 +14,7 @@
         }
         if (lastBuildTime !== null) {
             document.getElementById("lastBuildTimeWrapper").setAttribute("style", "");
-            document.getElementById("lastBuildTime").innerText = lastBuildTime;
+            document.getElementById("lastBuildTime").innerHTML = lastBuildTime;
         }
         buildIframe.addEventListener("load", function() {
             buildInProgess.setAttribute("style", "display : none;");
@@ -26,7 +26,7 @@
                 window.localStorage.setItem("lastBuildTime", buildTime);
             }
             buildTime = 0;
-            timeElement.innerText = 0;
+            timeElement.innerHTML = 0;
             if (interval) {
                 window.clearInterval(interval);
             }
@@ -46,7 +46,7 @@
             interval = null;
             interval = window.setInterval(function() {
                 buildTime += 1;
-                timeElement.innerText = buildTime;
+                timeElement.innerHTML = buildTime;
             }, 1000);
         });
         window.addEventListener("beforeunload", function() {
