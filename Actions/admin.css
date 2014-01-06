@@ -1,1 +1,18 @@
 @CHARSET "UTF-8";
+
+#content {
+    padding: 20px;
+}
+
+#header {
+    text-align: center;
+}
+
+#buildingInProgress {
+    padding-top: 2em;
+}
+
+#buildClients {
+    font-size: 1em;
+    padding: 0 4px;
+}

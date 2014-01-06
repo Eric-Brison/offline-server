@@ -1,25 +1,43 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-[CSS:REF]
-[JS:REF]
+    <title>Build offline module</title>
+    <meta charset="UTF-8">
+    [CSS:REF]
+    [JS:REF]
 </head>
-
 <body>
-
-<div id="header">
-<a class="button" id="build" href="[CORE_STANDURL]&app=OFFLINE&action=ADMIN&command=build">Build clients</a>
-</div>
-
-<div id="status">
-<h1 class="[STATUS_CLASS]">[STATUS_MESSAGE]</h1>
-<pre>[ERROR_LOG]</pre>
-</div>
-
-<div id="footer">
-<a class="link" href="[CORE_STANDURL]&app=OFFLINE&action=OFF_DLCLIENT">View clients</a>
-</div>
-
+    <div id="content">
+        <div id="header"> 
+          <div class="title"> Dynacase Offline : Building</div> 
+          <div class="content">Build your version of Dynacase Offline</div> 
+        </div>
+        <div id="welcome">
+            <button type="button" id="buildClients" data-href="[CORE_STANDURL]&amp;app=OFFLINE&amp;action=ADMIN&amp;command=build">Build Clients</button>
+            <div id="buildingInProgress" style="display:none;">
+                <img src="Images/loading.gif" alt="loading"/> 
+                <span>Building in progress...</span>
+                <div>
+                    <span>Time since building begun : </span>
+                    <span id="time">00</span>
+                    <span>seconds</span>
+                </div>
+                <div id="lastBuildTimeWrapper" style="display : none;">
+                    <span>Last build take : </span>
+                    <span id="lastBuildTime">00</span>
+                    <span>seconds</span>
+                </div>
+            </div>
+        </div>
+        <div id="log" style="display:none;">
+            <h1>Build done !</h1>
+            <a href="[CORE_STANDURL]&amp;app=OFFLINE&amp;action=OFF_DLCLIENT">See clients</a>
+            [ERROR_LOG]
+        </div>
+        <div style="display:none;">
+            <iframe src="" frameborder="0" id="buildIframe"></iframe>
+        </div>
+        <a href="[CORE_STANDURL]&amp;app=OFFLINE&amp;action=OFF_DLCLIENT">See already built clients</a>
+    </div>
 </body>
 </html>
