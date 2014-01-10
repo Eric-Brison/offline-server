@@ -105,6 +105,7 @@ class DomainSyncApi
             $out = $this->domainApi->getSharedDocuments($config, $callback);
             $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder() , $stillRecorded);
         } else {
+            $out=new stdClass();
             $out->error = $err;
         }
         $log = '';
@@ -112,7 +113,7 @@ class DomainSyncApi
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
             foreach ($out->content as & $rdoc) {
-                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+                $log->documentsToUpdate[] = $rdoc["properties"]["initid"];
             }
         }
         $this->domain->addLog(__METHOD__, $log);
@@ -133,6 +134,8 @@ class DomainSyncApi
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
+
+        $out=new stdClass();
         if ($doc->isAlive()) {
             $err = $this->callHook("onPullDocument", $doc);
             if ($err == "" || $err === true) {
@@ -160,12 +163,11 @@ class DomainSyncApi
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
+
+        $out=new stdClass();
         if ($doc->isAlive()) {
-            if ($err == "" || $err === true) {
                 $out = $this->domainApi->removeUserDocument($config);
-            } else {
-                $out->error = $err;
-            }
+
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -184,14 +186,12 @@ class DomainSyncApi
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
+        $out=new stdClass();
         if ($doc->isAlive()) {
-            if ($err == "" || $err === true) {
                 $this->domain->addFollowingStates($doc);
                 
                 $out = $this->domainApi->bookDocument($config);
-            } else {
-                $out->error = $err;
-            }
+
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -210,14 +210,13 @@ class DomainSyncApi
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
+        $out=new stdClass();
         if ($doc->isAlive()) {
-            if ($err == "" || $err === true) {
+
                 $this->domain->addFollowingStates($doc);
                 
                 $out = $this->domainApi->unbookDocument($config);
-            } else {
-                $out->error = $err;
-            }
+
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -270,6 +269,7 @@ class DomainSyncApi
             $out = $this->domainApi->getUserDocuments($config, $callback);
             $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder() , $stillRecorded);
         } else {
+            $out=new stdClass();
             $out->error = $err;
         }
         $log = '';
@@ -277,7 +277,7 @@ class DomainSyncApi
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
             foreach ($out->content as & $rdoc) {
-                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+                $log->documentsToUpdate[] = $rdoc["properties"]["initid"];
             }
         }
         $this->domain->addLog(__METHOD__, $log);
@@ -461,6 +461,7 @@ class DomainSyncApi
                 $out->error = sprintf(_("push:invalid document : %s") , $err);
             }
         } else {
+            $out=new stdClass();
             $out->error = _("push:no document found");
         }
         if (!$waitDoc) {
@@ -517,7 +518,7 @@ class DomainSyncApi
     public function getReport($config)
     {
         $report = '';
-        $err = $this->domain->updateReport($this->domain->getSystemUserId() , &$report);
+        $err = $this->domain->updateReport($this->domain->getSystemUserId() , $report);
         $out = '';
         if (!$err) $out->report = $report;
         $out->error = $err;
@@ -712,6 +713,7 @@ class DomainSyncApi
                 $out->statusMessage = $err;
             }
         } else {
+            $out=new stdClass();
             $out->error = _("endTransaction:no transaction identificator");
             $out->status = self::abortTransaction;
         }
