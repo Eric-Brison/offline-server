@@ -112,7 +112,7 @@ class DomainSyncApi
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
             foreach ( $out->content as &$rdoc ) {
-                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+                $log->documentsToUpdate[] = $rdoc["properties"]["initid"];
             }
         }
         $this->domain->addLog(__METHOD__, $log);
@@ -283,7 +283,7 @@ class DomainSyncApi
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
             foreach ( $out->content as &$rdoc ) {
-                $log->documentsToUpdate[] = $rdoc["properties"]["id"];
+                $log->documentsToUpdate[] = $rdoc["properties"]["initid"];
             }
         }
         $this->domain->addLog(__METHOD__, $log);

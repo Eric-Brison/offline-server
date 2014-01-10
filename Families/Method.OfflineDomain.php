@@ -362,7 +362,7 @@ class _OFFLINEDOMAIN extends Dir
             } elseif (count($msgdoc) == 1) {
                 $message = current($msgdoc);
             } else {
-                $message .= _("no documents uploaded");
+                $message = _("no documents uploaded");
             }
             //$message .= '<pre>' . print_r($sync->arg, true) . "</pre>";
             break;
