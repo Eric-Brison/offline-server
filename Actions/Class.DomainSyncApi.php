@@ -423,6 +423,10 @@ class DomainSyncApi
             $doc = null;
             
             $extraData = $rawdoc->properties->pushextradata;
+            if ($extraData === null) {
+                    $extraData=''; // to update it
+            }
+
             if (!$this->isNewDocument($rawdoc)) {
                 $refdoc = new_doc(getDbAccess() , $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
