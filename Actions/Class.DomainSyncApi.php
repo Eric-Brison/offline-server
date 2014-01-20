@@ -807,7 +807,7 @@ class DomainSyncApi
                     // need to redo modify cause rollback
                     $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
                     $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
-                    $waitDoc->modify();
+                    $waitDoc->modify(true, array("status", "statusmessage"));
                     $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s") , $waitDoc->statusmessage) , HISTO_ERROR);
                 }
             }
