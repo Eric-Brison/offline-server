@@ -774,12 +774,7 @@ class DomainSyncApi
                         $message = $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument() , $eExtra);
                         $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveDocument = $message;
                         if ($eExtra->changeState) {
-                            $refererDocument = $waitDoc->getRefererDocument();
-                            $beforeChangeStateReferId = $refererDocument->getProperty("id");
                             $message = $this->afterSaveChangeState($refererDocument, $eExtra->changeState);
-                            if ($message && $beforeChangeStateReferId === $refererDocument->getProperty("id")) {
-                                $needToRollback = true;
-                            }
                             $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveChangeState = $message;
                         }
                     } else {
