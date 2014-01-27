@@ -55,6 +55,11 @@ $app_const = array(
         "val" => "",
         "global" => "Y",
         "descr" => N_("OFFLINE:Offline update URL")
+    ),
+    "DCPOFFLINE_REPORT_NB_RESULT_MAX" => array(
+        "val" => "200",
+        "global" => "Y",
+        "descr" => N_("OFFLINE:DCPOFFLINE_REPORT_NB_RESULT_MAX")
     )
 );
 ?>

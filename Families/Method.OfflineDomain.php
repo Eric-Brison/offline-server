@@ -288,19 +288,19 @@ class _OFFLINEDOMAIN extends Dir
         $q->addQuery(sprintf("uid=%d", $userId));
         $q->order_by = "date desc";
         
-        $r = $q->query(0, 1000, "TABLE");
+        $r = $q->query(0, getParam("DCPOFFLINE_REPORT_NB_RESULT_MAX", 200), "TABLE");
         $tsync = array();
         foreach ($r as $k => $v) {
             
             $v = (object)$v;
             $v->arg = unserialize($v->arg);
-            
+
             $tsync[] = array(
                 "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v) ,
                 "syncCode" => substr($v->code, strlen('DomainSyncApi::')) ,
-                "syncAction" => $this->reportGetAction($v) ,
-                "syncMessage" => $this->reportGetMessage($v) ,
+                "syncAction" => $this->reportGetAction($v),
+                "syncMessage" => $this->reportGetMessage($v),
                 "syncStatus" => $this->reportGetStatus($v)
             );
         }
@@ -308,7 +308,6 @@ class _OFFLINEDOMAIN extends Dir
         $lay->set("date", FrenchDateToLocaleDate($this->getTimeDate()));
         $lay->set("domain", $this->getHTMLTitle());
         $lay->set("username", User::getDisplayName($this->getSystemUserId()));
-        //print $lay->gen();
         return $lay->gen();
     }
     

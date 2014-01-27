@@ -31,9 +31,9 @@
         border: 1px solid #444;
     }
     h1 span.domain {
-    float: right;
-    font-size: 50%;
-    padding-top: 2em;
+        float: right;
+        font-size: 50%;
+        padding-top: 2em;
     }
     table {
         border-spacing: 0px;
@@ -149,20 +149,19 @@
         display: none;
     }
     thead tr {
-        border-bottom: 3px solid #OOO;
-        border-top: 3px solid #OOO;
+        border-bottom: 3px solid #000000;
+        border-top: 3px solid #000000;
     }
     tr {
-        border-bottom: 1px solid #000;
+        border-bottom: 1px solid #000000;
     }
     td {
         vertical-align: top;
     }
 }
-}
 </style>
 <script>
-    allDisplayed = true;
+    window.allDisplayed = true;
     function showAll() {
         var tab = document.getElementById('synchro-result');
         var elts = document.getElementsByTagName("tr");
@@ -172,7 +171,7 @@
                 elts[i].style.display = (allDisplayed ? "none" : "table-row");
             }
         }
-        allDisplayed = (allDisplayed ? false : true);
+        window.allDisplayed = (allDisplayed ? false : true);
     }
 </script>
 </head>
