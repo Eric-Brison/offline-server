@@ -10,7 +10,6 @@
 /**
  */
 
-include_once ("DATA/Class.Collection.php");
 include_once ("OFFLINE/Class.ExceptionCode.php");
 include_once ("FDL/Class.DocWaitManager.php");
 

@@ -12,7 +12,6 @@
  */
 
 include_once ("FDL/Class.SearchDoc.php");
-include_once ("DATA/Class.Collection.php");
 include_once ("OFFLINE/Class.DomainManager.php");
 
 /**

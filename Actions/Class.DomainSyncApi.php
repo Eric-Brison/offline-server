@@ -15,7 +15,6 @@
 /**
  */
 
-include_once ("DATA/Class.Collection.php");
 include_once ("OFFLINE/Class.ExceptionCode.php");
 include_once ("FDL/Class.DocWaitManager.php");
 
@@ -108,7 +107,7 @@ class DomainSyncApi
             $out=new stdClass();
             $out->error = $err;
         }
-        $log = '';
+        $log = new stdClass();
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
@@ -272,7 +271,7 @@ class DomainSyncApi
             $out=new stdClass();
             $out->error = $err;
         }
-        $log = '';
+        $log = new stdClass();
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
@@ -289,7 +288,7 @@ class DomainSyncApi
      */
     public function getUserDocumentsAcknowledgement($config)
     {
-        $out = '';
+        $out = new stdClass();
         $out->acknowledgement = $this->callHook("onAfterPullUserDocuments");
         return $out;
     }
@@ -299,7 +298,7 @@ class DomainSyncApi
      */
     public function getSharedDocumentsAcknowledgement($config)
     {
-        $out = '';
+        $out = new stdClass();
         $out->acknowledgement = $this->callHook("onAfterPullSharedDocuments");
         return $out;
     }
@@ -318,7 +317,7 @@ class DomainSyncApi
             $aid = trim($reg[1]);
         }
         $path = 'php://input';
-        $out = '';
+        $out = new stdClass();
         $tmpfile = tempnam(getTmpDir() , 'pushFile');
         if ($tmpfile == false) {
             $err = sprintf("cannot create temporay file %s", $tmpfile);
@@ -359,7 +358,7 @@ class DomainSyncApi
     /**
      *
      * Enter description here ...
-     * @param unknown_type $rawdoc
+     * @param stdClass $rawdoc
      *
      */
     private function raw2doc($rawdoc, &$doc)
@@ -419,7 +418,7 @@ class DomainSyncApi
         $rawdoc = $config->document;
         
         if ($rawdoc) {
-            $out = '';
+            $out = new stdClass();
             $doc = null;
             
             $extraData = $rawdoc->properties->pushextradata;
@@ -509,7 +508,7 @@ class DomainSyncApi
         
         $err = DocWaitManager::clearWaitingDocs($this->domain->id, $this->domain->getSystemUserId());
         
-        $out = '';
+        $out = new stdClass();
         $out->error = $err;
         
         return $out;
@@ -523,7 +522,7 @@ class DomainSyncApi
     {
         $report = '';
         $err = $this->domain->updateReport($this->domain->getSystemUserId() , $report);
-        $out = '';
+        $out = new stdClass();
         if (!$err) $out->report = $report;
         $out->error = $err;
         
@@ -536,7 +535,7 @@ class DomainSyncApi
     public function beginTransaction()
     {
         $err = $this->callHook("onBeforePushTransaction");
-        $out = '';
+        $out = new stdClass();
         $out->error = $err;
         if (!$err) {
             $out->transactionId = DocWaitManager::getTransaction();
@@ -552,6 +551,10 @@ class DomainSyncApi
     private function verifyAllConflict(DbObjectList & $waitings, &$out)
     {
         $err = '';
+         $out = new stdClass();
+        /**
+         * @var DocWait $waitDoc
+         */
         foreach ($waitings as $k => $waitDoc) {
             $status = $waitDoc->computeStatus();
             $out->detailStatus[$waitDoc->refererinitid] = array(
@@ -653,7 +656,7 @@ class DomainSyncApi
     public function endTransaction($config)
     {
         if ($config->transaction) {
-            $out = '';
+            $out = new stdClass();
             $err = '';
             $waitings = DocWaitManager::getWaitingDocs($config->transaction);
             

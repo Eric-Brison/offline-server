@@ -60,13 +60,13 @@ class _OFFLINEFOLDER extends Dir
         return $err;
     }
 
-    public function preInsertDoc($docid)
+    public function preInsertDoc($docid, $multiple=false)
     {
         $err = $this->hookBeforeInsert($docid);
         return $err;
     }
     
-    public function postInsertDoc($docid)
+    public function postInsertDoc($docid, $multiple=false)
     {
         $err = "";
         $doc = new_doc($this->dbaccess, $docid, true);
@@ -84,7 +84,7 @@ class _OFFLINEFOLDER extends Dir
         }
         return $err;
     }
-    public function postUnlinkDoc($docid)
+    public function postUnlinkDoc($docid, $multiple=false)
     {
         $err = '';
 
@@ -113,7 +113,7 @@ class _OFFLINEFOLDER extends Dir
     }
     
     
-    public function preUnlinkDoc($docid) {
+    public function preUnlinkDoc($docid, $multple=false) {
         $err = $this->hookBeforeRemove($docid);
         return $err;
     }

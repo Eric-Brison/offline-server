@@ -650,7 +650,7 @@ class _OFFLINEDOMAIN extends Dir
             foreach ($users as $guser) {
                 $g = new User($this->dbaccess, $guser["us_whatid"]);
                 if ($g->isAffected()) {
-                    $members = $g->getUserMembers();
+                    $members = $g->getAllMembers();
                     foreach ($members as $user) {
                         $index = $useSystemId ? $user["id"] : $user["fid"];
                         $out[$index] = array(
@@ -775,7 +775,7 @@ class _OFFLINEDOMAIN extends Dir
                 $gu = new User($this->dbaccess);
                 foreach ($ugroups as $k => $gid) {
                     if ($gu->setFid($gid)) {
-                        $members = $gu->getUserMembers();
+                        $members = $gu->getAllMembers();
                         foreach ($members as $member) {
                             if ($member['id'] == $uid) {
                                 $userMode = $this->getTValue("off_group_mode", '', $k);
@@ -1283,7 +1283,9 @@ class _OFFLINEDOMAIN extends Dir
      */
     private function getUserFolderId($login)
     {
+        // TODO #4447
         return sprintf("offuser_%s_%s", $this->name, $login);
+        //return preg_replace('/\p{P}/u','_',sprintf("offuser_%s_%s", $this->name, $login));
     }
     /**
      * Create subdir of the offline domain
