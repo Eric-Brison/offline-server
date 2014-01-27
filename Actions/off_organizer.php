@@ -1,4 +1,9 @@
 <?php
+/*
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package FDL
+*/
 /**
  * Display offline documents
  *
@@ -8,30 +13,27 @@
  * @package OFFLINE
  * @subpackage
  */
-/**
- */
 
 include_once ("WORKSPACE/ws_navigate.php");
-
 /**
  * View folders and document for exchange them
  * @param Action &$action current action
  */
-function off_organizer(Action &$action)
+function off_organizer(Action & $action)
 {
     
     $domainId = $action->getArgument("domain");
     $dirid = $action->getArgument("dirid");
-    $nav = new ws_Navigate($action);
+    $nav = new \ws_Navigate($action);
     if ($domainId) {
-        
-        $spaces = new SearchDoc($action->dbaccess,'OFFLINEDOMAIN');
+        $fld = new \stdClass();
+        $spaces = new SearchDoc($action->dbaccess, 'OFFLINEDOMAIN');
         if ($domainId != 'all') {
             $fld = new_Doc($action->dbaccess, $domainId);
-            if (!$fld->isAlive()) $action->exitError(sprintf(_("document %s not found"), $domainId));
+            if (!$fld->isAlive()) $action->exitError(sprintf(_("document %s not found") , $domainId));
             
             $spaces->addFilter("id=%d", $fld->initid);
-            $domainId=$fld->initid;
+            $domainId = $fld->initid;
         }
         $nav->setSpaces($spaces);
         if (method_exists($fld, "getFamilies")) {
@@ -50,12 +52,10 @@ function off_organizer(Action &$action)
     
     if ($dirid) {
         $nav->setInitialFolder($dirid);
-    } else if ($domainId  && ($domainId!='all')) {
+    } else if ($domainId && ($domainId != 'all')) {
         $nav->setInitialFolder($domainId);
-    
     }
     
     $nav->viewMySpace(false);
     $action->lay->set("NAV", $nav->output());
 }
-?>

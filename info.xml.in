@@ -11,6 +11,8 @@
         <module name="dynacase-offline-client"/>
         <module name="dynacase-offline-xulruntimes"/>
         <module name="dynacase-htmledit"/>
+	<module name="dynacase-core" comp="ge" version="3.2.13"/>
+	<module name="dynacase-onefam"/>
     </requires>
 
     <pre-install>
@@ -19,6 +21,8 @@
         <check type="syscommand" command="patch"/>
         <check type="syscommand" command="zip"/>
         <check type="syscommand" command="makensis" optional="yes"/>
+	<check type="syscommand" command="python"/>
+	<check type="syscommand" command="perl"/>
     </pre-install>
 
     <pre-upgrade>
@@ -27,6 +31,8 @@
         <check type="syscommand" command="patch"/>
         <check type="syscommand" command="zip"/>
         <check type="syscommand" command="makensis" optional="yes"/>
+	<check type="syscommand" command="python"/>
+	<check type="syscommand" command="perl"/>
     </pre-upgrade>
 
     <post-install>

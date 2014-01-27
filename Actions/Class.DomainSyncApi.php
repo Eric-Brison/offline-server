@@ -12,10 +12,9 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package OFFLINE
  */
-/**
- */
 
-include_once ("DATA/Class.Collection.php");
+namespace Dcp\Offline;
+
 include_once ("OFFLINE/Class.ExceptionCode.php");
 include_once ("FDL/Class.DocWaitManager.php");
 
@@ -28,31 +27,31 @@ class DomainSyncApi
     const newPrefix = "DLID-";
     /**
      * internal domain document
-     * @var _OFFLINEDOMAIN
+     * @var \Dcp\Family\OfflineDomain
      */
     private $domain = null;
     /**
      * parent object
-     * @var DomainApi
+     * @var \Dcp\Offline\DomainApi
      */
     private $domainApi = null;
-    public function __construct(Dir & $domain = null, DomainApi & $domainApi = null)
+    public function __construct(\Dcp\Family\Dir & $domain = null, DomainApi & $domainApi = null)
     {
         $this->domain = $domain;
         $this->domainApi = $domainApi;
     }
     private static function setError($err)
     {
-        throw new Exception($err);
+        throw new \Exception($err);
     }
     /**
      * test if document must be returned to the client
      *
-     * @param Doc $doc
+     * @param \Doc $doc
      * @param array $stillRecorded
      * @return true is client document is uptodate
      */
-    public static function isUpToDate(Doc & $doc, array & $stillRecorded)
+    public static function isUpToDate(\Doc & $doc, array & $stillRecorded)
     {
         
         if (!$stillRecorded[$doc->initid]) return false;
@@ -63,7 +62,7 @@ class DomainSyncApi
     }
     /**
      * get share folder documents
-     * @return DocumentList
+     * @return \DocumentList
      */
     public function getSharedDocuments($config)
     {
@@ -105,10 +104,10 @@ class DomainSyncApi
             $out = $this->domainApi->getSharedDocuments($config, $callback);
             $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder() , $stillRecorded);
         } else {
-            $out=new stdClass();
+            $out = new \stdClass();
             $out->error = $err;
         }
-        $log = '';
+        $log = new \stdClass();
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
@@ -120,7 +119,7 @@ class DomainSyncApi
         return $out;
     }
     
-    private function getIntersect(Dir & $folder, array & $stillRecorded)
+    private function getIntersect(\Dir & $folder, array & $stillRecorded)
     {
         $serverInitids = $folder->getContentInitid();
         $clientInitids = array_keys($stillRecorded);
@@ -128,14 +127,14 @@ class DomainSyncApi
     }
     /**
      * revert document into user space
-     * @return Fdl_Document
+     * @return \Fdl_Document
      */
     public function revertDocument($config)
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
-
-        $out=new stdClass();
+        
+        $out = new \stdClass();
         if ($doc->isAlive()) {
             $err = $this->callHook("onPullDocument", $doc);
             if ($err == "" || $err === true) {
@@ -157,17 +156,16 @@ class DomainSyncApi
     }
     /**
      * unlink document from user space
-     * @return Fdl_Document
+     * @return \Fdl_Document
      */
     public function removeUserDocument($config)
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
-
-        $out=new stdClass();
+        
+        $out = new \stdClass();
         if ($doc->isAlive()) {
-                $out = $this->domainApi->removeUserDocument($config);
-
+            $out = $this->domainApi->removeUserDocument($config);
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -180,18 +178,17 @@ class DomainSyncApi
     }
     /**
      * book document into user space
-     * @return Fdl_Document
+     * @return \Fdl_Document
      */
     public function bookDocument($config)
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
-        $out=new stdClass();
+        $out = new \stdClass();
         if ($doc->isAlive()) {
-                $this->domain->addFollowingStates($doc);
-                
-                $out = $this->domainApi->bookDocument($config);
-
+            $this->domain->addFollowingStates($doc);
+            
+            $out = $this->domainApi->bookDocument($config);
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -204,19 +201,18 @@ class DomainSyncApi
     }
     /**
      * unbook document from user space
-     * @return Fdl_Document
+     * @return \Fdl_Document
      */
     public function unbookDocument($config)
     {
         $docid = $config->docid;
         $doc = new_doc(getDbaccess() , $docid, true);
-        $out=new stdClass();
+        $out = new \stdClass();
         if ($doc->isAlive()) {
-
-                $this->domain->addFollowingStates($doc);
-                
-                $out = $this->domainApi->unbookDocument($config);
-
+            
+            $this->domain->addFollowingStates($doc);
+            
+            $out = $this->domainApi->unbookDocument($config);
         } else {
             $out->error = sprintf(_("document %s not found") , $docid);
         }
@@ -229,7 +225,7 @@ class DomainSyncApi
     }
     /**
      * get user folder documents
-     * @return DocumentList
+     * @return \DocumentList
      */
     public function getUserDocuments($config)
     {
@@ -269,10 +265,10 @@ class DomainSyncApi
             $out = $this->domainApi->getUserDocuments($config, $callback);
             $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder() , $stillRecorded);
         } else {
-            $out=new stdClass();
+            $out = new \stdClass();
             $out->error = $err;
         }
-        $log = '';
+        $log = new \stdClass();
         $log->error = $out->error;
         $log->documentsToDelete = $out->documentsToDelete;
         if (is_array($out->content)) {
@@ -289,7 +285,7 @@ class DomainSyncApi
      */
     public function getUserDocumentsAcknowledgement($config)
     {
-        $out = '';
+        $out = new \stdClass();
         $out->acknowledgement = $this->callHook("onAfterPullUserDocuments");
         return $out;
     }
@@ -299,13 +295,13 @@ class DomainSyncApi
      */
     public function getSharedDocumentsAcknowledgement($config)
     {
-        $out = '';
+        $out = new \stdClass();
         $out->acknowledgement = $this->callHook("onAfterPullSharedDocuments");
         return $out;
     }
     /**
      * set file to document
-     * @return D document List
+     * @return \DocumentList document List
      */
     public function pushFile($config)
     {
@@ -318,7 +314,7 @@ class DomainSyncApi
             $aid = trim($reg[1]);
         }
         $path = 'php://input';
-        $out = '';
+        $out = new \stdClass();
         $tmpfile = tempnam(getTmpDir() , 'pushFile');
         if ($tmpfile == false) {
             $err = sprintf("cannot create temporay file %s", $tmpfile);
@@ -330,7 +326,7 @@ class DomainSyncApi
                 $localid = $docid;
                 $docid = $this->numerizeId($docid);
             }
-            $wdoc = DocWaitManager::getWaitingDoc($docid);
+            $wdoc = \DocWaitManager::getWaitingDoc($docid);
             //$doc = new_doc(getDbAccess(), $docid);
             if ($wdoc) {
                 $doc = $wdoc->getWaitingDocument();
@@ -346,7 +342,7 @@ class DomainSyncApi
                     }
                     $err = $doc->storeFile($oa->id, $tmpfile, $filename, $index);
                     @unlink($tmpfile);
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
+                    $err = \DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction);
                 }
                 // $err = DocWaitManager::saveWaitingDoc($doc);
                 
@@ -359,7 +355,7 @@ class DomainSyncApi
     /**
      *
      * Enter description here ...
-     * @param unknown_type $rawdoc
+     * @param \stdClass $rawdoc
      *
      */
     private function raw2doc($rawdoc, &$doc)
@@ -412,21 +408,22 @@ class DomainSyncApi
     }
     /**
      * Modify waiting doc
-     * @return Fdl_Document document
+     * @return \Fdl_Document document
      */
     public function pushDocument($config)
     {
         $rawdoc = $config->document;
         
         if ($rawdoc) {
-            $out = '';
+            $out = new \stdClass();
             $doc = null;
             
             $extraData = $rawdoc->properties->pushextradata;
             if ($extraData === null) {
-                    $extraData=''; // to update it
+                $extraData = ''; // to update it
+                
             }
-
+            
             if (!$this->isNewDocument($rawdoc)) {
                 $refdoc = new_doc(getDbAccess() , $rawdoc->properties->id, true);
                 $err = $this->verifyPrivilege($refdoc);
@@ -441,21 +438,21 @@ class DomainSyncApi
                 
                 if (!$err) {
                     
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
+                    $err = \DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
                 }
                 if ($err) {
                     $out->error = $err;
                 } else {
                     $message = $this->callHook("onAfterPushDocument", $doc, $extraData);
-                    $fdoc = new Fdl_Document($doc->id, null, $doc);
+                    $fdoc = new \Fdl_Document($doc->id, null, $doc);
                     $out = $fdoc->getDocument(true, false);
                     $out["message"] = $message;
                 }
             } else {
-                $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
+                $waitDoc = \DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
                 if (!$waitDoc) {
                     $doc = new_doc(getDbAccess() , $rawdoc->properties->id, true);
-                    $err = DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
+                    $err = \DocWaitManager::saveWaitingDoc($doc, $this->domain->id, $config->transaction, $extraData);
                 } else {
                     $waitDoc->transaction = $config->transaction;
                     $waitDoc->status = $waitDoc::invalid;
@@ -465,11 +462,11 @@ class DomainSyncApi
                 $out->error = sprintf(_("push:invalid document : %s") , $err);
             }
         } else {
-            $out=new stdClass();
+            $out = new \stdClass();
             $out->error = _("push:no document found");
         }
         if (!$waitDoc) {
-            $waitDoc = DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
+            $waitDoc = \DocWaitManager::getWaitingDoc($rawdoc->properties->initid);
         }
         if ($waitDoc) {
             $log = (object)$waitDoc->getValues();
@@ -507,9 +504,9 @@ class DomainSyncApi
     {
         include_once ("FDL/Class.DocWaitManager.php");
         
-        $err = DocWaitManager::clearWaitingDocs($this->domain->id, $this->domain->getSystemUserId());
+        $err = \DocWaitManager::clearWaitingDocs($this->domain->id, $this->domain->getSystemUserId());
         
-        $out = '';
+        $out = new \stdClass();
         $out->error = $err;
         
         return $out;
@@ -523,7 +520,7 @@ class DomainSyncApi
     {
         $report = '';
         $err = $this->domain->updateReport($this->domain->getSystemUserId() , $report);
-        $out = '';
+        $out = new \stdClass();
         if (!$err) $out->report = $report;
         $out->error = $err;
         
@@ -536,22 +533,26 @@ class DomainSyncApi
     public function beginTransaction()
     {
         $err = $this->callHook("onBeforePushTransaction");
-        $out = '';
+        $out = new \stdClass();
         $out->error = $err;
         if (!$err) {
-            $out->transactionId = DocWaitManager::getTransaction();
+            $out->transactionId = \DocWaitManager::getTransaction();
         }
         $this->domain->addLog(__METHOD__, $out);
         return $out;
     }
     /**
      * Verify all document in list to computeStatus
-     * @param DbObjectList $waitings
-     * @param stdClass $out
+     * @param \DbObjectList $waitings
+     * @param \stdClass $out
      */
-    private function verifyAllConflict(DbObjectList & $waitings, &$out)
+    private function verifyAllConflict(\DbObjectList & $waitings, &$out)
     {
         $err = '';
+        $out = new \stdClass();
+        /**
+         * @var \DocWait $waitDoc
+         */
         foreach ($waitings as $k => $waitDoc) {
             $status = $waitDoc->computeStatus();
             $out->detailStatus[$waitDoc->refererinitid] = array(
@@ -565,7 +566,7 @@ class DomainSyncApi
         return $err;
     }
     
-    public function verifyPrivilege(Doc & $doc)
+    public function verifyPrivilege(\Doc & $doc)
     {
         if (!$this->domain->isMember()) return _("not a member domain");
         $err = $doc->canEdit(false);
@@ -611,7 +612,7 @@ class DomainSyncApi
     }
     /**
      * change local relation link by server document identificator
-     * @param stdClass $results
+     * @param \stdClass $results
      */
     private function updateLocalLink(&$results)
     {
@@ -626,7 +627,7 @@ class DomainSyncApi
             }
         }
         
-        $list = new DocumentList();
+        $list = new \DocumentList();
         $list->addDocumentIdentificators($serverIds);
         foreach ($list as $id => $doc) {
             $oas = $doc->getNormalAttributes();
@@ -653,9 +654,9 @@ class DomainSyncApi
     public function endTransaction($config)
     {
         if ($config->transaction) {
-            $out = '';
+            $out = new \stdClass();
             $err = '';
-            $waitings = DocWaitManager::getWaitingDocs($config->transaction);
+            $waitings = \DocWaitManager::getWaitingDocs($config->transaction);
             
             $policy = $this->domain->getValue('off_transactionpolicy');
             if ($policy == "global") {
@@ -717,7 +718,7 @@ class DomainSyncApi
                 $out->statusMessage = $err;
             }
         } else {
-            $out=new stdClass();
+            $out = new \stdClass();
             $out->error = _("endTransaction:no transaction identificator");
             $out->status = self::abortTransaction;
         }
@@ -802,7 +803,10 @@ class DomainSyncApi
                     // need to redo modify cause rollback
                     $waitDoc->status = $out[$waitDoc->refererinitid]["statusCode"];
                     $waitDoc->statusmessage = $out[$waitDoc->refererinitid]["statusMessage"];
-                    $waitDoc->modify(true, array("status", "statusmessage"));
+                    $waitDoc->modify(true, array(
+                        "status",
+                        "statusmessage"
+                    ));
                     $waitDoc->getRefererDocument()->addComment(sprintf(_("synchro: %s") , $waitDoc->statusmessage) , HISTO_ERROR);
                 }
             }
@@ -814,7 +818,7 @@ class DomainSyncApi
     private function resolveLocalLinks($localId, $serverId)
     {
         $numLocalId = $this->numerizeId($localId);
-        $waitings = DocWaitManager::getWaitingDocsByDomain($this->domain->id);
+        $waitings = \DocWaitManager::getWaitingDocsByDomain($this->domain->id);
         $out = array();
         foreach ($waitings as $k => $waitDoc) {
             if ($waitDoc->status == $waitDoc::upToDate) {
@@ -851,12 +855,12 @@ class DomainSyncApi
         return $out;
     }
     
-    private function afterSaveChangeState(Doc & $doc, $newState)
+    private function afterSaveChangeState(\Doc & $doc, $newState)
     {
         
-        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s"), $newState));
+        $err = $doc->setState($newState, sprintf(_("synchronize change state to %s") , $newState));
         if ($doc->canEdit(false) === '' && $doc->isInDomain()) {
-            $err .= $doc->lockToDomain($this->domain->getProperty("id"), DOC::getSystemUserId());
+            $err.= $doc->lockToDomain($this->domain->getProperty("id") , \Doc::getSystemUserId());
         }
         return $err;
     }

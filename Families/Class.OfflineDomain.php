@@ -4,30 +4,15 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package FDL
 */
-/**
- * Offline domain
- *
- * @author Anakeen
- * @version $Id:  $
- * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
- * @package OFFLINE
- */
-/**
- */
-/*
- * @begin-method-ignore
- * this part will be deleted when construct document class until end-method-ignore
-*/
+namespace Dcp\Offline;
+use Dcp\AttributeIdentifiers\OfflineDomain as MyAttributes;
 /**
  * offline domain fonctionalities
  *
  */
-class _OFFLINEDOMAIN extends Dir
+class OfflineDomain extends \Dcp\Family\Dir
 {
-    /*
-     * @end-method-ignore
-    */
-    
+    private $domain = null;
     private $hookObject = null;
     /**
      * Add new supported family in offline domain
@@ -44,8 +29,8 @@ class _OFFLINEDOMAIN extends Dir
             $fam = new_doc($this->dbaccess, $familyId);
             if ($fam->isAlive()) {
                 if ($fam->doctype == "C") {
-                    $famids = $this->getTValue("off_families");
-                    $subfamids = $this->getTValue("off_subfamilies");
+                    $famids = $this->getMultipleRawValues(MyAttributes::off_families);
+                    $subfamids = $this->getMultipleRawValues(MyAttributes::off_subfamilies);
                     $key = array_search($fam->id, $famids);
                     if ($key === false) {
                         $famids[] = $fam->id;
@@ -72,14 +57,14 @@ class _OFFLINEDOMAIN extends Dir
         return $err;
     }
     
-    public function addFollowingStates(Doc & $doc)
+    public function addFollowingStates(\Doc & $doc)
     {
         if (!$doc->wid) {
             return false;
         }
         if (($doc->lockdomainid == $this->id) && ($doc->locked == $this->getSystemUserId())) {
             $wdoc = new_doc($this->dbaccess, $doc->wid);
-            /* @var $wdoc WDoc */
+            /* @var $wdoc \Dcp\Family\WDoc */
             if (!$wdoc->isAlive()) {
                 return false;
             }
@@ -102,14 +87,14 @@ class _OFFLINEDOMAIN extends Dir
                 $this->addExtraData($doc, "followingStates", $fsout);
                 return true;
             }
-            catch(Exception $e) {
+            catch(\Exception $e) {
                 AddLogMsg(__METHOD__ . $e->getMessage());
             }
         }
         return false;
     }
     
-    public function addExtraData(Doc & $doc, $key, $value)
+    public function addExtraData(\Doc & $doc, $key, $value)
     {
         /** @noinspection PhpUndefinedFieldInspection */
         $doc->addfields["pullextradata"] = "pullextradata";
@@ -127,8 +112,8 @@ class _OFFLINEDOMAIN extends Dir
         $fam = new_doc($this->dbaccess, $familyId);
         if ($fam->isAlive()) {
             if ($fam->doctype == "C") {
-                $famids = $this->getTValue("off_families");
-                $subfamids = $this->getTValue("off_subfamilies");
+                $famids = $this->getMultipleRawValues(MyAttributes::off_families);
+                $subfamids = $this->getMultipleRawValues(MyAttributes::off_subfamilies);
                 $key = array_search($fam->id, $famids);
                 if ($key !== false) {
                     unset($famids[$key]);
@@ -159,10 +144,10 @@ class _OFFLINEDOMAIN extends Dir
             $fam = new_doc($this->dbaccess, $familyId);
             if ($fam->isAlive()) {
                 if ($fam->doctype == "C") {
-                    $domainFamily = $this->getFamDoc();
+                    $domainFamily = $this->getFamilyDocument();
                     if ($maskId) {
                         $newMask = new_doc($this->dbaccess, $maskId);
-                        /* @var $newMask _MASK */
+                        /* @var $newMask \Dcp\Family\Mask */
                         /** @noinspection PhpUndefinedFieldInspection */
                         if ((!$newMask->isAlive()) || ($newMask->fromname != 'MASK')) {
                             $err = sprintf("not a mask %s", $maskId);
@@ -217,9 +202,9 @@ class _OFFLINEDOMAIN extends Dir
      */
     public function getFamilies()
     {
-        $famids = $this->getTValue("off_allfamilies");
+        $famids = $this->getMultipleRawValues(MyAttributes::off_allfamilies);
         if (count($famids) == 0) {
-            $families = $this->getAValues("off_t_families");
+            $families = $this->getArrayRawValues(MyAttributes::off_t_families);
             $fams = array();
             foreach ($families as $currentFamily) {
                 if ($currentFamily["off_families"]) {
@@ -233,7 +218,7 @@ class _OFFLINEDOMAIN extends Dir
             $famids = array_unique($fams);
             
             $this->disableEditControl();
-            $err = $this->setValue("off_allfamilies", $famids);
+            $err = $this->setValue(MyAttributes::off_allfamilies, $famids);
             $err.= $this->modify();
             
             if ($err) {
@@ -247,7 +232,7 @@ class _OFFLINEDOMAIN extends Dir
     
     public function canUseWorkflow($familyId)
     {
-        $families = $this->getAValues("off_t_families");
+        $families = $this->getArrayRawValues(MyAttributes::off_t_families);
         foreach ($families as $currentFamily) {
             if ($currentFamily["off_families"] == $familyId) {
                 if ($currentFamily["off_useworkflow"] == "yes") {
@@ -272,7 +257,7 @@ class _OFFLINEDOMAIN extends Dir
         file_put_contents($tmpfile, $report);
         
         $folder->disableEditControl();
-        $err = $folder->storeFile("off_report", $tmpfile, sprintf(_("Sync report %s.html") , date('Y-m-d')));
+        $err = $folder->setFile(\Dcp\AttributeIdentifiers\OfflineFolder::off_report, $tmpfile, sprintf(_("Sync report %s.html") , date('Y-m-d')));
         if (!$err) $err = $folder->modify();
         $folder->enableEditControl();
         @unlink($tmpfile);
@@ -282,32 +267,32 @@ class _OFFLINEDOMAIN extends Dir
     public function generateReport($userId)
     {
         global $action;
-        $lay = new Layout(getLayoutFile("OFFLINE", "syncreport.html") , $action);
-        $q = new QueryDb($this->dbaccess, "DocLog");
+        $lay = new \Layout(getLayoutFile("OFFLINE", "syncreport.html") , $action);
+        $q = new \QueryDb($this->dbaccess, "DocLog");
         $q->addQuery(sprintf("initid=%d", $this->id));
         $q->addQuery(sprintf("uid=%d", $userId));
         $q->order_by = "date desc";
         
-        $r = $q->query(0, getParam("DCPOFFLINE_REPORT_NB_RESULT_MAX", 200), "TABLE");
+        $r = $q->query(0, getParam("DCPOFFLINE_REPORT_NB_RESULT_MAX", 200) , "TABLE");
         $tsync = array();
         foreach ($r as $k => $v) {
             
             $v = (object)$v;
             $v->arg = unserialize($v->arg);
-
+            
             $tsync[] = array(
                 "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v) ,
                 "syncCode" => substr($v->code, strlen('DomainSyncApi::')) ,
-                "syncAction" => $this->reportGetAction($v),
-                "syncMessage" => $this->reportGetMessage($v),
+                "syncAction" => $this->reportGetAction($v) ,
+                "syncMessage" => $this->reportGetMessage($v) ,
                 "syncStatus" => $this->reportGetStatus($v)
             );
         }
         $lay->setBlockData("MSG", $tsync);
         $lay->set("date", FrenchDateToLocaleDate($this->getTimeDate()));
         $lay->set("domain", $this->getHTMLTitle());
-        $lay->set("username", User::getDisplayName($this->getSystemUserId()));
+        $lay->set("username", \Account::getDisplayName($this->getSystemUserId()));
         return $lay->gen();
     }
     
@@ -322,7 +307,7 @@ class _OFFLINEDOMAIN extends Dir
         switch ($sync->code) {
             case 'DomainSyncApi::endTransaction':
                 switch ($sync->arg->status) {
-                    case DomainSyncApi::successTransaction:
+                    case \Dcp\Offline\DomainSyncApi::successTransaction:
                         $status = "ok";
                         foreach ($sync->arg->detailStatus as $dstatus) {
                             $dstatus = (object)$dstatus;
@@ -333,11 +318,11 @@ class _OFFLINEDOMAIN extends Dir
                         }
                         break;
 
-                    case DomainSyncApi::partialTransaction:
+                    case \Dcp\Offline\DomainSyncApi::partialTransaction:
                         $status = "partial";
                         break;
 
-                    case DomainSyncApi::abortTransaction:
+                    case \Dcp\Offline\DomainSyncApi::abortTransaction:
                         $status = "ko";
                         break;
                 }
@@ -367,8 +352,8 @@ class _OFFLINEDOMAIN extends Dir
         
         switch ($sync->code) {
             case 'DomainSyncApi::endTransaction':
-                $list = new DocumentList();
-                $list->addDocumentIdentificators(array_keys($sync->arg->detailStatus));
+                $list = new \DocumentList();
+                $list->addDocumentIdentifiers(array_keys($sync->arg->detailStatus));
                 $msgdoc = array();
                 foreach ($sync->arg->detailStatus as $docid => $status) {
                     if ($docid < 0) {
@@ -376,7 +361,7 @@ class _OFFLINEDOMAIN extends Dir
                     }
                 }
                 foreach ($list as $id => $doc) {
-                    /* @var $doc Doc */
+                    /* @var $doc \Doc */
                     $status = (object)$sync->arg->detailStatus[$doc->initid];
                     $msgdoc[$id] = $this->reportFormatEndStatus($status, sprintf("%s <span>%s</span>", $doc->getTitle() , $doc->initid));
                 }
@@ -422,11 +407,11 @@ class _OFFLINEDOMAIN extends Dir
             case 'DomainSyncApi::getUserDocuments':
             case 'DomainSyncApi::getSharedDocuments':
                 if (is_array($sync->arg->documentsToUpdate)) {
-                    $list = new DocumentList();
-                    $list->addDocumentIdentificators($sync->arg->documentsToUpdate);
+                    $list = new \DocumentList();
+                    $list->addDocumentIdentifiers($sync->arg->documentsToUpdate);
                     $msgdoc = array();
                     foreach ($list as $docid => $doc) {
-                        /* @var $doc Doc */
+                        /* @var $doc \Doc */
                         $msgdoc[$docid] = sprintf("%s <span>%s</span>", $doc->getTitle() , $doc->initid);
                     }
                     if (count($msgdoc) > 1) {
@@ -438,8 +423,8 @@ class _OFFLINEDOMAIN extends Dir
                     }
                 }
                 if (is_array($sync->arg->documentsToDelete)) {
-                    $list = new DocumentList();
-                    $list->addDocumentIdentificators($sync->arg->documentsToDelete);
+                    $list = new \DocumentList();
+                    $list->addDocumentIdentifiers($sync->arg->documentsToDelete);
                     $msgdoc = array();
                     foreach ($list as $docid => $doc) {
                         $msgdoc[$docid] = $doc->getTitle();
@@ -521,19 +506,18 @@ class _OFFLINEDOMAIN extends Dir
         
         $err = '';
         if ($userId) {
-            $user = new User($this->dbaccess, $userId);
-            /* @var $user User */
+            $user = new \Account($this->dbaccess, $userId);
             if ($user->isAffected()) {
                 /** @noinspection PhpUndefinedFieldInspection */
-                if ($user->isgroup == 'Y') {
-                    $aidMember = 'off_group_members';
-                    $aidMode = 'off_group_mode';
+                if ($user->accountType == 'G') {
+                    $aidMember = MyAttributes::off_group_members;
+                    $aidMode = MyAttributes::off_group_mode;
                 } else {
-                    $aidMember = 'off_user_members';
-                    $aidMode = 'off_user_mode';
+                    $aidMember = MyAttributes::off_user_members;
+                    $aidMode = MyAttributes::off_user_mode;
                 }
-                $members = $this->getTValue($aidMember);
-                $mode = $this->getTValue($aidMode);
+                $members = $this->getMultipleRawValues($aidMember);
+                $mode = $this->getMultipleRawValues($aidMode);
                 /** @noinspection PhpUndefinedFieldInspection */
                 $key = array_search($user->fid, $members);
                 if ($key === false) {
@@ -566,18 +550,18 @@ class _OFFLINEDOMAIN extends Dir
         $userId = $this->getDomainUserId($userId);
         $err = '';
         if ($userId) {
-            $user = new User($this->dbaccess, $userId);
+            $user = new \Account($this->dbaccess, $userId);
             if ($user->isAffected()) {
                 /** @noinspection PhpUndefinedFieldInspection */
-                if ($user->isgroup == 'Y') {
-                    $aidMember = 'off_group_members';
-                    $aidMode = 'off_group_mode';
+                if ($user->accounttype == 'G') {
+                    $aidMember = MyAttributes::off_group_members;
+                    $aidMode = MyAttributes::off_group_mode;
                 } else {
-                    $aidMember = 'off_user_members';
-                    $aidMode = 'off_user_mode';
+                    $aidMember = MyAttributes::off_user_members;
+                    $aidMode = MyAttributes::off_user_mode;
                 }
-                $members = $this->getTValue($aidMember);
-                $mode = $this->getTValue($aidMode);
+                $members = $this->getMultipleRawValues($aidMember);
+                $mode = $this->getMultipleRawValues($aidMode);
                 /** @noinspection PhpUndefinedFieldInspection */
                 $key = array_search($user->fid, $members);
                 if ($key !== false) {
@@ -607,8 +591,8 @@ class _OFFLINEDOMAIN extends Dir
     {
         $userId = $this->getDomainUserId($userId);
         $fid = $this->uid2fid($userId);
-        $fids = $this->getTValue("off_user_members");
-        $fids+= $this->getTValue("off_group_members");
+        $fids = $this->getMultipleRawValues(MyAttributes::off_user_members);
+        $fids+= $this->getMultipleRawValues(MyAttributes::off_group_members);
         if (in_array($fid, $fids)) {
             $err = $this->addMember($userId, $hasManagePrivilege);
         } else {
@@ -637,19 +621,19 @@ class _OFFLINEDOMAIN extends Dir
         
         $out = array();
         // group members
-        $um = $this->getTValue("off_group_members");
+        $um = $this->getMultipleRawValues(MyAttributes::off_group_members);
         foreach ($um as $k => $v) {
             if (!$v) unset($um[$k]);
         }
         if (count($um) > 0) {
-            $s = new SearchDoc($this->dbaccess, "IGROUP");
+            $s = new \SearchDoc($this->dbaccess, "IGROUP");
             $s->addFilter($s->sqlCond($um, "initid", true));
-            $s->noViewControl();
+            $s->overrideViewControl();
             $users = $s->search();
             foreach ($users as $guser) {
-                $g = new User($this->dbaccess, $guser["us_whatid"]);
+                $g = new \Account($this->dbaccess, $guser["us_whatid"]);
                 if ($g->isAffected()) {
-                    $members = $g->getUserMembers();
+                    $members = $g->getAllMembers();
                     foreach ($members as $user) {
                         $index = $useSystemId ? $user["id"] : $user["fid"];
                         $out[$index] = array(
@@ -663,12 +647,12 @@ class _OFFLINEDOMAIN extends Dir
             }
         }
         // user members
-        $um = $this->getTValue("off_user_members");
+        $um = $this->getMultipleRawValues(MyAttributes::off_user_members);
         foreach ($um as $k => $v) {
             if (!$v) unset($um[$k]);
         }
         if (count($um) > 0) {
-            $s = new SearchDoc($this->dbaccess, "IUSER");
+            $s = new \SearchDoc($this->dbaccess, "IUSER");
             $s->addFilter($s->sqlCond($um, "initid", true));
             $users = $s->search();
             foreach ($users as $user) {
@@ -698,20 +682,20 @@ class _OFFLINEDOMAIN extends Dir
         $fid = $this->uid2fid($userId);
         
         if ($fid) {
-            $um = $this->getTValue("off_user_members");
+            $um = $this->getMultipleRawValues(MyAttributes::off_user_members);
             if (in_array($fid, $um)) return true;
             
-            $um = $this->getTValue("off_group_members");
+            $um = $this->getMultipleRawValues(MyAttributes::off_group_members);
             foreach ($um as $k => $v) {
                 if (!$v) unset($um[$k]);
             }
             if (count($um) > 0) {
-                $s = new SearchDoc($this->dbaccess, "IGROUP");
+                $s = new \SearchDoc($this->dbaccess, "IGROUP");
                 $s->addFilter($s->sqlCond($um, "initid", true));
-                $s->noViewControl();
+                $s->overrideViewControl();
                 $users = $s->search();
                 foreach ($users as $guser) {
-                    $g = new User($this->dbaccess, $guser["us_whatid"]);
+                    $g = new \Account($this->dbaccess, $guser["us_whatid"]);
                     if ($g->isAffected()) {
                         if ($g->isMember($userId)) return true;
                     }
@@ -731,7 +715,7 @@ class _OFFLINEDOMAIN extends Dir
     {
         $out = null;
         if ($this->isMember($uid)) {
-            $user = new User($this->dbaccess, $uid);
+            $user = new \Account($this->dbaccess, $uid);
             $userMode = $this->getUserMode($uid);
             /** @noinspection PhpUndefinedFieldInspection */
             $out = array(
@@ -764,20 +748,20 @@ class _OFFLINEDOMAIN extends Dir
         $uid = $this->getDomainUserId($uid);
         $docuid = $this->uid2fid($uid);
         if ($docuid) {
-            $umembers = $this->getTValue("off_user_members");
+            $umembers = $this->getMultipleRawValues(MyAttributes::off_user_members);
             $key = array_search($docuid, $umembers);
             if ($key !== false) {
-                $userMode = $this->getTValue("off_user_mode", '', $key);
+                $userMode = $this->getMultipleRawValues(MyAttributes::off_user_mode, '', $key);
             } else {
                 // search in groups
-                $ugroups = $this->getTValue("off_group_members");
-                $gu = new User($this->dbaccess);
+                $ugroups = $this->getMultipleRawValues(MyAttributes::off_group_members);
+                $gu = new \Account($this->dbaccess);
                 foreach ($ugroups as $k => $gid) {
                     if ($gu->setFid($gid)) {
-                        $members = $gu->getUserMembers();
+                        $members = $gu->getAllMembers();
                         foreach ($members as $member) {
                             if ($member['id'] == $uid) {
-                                $userMode = $this->getTValue("off_group_mode", '', $k);
+                                $userMode = $this->getMultipleRawValues(MyAttributes::off_group_mode, '', $k);
                                 break;
                             }
                         }
@@ -816,7 +800,7 @@ class _OFFLINEDOMAIN extends Dir
         $doc = new_doc($this->dbaccess, $documentId, true);
         
         if ($doc->isAlive()) {
-            $err = $sfolder->delFile($doc->initid);
+            $err = $sfolder->removeDocument($doc->initid);
             $this->sendEvents($doc);
         }
         return $err;
@@ -827,7 +811,7 @@ class _OFFLINEDOMAIN extends Dir
      * @param integer $documentId document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
-     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
+     * @param \Dcp\Offline\ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
     public function insertUserDocument($documentId, $userId = 0, $reserve = true, &$documentstatus = array())
@@ -843,14 +827,14 @@ class _OFFLINEDOMAIN extends Dir
      * add new document into folder
      * if reserve is true and document is reserved by another user, the document is not added
      *
-     * @param Dir $folder
-     * @param Doc $doc
+     * @param \Dcp\Family\Dir $folder
+     * @param \Doc $doc
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
-     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
+     * @param \Dcp\Offline\ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    private function domainInsertDocument(Dir $folder, Doc & $doc, $userId = 0, $reserve = true, &$documentstatus = array())
+    private function domainInsertDocument(\Dcp\Family\Dir $folder, \Doc & $doc, $userId = 0, $reserve = true, &$documentstatus = array())
     {
         $status = "";
         $statusErrorMessage = "";
@@ -860,7 +844,7 @@ class _OFFLINEDOMAIN extends Dir
             } else {
                 $point = "domainInsertDocument" . $doc->id;
                 $this->savePoint($point);
-                $err = $folder->AddFile($doc->initid);
+                $err = $folder->insertDocument($doc->initid);
                 if (!$err) {
                     $status = "inserted";
                     if ($reserve) {
@@ -877,7 +861,7 @@ class _OFFLINEDOMAIN extends Dir
                     $this->sendEvents($doc);
                 }
             }
-            $documentstatus[$doc->id] = new ReserveInfo($doc->id, $doc->getTitle() , $err ? "error" : $status, $err ? $err : "", $statusErrorMessage);
+            $documentstatus[$doc->id] = new \Dcp\Offline\ReserveInfo($doc->id, $doc->getTitle() , $err ? "error" : $status, $err ? $err : "", $statusErrorMessage);
         } else {
             $err = sprintf(_("document to book not exists %s") , $doc->id);
         }
@@ -885,9 +869,9 @@ class _OFFLINEDOMAIN extends Dir
     }
     /**
      * send events for workspace interface
-     * @param Doc $doc
+     * @param \Doc $doc
      */
-    private static function sendEvents(Doc & $doc)
+    private static function sendEvents(\Doc & $doc)
     {
         global $action;
         $fdlids = $doc->getParentFolderIds();
@@ -904,12 +888,12 @@ class _OFFLINEDOMAIN extends Dir
      $list=$s->search()->getDocumentList();
      $err=$domain->insertShareCollection($list);
      * @endcode
-     * @param DocumentList $collection document identificator
+     * @param \DocumentList $collection document identificator
      * @param int $reservedBy user identificator which reserved document
-     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
+     * @param \Dcp\Offline\ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    public function insertShareCollection(DocumentList $collection, $reservedBy = 0, &$documentstatus = array())
+    public function insertShareCollection(\DocumentList $collection, $reservedBy = 0, &$documentstatus = array())
     {
         $sfolder = $this->getSharedFolder();
         if ($sfolder) {
@@ -922,13 +906,13 @@ class _OFFLINEDOMAIN extends Dir
     /**
      * insert all documents where are into collection in user folder (not recursive in subfolders)
      * if reserve is true and document is reserved by another user, the document is not added
-     * @param DocumentList $collection document identificator
+     * @param \DocumentList $collection document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
-     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
+     * @param \Dcp\Offline\ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    public function insertUserCollection(DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
+    public function insertUserCollection(\DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
     {
         $userId = $this->getDomainUserId($userId);
         $ufolder = $this->getUserFolder($userId);
@@ -942,14 +926,14 @@ class _OFFLINEDOMAIN extends Dir
     /**
      * insert all documents where are into collection in user folder (not recursive in subfolders)
      * if reserve is true and document is reserved by another user, the document is not added
-     * @param Dir $folder
-     * @param DocumentList $collection document identificator
+     * @param \Dcp\Family\Dir $folder
+     * @param \DocumentList $collection document identificator
      * @param int $userId user identificator (system id/or logical name)
      * @param boolean $reserve set to false if want readonly else reserved by $userId
-     * @param ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
+     * @param \Dcp\Offline\ReserveInfo[] $documentstatus information on inserted document (id, title, status...)
      * @return string error message (empty string if no errors)
      */
-    private function insertCollection(Dir & $folder, DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
+    private function insertCollection(\Dcp\Family\Dir & $folder, \DocumentList $collection, $userId, $reserve = true, &$documentstatus = array())
     {
         $err = '';
         foreach ($collection as $doc) {
@@ -985,17 +969,17 @@ class _OFFLINEDOMAIN extends Dir
     /**
      * clear all documents from foldder
      * if unlock is true all document lock by current user are unlocked
-     * @param Dir $folder
+     * @param \Dcp\Family\Dir $folder
      * @param boolean $unlock set to false to not unlock documents
      * @return string error message (empty string if no errors)
      */
-    private function clearFolder(Dir & $folder, $unlock = true)
+    private function clearFolder(\Dcp\Family\Dir & $folder, $unlock = true)
     {
         $dl = $folder->getDocumentList();
         $err = $folder->clear();
         if ($err == "") {
             foreach ($dl as $doc) {
-                /* @var $doc _OFFLINEDOMAIN */
+                /* @var $doc \Dcp\Offline\OfflineDomain */
                 $doc->updateDomains();
                 if ($unlock) {
                     $doc->unlock();
@@ -1003,7 +987,7 @@ class _OFFLINEDOMAIN extends Dir
             }
             /** @noinspection PhpIncludeInspection */
             include_once ("FDL/Class.DocWaitManager.php");
-            DocWaitManager::clearWaitingDocs($this->domain, $this->getSystemUserId());
+            \DocWaitManager::clearWaitingDocs($this->domain, $this->getSystemUserId());
         } else {
             $this->setError($err);
         }
@@ -1024,7 +1008,7 @@ class _OFFLINEDOMAIN extends Dir
         $doc = new_doc($this->dbaccess, $documentId, true);
         
         if ($doc->isAlive()) {
-            $err = $ufolder->delFile($doc->initid);
+            $err = $ufolder->removeDocument($doc->initid);
             if ($err != '') {
                 return $err;
             }
@@ -1062,7 +1046,7 @@ class _OFFLINEDOMAIN extends Dir
     }
     /**
      * get share folder
-     * @return Dir the folder document
+     * @return \Dcp\Family\Dir the folder document
      */
     public function getSharedFolder()
     {
@@ -1078,7 +1062,7 @@ class _OFFLINEDOMAIN extends Dir
         } else {
             if (!is_numeric($userId)) {
                 // search by login
-                $user = new User($this->dbaccess);
+                $user = new \Account($this->dbaccess);
                 $user->SetLoginName($userId);
                 if ($user->isAffected()) {
                     /** @noinspection PhpUndefinedFieldInspection */
@@ -1095,8 +1079,8 @@ class _OFFLINEDOMAIN extends Dir
      */
     public function getOfflineMask($family)
     {
-        $fam = $this->getFamDoc();
-        $families = $fam->getParamTValue("off_mskfamilies");
+        $fam = $this->getFamilyDocument();
+        $families = $fam->getParamTValue(MyAttributes::off_mskfamilies);
         $familyMask = new_doc($this->dbaccess, $family);
         if ($familyMask->isAlive()) {
             // first : easy test
@@ -1120,14 +1104,14 @@ class _OFFLINEDOMAIN extends Dir
      * get user folder
      * @param int $userId user identificator (system id/or logical name)
      *
-     * @throws Exception
+     * @throws \Exception
      *
-     * @return Dir the folder document (null is user is not recorded)
+     * @return \Dcp\Family\Dir the folder document (null is user is not recorded)
      */
     public function getUserFolder($userId = 0)
     {
         $userId = $this->getDomainUserId($userId);
-        $user = new User($this->dbaccess, $userId);
+        $user = new \Account($this->dbaccess, $userId);
         $userFolder = null;
         if ($user->isAffected()) {
             /** @noinspection PhpUndefinedFieldInspection */
@@ -1147,7 +1131,7 @@ class _OFFLINEDOMAIN extends Dir
                 $userFolder = $this->generateUserFolder($userFolderId, $userArray, $usersFolder);
             }
         } else {
-            throw new Exception(__METHOD__ . " user $userId is not affected");
+            throw new \Exception(__METHOD__ . " user $userId is not affected");
         }
         return $userFolder;
     }
@@ -1162,7 +1146,7 @@ class _OFFLINEDOMAIN extends Dir
         $userId = $this->getDomainUserId($userId);
         $userFolder = $this->getUserFolder($userId);
         if ($userFolder) {
-            $s = new SearchDoc($this->dbaccess);
+            $s = new \SearchDoc($this->dbaccess);
             $s->useCollection($userFolder->initid);
             $s->setObjectReturn();
             $s->addFilter("locked = %d", $userId);
@@ -1175,7 +1159,7 @@ class _OFFLINEDOMAIN extends Dir
         
         $shareFolder = $this->getSharedFolder();
         if ($shareFolder) {
-            $s = new SearchDoc($this->dbaccess);
+            $s = new \SearchDoc($this->dbaccess);
             $s->useCollection($shareFolder->initid);
             $s->setObjectReturn();
             $s->addFilter("locked = %d", $userId);
@@ -1201,7 +1185,7 @@ class _OFFLINEDOMAIN extends Dir
      }
      }
      * @endcode
-     * @return DocumentList the folder document (null is user is not recorded)
+     * @return \DocumentList the folder document (null is user is not recorded)
      */
     public function getUserDocuments($userId = 0)
     {
@@ -1213,7 +1197,7 @@ class _OFFLINEDOMAIN extends Dir
     }
     /**
      * get share folder documents
-     * @return DocumentList the folder document (null is user is not recorded)
+     * @return \DocumentList the folder document (null is user is not recorded)
      */
     public function getSharedDocuments()
     {
@@ -1228,10 +1212,10 @@ class _OFFLINEDOMAIN extends Dir
      *
      * @return string|void
      */
-    public function postModify()
+    public function postStore()
     {
         $err = $this->createSubDirectories();
-        $err.= $this->deleteValue("off_allfamilies");
+        $err.= $this->clearValue(MyAttributes::off_allfamilies);
         return $err;
     }
     /**
@@ -1241,7 +1225,7 @@ class _OFFLINEDOMAIN extends Dir
      */
     public function preCreated()
     {
-        $ref = $this->getValue("off_ref");
+        $ref = $this->getRawValue(MyAttributes::off_ref);
         if ($ref) {
             $exists = $this->getTitle($ref);
             if ($exists) {
@@ -1257,9 +1241,9 @@ class _OFFLINEDOMAIN extends Dir
      */
     public function postCreated()
     {
-        $ref = $this->getValue("off_ref");
+        $ref = $this->getRawValue(MyAttributes::off_ref);
         if ($ref) {
-            $err = $this->setLogicalIdentificator($ref);
+            $err = $this->setLogicalName($ref);
             return $err;
         }
         $err = $this->createSubDirectories();
@@ -1282,7 +1266,10 @@ class _OFFLINEDOMAIN extends Dir
      */
     private function getUserFolderId($login)
     {
+        // TODO #4447
         return sprintf("offuser_%s_%s", $this->name, $login);
+        //return preg_replace('/\p{P}/u','_',sprintf("offuser_%s_%s", $this->name, $login));
+        
     }
     /**
      * Create subdir of the offline domain
@@ -1295,9 +1282,9 @@ class _OFFLINEDOMAIN extends Dir
     {
         $err = "";
         if (!$this->name) {
-            $err.= $this->setLogicalIdentificator($this->getValue("off_ref"));
+            $err.= $this->setLogicalName($this->getRawValue(MyAttributes::off_ref));
         }
-        if (($this->getValue("off_sharepolicy") == "admin") || ($this->getValue("off_sharepolicy") == "users")) {
+        if (($this->getRawValue(MyAttributes::off_sharepolicy) == "admin") || ($this->getRawValue(MyAttributes::off_sharepolicy) == "users")) {
             $sharedID = $this->getShareId();
             $sharedFolder = new_doc($this->dbaccess, $sharedID);
             if (!$sharedFolder->isAlive()) {
@@ -1305,22 +1292,22 @@ class _OFFLINEDOMAIN extends Dir
                 $sharedFolder->setValue("ba_title", sprintf(_("%s Share folder") , $this->getTitle()));
                 $sharedFolder->setValue("off_domain", $this->id);
                 $err.= $sharedFolder->add();
-                $err.= $sharedFolder->setLogicalIdentificator($sharedID);
-                $err.= $this->addFile($sharedFolder->initid);
+                $err.= $sharedFolder->setLogicalName($sharedID);
+                $err.= $this->insertDocument($sharedFolder->initid);
             } else {
                 $sharedFolder = new_doc($this->dbaccess, $sharedID);
-                $err.= $this->addFile($sharedFolder->initid);
+                $err.= $this->insertDocument($sharedFolder->initid);
             }
             $sharedFolder->disableEditControl();
-            $sharedFolder->setValue("off_admins", $this->getValue("off_admins"));
-            $sharedFolder->setValue("off_users", array_merge($this->getTValue("off_group_members") , $this->getTValue("off_user_members")));
+            $sharedFolder->setValue("off_admins", $this->getRawValue(MyAttributes::off_admins));
+            $sharedFolder->setValue("off_users", array_merge($this->getMultipleRawValues(MyAttributes::off_group_members) , $this->getMultipleRawValues(MyAttributes::off_user_members)));
             $sharedFolder->setValue("fld_allbut", "1"); // add restrictions
-            $sharedFolder->setValue("fld_famids", $this->getValue("off_families"));
-            $sharedFolder->setValue("fld_subfam", $this->getValue("off_subfamilies"));
+            $sharedFolder->setValue("fld_famids", $this->getRawValue(MyAttributes::off_families));
+            $sharedFolder->setValue("fld_subfam", $this->getRawValue(MyAttributes::off_subfamilies));
             $err.= $sharedFolder->modify();
-            if ($this->getValue("off_sharepolicy") == "admin") {
+            if ($this->getRawValue(MyAttributes::off_sharepolicy) == "admin") {
                 $sharedFolder->setProfil("PRF_OFFGLOBFOLDERADMIN");
-            } elseif ($this->getValue("off_sharepolicy") == "users") {
+            } elseif ($this->getRawValue(MyAttributes::off_sharepolicy) == "users") {
                 $sharedFolder->setProfil("PRF_OFFGLOBFOLDERUSER");
             }
             $sharedFolder->enableEditControl();
@@ -1344,7 +1331,7 @@ class _OFFLINEDOMAIN extends Dir
                 $this->generateUserFolder($userFolderID, $member, $usersFolder);
             }
         }
-        catch(Exception $e) {
+        catch(\Exception $e) {
             $err.= $e->getMessage();
         }
         
@@ -1355,37 +1342,37 @@ class _OFFLINEDOMAIN extends Dir
      *
      * @param string $usersID users folder Id
      *
-     * @return DIR
+     * @return \Dcp\Family\Dir
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function generateUsersFolder($usersID)
     {
         $err = "";
         $usersFolder = new_doc($this->dbaccess, $usersID);
-        /* @var $usersFolder DIR */
+        /* @var $usersFolder \Dcp\Family\Dir */
         if (!$usersFolder->isAlive()) {
             $usersFolder = createDoc($this->dbaccess, "DIR", false);
             $usersFolder->setValue("ba_title", sprintf(_("%s Users folder") , $this->getTitle()));
             $usersFolder->setValue("off_domain", $this->id);
             
             $err.= $usersFolder->add();
-            $err.= $usersFolder->setLogicalIdentificator($usersID);
-            $err.= $this->addFile($usersFolder->initid);
+            $err.= $usersFolder->setLogicalName($usersID);
+            $err.= $this->insertDocument($usersFolder->initid);
         } else {
             $usersFolder = new_doc($this->dbaccess, $usersID);
-            $err.= $this->addFile($usersFolder->initid);
+            $err.= $this->insertDocument($usersFolder->initid);
         }
         $usersFolder->disableEditControl();
         $usersFolder->setValue("fld_allbut", "1"); // add restrictions
         $usersFolder->setValue("fld_famids", getFamIdFromName($this->dbaccess, "OFFLINEFOLDER"));
         $usersFolder->setValue("fld_subfam", "no");
-        $usersFolder->setValue("off_admins", $this->getValue("off_admins"));
-        $usersFolder->setValue("off_users", array_merge($this->getTValue("off_group_members") , $this->getTValue("off_user_members")));
+        $usersFolder->setValue("off_admins", $this->getRawValue(MyAttributes::off_admins));
+        $usersFolder->setValue("off_users", array_merge($this->getMultipleRawValues(MyAttributes::off_group_members) , $this->getMultipleRawValues(MyAttributes::off_user_members)));
         $err.= $usersFolder->modify();
         $usersFolder->enableEditControl();
         if ($err) {
-            throw new Exception(__METHOD__ . $err);
+            throw new \Exception(__METHOD__ . $err);
         }
         return $usersFolder;
     }
@@ -1398,15 +1385,15 @@ class _OFFLINEDOMAIN extends Dir
     /**
      * getUsersFolder
      *
-     * @return Dir
-     * @throws Exception
+     * @return \Dcp\Family\Dir
+     * @throws \Exception
      */
     protected function getUsersFolder()
     {
         $usersFolderId = $this->getUsersFolderId();
         $usersFolder = new_Doc("", $usersFolderId);
         if (!$usersFolder->isAlive()) {
-            throw new Exception(__METHOD__ . " usersFolder : $usersFolderId");
+            throw new \Exception(__METHOD__ . " usersFolder : $usersFolderId");
         }
         return $usersFolder;
     }
@@ -1415,13 +1402,13 @@ class _OFFLINEDOMAIN extends Dir
      *
      * @param String $userFolderID
      * @param Array $member
-     * @param Dir $usersFolder
+     * @param \Dcp\Family\Dir $usersFolder
      *
-     * @throws Exception
+     * @throws \Exception
      *
-     * @return Dir
+     * @return \Dcp\Family\Dir
      */
-    protected function generateUserFolder($userFolderID, $member, Dir $usersFolder)
+    protected function generateUserFolder($userFolderID, $member, \Dcp\Family\Dir $usersFolder)
     {
         $err = "";
         $userFolder = new_doc($this->dbaccess, $userFolderID);
@@ -1432,25 +1419,25 @@ class _OFFLINEDOMAIN extends Dir
             $userFolder->setValue("off_user", $member["docid"]);
             
             $err.= $userFolder->add();
-            $err.= $userFolder->setLogicalIdentificator($userFolderID);
-            $err.= $usersFolder->addFile($userFolder->initid);
+            $err.= $userFolder->setLogicalName($userFolderID);
+            $err.= $usersFolder->insertDocument($userFolder->initid);
         } else {
             $userFolder = new_doc($this->dbaccess, $userFolderID);
-            $err.= $usersFolder->addFile($userFolder->initid);
+            $err.= $usersFolder->insertDocument($userFolder->initid);
         }
         $userFolder->disableEditControl();
         if ($this->hasManagePrivilege($member["id"])) {
             $userFolder->setValue("off_advanceduser", $member["docid"]);
         } else {
-            $userFolder->deleteValue("off_advanceduser");
+            $userFolder->clearValue(\Dcp\AttributeIdentifiers\OfflineFolder::off_advanceduser);
         }
         $userFolder->setValue("fld_allbut", "1"); // add restrictions
-        $userFolder->setValue("fld_famids", $this->getValue("off_families"));
-        $userFolder->setValue("fld_subfam", $this->getValue("off_subfamilies"));
+        $userFolder->setValue("fld_famids", $this->getRawValue(MyAttributes::off_families));
+        $userFolder->setValue("fld_subfam", $this->getRawValue(MyAttributes::off_subfamilies));
         $err.= $userFolder->modify();
         $userFolder->enableEditControl();
         if ($err) {
-            throw new Exception(__METHOD__ . ' ' . $err);
+            throw new \Exception(__METHOD__ . ' ' . $err);
         }
         return $userFolder;
     }
@@ -1482,12 +1469,12 @@ class _OFFLINEDOMAIN extends Dir
     }
     /**
      * return object hook
-     * @return DomainHook
+     * @return \Dcp\Offline\DomainHook
      */
     public function hook()
     {
         if (!$this->hookObject) {
-            $hookPath = $this->getValue('off_hookpath');
+            $hookPath = $this->getRawValue(MyAttributes::off_hookpath);
             if ($hookPath) {
                 if (!strstr($hookPath, '..')) {
                     /** @noinspection PhpIncludeInspection */
@@ -1524,25 +1511,17 @@ class _OFFLINEDOMAIN extends Dir
         }
         if (count($fuid) > 0) {
             $userFids = "'" . implode("','", $fuid) . "'";
-            $searchDoc = new SearchDoc($this->dbaccess, "OFFLINEFOLDER");
+            $searchDoc = new \SearchDoc($this->dbaccess, "OFFLINEFOLDER");
             $searchDoc->only = true;
             $searchDoc->addFilter("off_domain = '%d'", $this->id);
             $searchDoc->addFilter(sprintf("off_user not in (%s)", $userFids));
             $searchDoc->setObjectReturn();
             $searchDoc->search();
-            while ($doc = $searchDoc->nextDoc()) {
+            while ($doc = $searchDoc->getNextDoc()) {
                 $doc->delete();
             }
         }
         
         return $err;
     }
-    /*
-     * @begin-method-ignore
-     * this part will be deleted when construct document class until end-method-ignore
-    */
 }
-/*
- * @end-method-ignore
-*/
-
