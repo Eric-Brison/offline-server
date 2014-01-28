@@ -1267,7 +1267,11 @@ class OfflineDomain extends \Dcp\Family\Dir
     private function getUserFolderId($login)
     {
         // TODO #4447
-        return sprintf("offuser_%s_%s", $this->name, $login);
+        $account = new \Account($this->dbaccess);
+        if ($account->setLoginName($login) === false) {
+            throw new \Dcp\Exception(sprintf("Could not find a user with login '%s'.", $login));
+        }
+        return sprintf("offuser_%s_%s", $this->name, $account->id);
         //return preg_replace('/\p{P}/u','_',sprintf("offuser_%s_%s", $this->name, $login));
         
     }
