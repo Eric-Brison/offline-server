@@ -77,7 +77,7 @@ function _prepare_xulapp {
     # -- Copy CKEditor --
     local CKEDITOR_DEST_DIR="$DEST_DIR/chrome/ckeditor/content/ckeditor"
     mkdir -p "$CKEDITOR_DEST_DIR"
-    tar -C "$wpub/ckeditor" -cf - . | tar -C "$CKEDITOR_DEST_DIR" -xf -
+    tar -C "$wpub/share/offline/ckeditor" -cf - . | tar -C "$CKEDITOR_DEST_DIR" -xf -
 
     # -- Apply patches on XULAPP --
     if [ -d "$wpub/share/offline/patches" ]; then
