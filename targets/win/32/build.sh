@@ -63,7 +63,6 @@ function _main {
     tar -C "$XULRUNTIMES_DIR/$BUILD_OS/$BUILD_ARCH" -cf - "xulrunner" | tar -C "$PKG_NAME/dist" -xf -
 
     cp "$PKG_NAME/dist/xulrunner/xulrunner-stub.exe" "$PKG_NAME/dist/dynacase-offline.exe"
-    cp "$PKG_NAME/dist/xulrunner/mozcrt19.dll" "$PKG_NAME/dist/mozcrt19.dll"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dist/dynacase-offline.ico"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/LICENSE.txt" "$PKG_NAME/dist/LICENSE.txt"
 
