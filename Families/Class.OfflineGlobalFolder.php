@@ -7,19 +7,15 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package OFFLINE
  */
-/**
- */
 
-/*
- * @begin-method-ignore
- * this part will be deleted when construct document class until end-method-ignore
- */
+namespace Dcp\Offline;
+use \Dcp\AttributeIdentifiers\OfflineGlobalFolder as MyAttributes;
 
 /**
  * offline domain fonctionalities
  *
  */
-class _OFFLINEGLOBALFOLDER extends _OFFLINEFOLDER
+class OfflineGlobalFolder extends \Dcp\Family\OfflineFolder
 {
     /*
      * @end-method-ignore
@@ -45,13 +41,4 @@ class _OFFLINEGLOBALFOLDER extends _OFFLINEFOLDER
         $err = $this->callHookDocument($docid, "onAfterRemoveFromSharedFolder");
         return $err;
     }
-    
-/*
- * @begin-method-ignore
- * this part will be deleted when construct document class until end-method-ignore
- */
 }
-
-/*
- * @end-method-ignore
- */

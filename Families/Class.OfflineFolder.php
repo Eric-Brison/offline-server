@@ -7,19 +7,11 @@
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package OFFLINE
  */
-/**
- */
 
-/*
- * @begin-method-ignore
- * this part will be deleted when construct document class until end-method-ignore
- */
+namespace Dcp\Offline;
+use \Dcp\AttributeIdentifiers\OfflineFolder as MyAttributes;
 
-/**
- * offline domain fonctionalities
- *
- */
-class _OFFLINEFOLDER extends Dir
+class OfflineFolder extends \Dcp\Family\Dir
 {
     /*
      * @end-method-ignore
@@ -51,7 +43,7 @@ class _OFFLINEFOLDER extends Dir
         $doc = new_doc($this->dbaccess, $docid, true);
         if ($doc->isAlive()) {
             if (method_exists($doc, $method)) {
-                $domain=new_doc($this->dbaccess, $this->getValue("off_domain"));
+                $domain=new_doc($this->dbaccess, $this->getRawValue(MyAttributes::off_domain));
                 $err = call_user_func(array($doc, $method), $domain, $this);
             }
         } else {
@@ -60,13 +52,13 @@ class _OFFLINEFOLDER extends Dir
         return $err;
     }
 
-    public function preInsertDoc($docid)
+    public function preInsertDocument($docid, $multiple=false)
     {
         $err = $this->hookBeforeInsert($docid);
         return $err;
     }
     
-    public function postInsertDoc($docid)
+    public function postInsertDocument($docid, $multiple=false)
     {
         $err = "";
         $doc = new_doc($this->dbaccess, $docid, true);
@@ -84,21 +76,21 @@ class _OFFLINEFOLDER extends Dir
         }
         return $err;
     }
-    public function postUnlinkDoc($docid)
+    public function postRemoveDocument($docid, $multiple=false)
     {
         $err = '';
 
         $doc = new_doc($this->dbaccess, $docid, true);
         if ($doc->isAlive()) {
             $doc->updateDomains();
-            $docuid = $this->getValue("off_user");
+            $docuid = $this->getRawValue(MyAttributes::off_user);
             if ($docuid) {
                 $uid = array();
                 $err .= simpleQuery($this->dbaccess, sprintf("select id from users where fid=%d", $docuid), $uid, true, true);
                 if ($uid) {
                     /** @noinspection PhpIncludeInspection */
                     require_once "FDL/Class.DocWait.php";
-                    $docWait = new DocWait($this->dbaccess, array(
+                    $docWait = new \DocWait($this->dbaccess, array(
                         $doc->initid,
                         $uid
                     ));
@@ -113,17 +105,8 @@ class _OFFLINEFOLDER extends Dir
     }
     
     
-    public function preUnlinkDoc($docid) {
+    public function preRemoveDocument($docid, $multple=false) {
         $err = $this->hookBeforeRemove($docid);
         return $err;
     }
-    
-/*
- * @begin-method-ignore
- * this part will be deleted when construct document class until end-method-ignore
- */
 }
-
-/*
- * @end-method-ignore
- */

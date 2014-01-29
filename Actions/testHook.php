@@ -1,60 +1,68 @@
 <?php
+/*
+ * @author Anakeen
+ * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
+ * @package FDL
+*/
+
+namespace Dcp\Offline;
 
 include_once ("OFFLINE/Interface.DomainHook.php");
 
 class testHook implements DomainHook
 {
-    public function onBeforePushTransaction(_OfflineDomain &$domain)
+    public function onBeforePushTransaction(\Dcp\Family\OfflineDomain & $domain)
     {
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
         return '';
     }
     
-    public function onAfterPushTransaction(_OfflineDomain &$domain)
+    public function onAfterPushTransaction(\Dcp\Family\OfflineDomain & $domain)
     {
         
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
     }
-    public function onAfterSaveTransaction(_OfflineDomain &$domain)
+    public function onAfterSaveTransaction(\Dcp\Family\OfflineDomain & $domain)
     {
         
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
     }
-    public function onBeforePullUserDocuments(_OfflineDomain &$domain)
+    public function onBeforePullUserDocuments(\Dcp\Family\OfflineDomain & $domain)
     {
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
         return '';
     }
     
-    public function onAfterPullSharedDocuments(_OfflineDomain &$domain)
+    public function onAfterPullSharedDocuments(\Dcp\Family\OfflineDomain & $domain)
     {
         
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
     }
     
-    public function onBeforePullSharedDocuments(_OfflineDomain &$domain)
+    public function onBeforePullSharedDocuments(\Dcp\Family\OfflineDomain & $domain)
     {
-        $domain->addComment(__METHOD__);
-    
-     //return 'pas de partage';
+        $domain->addHistoryEntry(__METHOD__);
+        //return 'pas de partage';
+        
     }
     
-    public function onAfterPullUserDocuments(_OfflineDomain &$domain)
+    public function onAfterPullUserDocuments(\Dcp\Family\OfflineDomain & $domain)
     {
         
-        $domain->addComment(__METHOD__);
+        $domain->addHistoryEntry(__METHOD__);
     }
-    public function onAfterSaveDocument(_OfflineDomain &$domain, Doc &$updatedDoc, $data = null)
+    public function onAfterSaveDocument(\Dcp\Family\OfflineDomain & $domain, \Doc & $updatedDoc, $data = null)
     {
         
-        $domain->addComment(__METHOD__ . $updatedDoc->getTitle());
-        $updatedDoc->addComment(__METHOD__ . ':' . serialize($data));
+        $domain->addHistoryEntry(__METHOD__ . $updatedDoc->getTitle());
+        $updatedDoc->addHistoryEntry(__METHOD__ . ':' . serialize($data));
     }
-    public function onPullDocument(_OfflineDomain &$domain, Doc &$doc)
+    public function onPullDocument(\Dcp\Family\OfflineDomain & $domain, \Doc & $doc)
     {
         //$domain->addExtraData($doc, "test", "one");
         //$doc->addComment(__METHOD__);
         return true;
+        /*
         $doc->addComment(__METHOD__);
         $classid = $doc->getValue("es_classe");
         if ($classid != '1126') {
@@ -67,30 +75,31 @@ class testHook implements DomainHook
             return 'not a reptilia';
         }
         return true;
-    
+        */
     }
     
-    public function onBeforePushDocument(_OfflineDomain &$domain, Doc &$doc, $data = null)
+    public function onBeforePushDocument(\Dcp\Family\OfflineDomain & $domain, \Doc & $doc, $data = null)
     {
-        $domain->addComment(__METHOD__ . $doc->getTitle());
-        $doc->addComment(__METHOD__ . ':' . serialize($data));
-       // return "stop the push";
-    }
-    public function onAfterPushDocument(_OfflineDomain &$domain, Doc &$doc, $data = null)
-    {
-        $domain->addComment(__METHOD__ . $doc->getTitle());
-        $doc->addComment(__METHOD__ . ':' . serialize($data));
-    }
-    public function onBeforeSaveDocument(_OfflineDomain &$domain, Doc &$waitDoc, Doc &$refererDoc = null, $data = null)
-    {
+        $domain->addHistoryEntry(__METHOD__ . $doc->getTitle());
+        $doc->addHistoryEntry(__METHOD__ . ':' . serialize($data));
+        // return "stop the push";
         
+    }
+    public function onAfterPushDocument(\Dcp\Family\OfflineDomain & $domain, \Doc & $doc, $data = null)
+    {
+        $domain->addHistoryEntry(__METHOD__ . $doc->getTitle());
+        $doc->addHistoryEntry(__METHOD__ . ':' . serialize($data));
+    }
+    public function onBeforeSaveDocument(\Dcp\Family\OfflineDomain & $domain, \Doc & $waitDoc, \Doc & $refererDoc = null, $data = null)
+    {
+        $err = '';
         if ($refererDoc) {
-            $domain->addComment(__METHOD__ . $refererDoc->getTitle());
-            $refererDoc->addComment(__METHOD__ . ':' . serialize($data));
-            $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
+            $domain->addHistoryEntry(__METHOD__ . $refererDoc->getTitle());
+            $refererDoc->addHistoryEntry(__METHOD__ . ':' . serialize($data));
+            $err.= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
             //print "Before";print_r2($res);
-            $err = $refererDoc->addRevision("before save in synchro");
-            $err .= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
+            $err = $refererDoc->addHistoryEntry("before save in synchro");
+            $err.= simpleQuery($refererDoc->dbaccess, "select id, locked, revision from doc where locked != -1 and initid=" . $refererDoc->initid, $res, false, true);
         }
         //print "After";print_r2($res);
         // if ($refererDoc->getValue("es_poids") < 98) {
@@ -99,5 +108,4 @@ class testHook implements DomainHook
         //$refererDoc->addComment("add one in es_poids :" . ($waitDoc->getValue("es_poids") ));
         return $err;
     }
-
 }

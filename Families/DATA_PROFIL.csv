@@ -17,5 +17,5 @@ CPROFID;PRF_OFFFOLDER;;;;;;;;;;;;;;;
 END;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;
 BEGIN;;;;;OFFLINEGLOBALFOLDER;;;;;;;;;;;
-CPROFID;PRF_OFFGLOBFOLDER;;;;;;;;;;;;;;;
+#CPROFID;PRF_OFFGLOBFOLDER;;;;;;;;;;;;;;;
 END;;;;;;;;;;;;;;;;

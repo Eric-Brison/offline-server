@@ -13,7 +13,7 @@ libdir=$(pubdir)/lib
 
 export pubdir utildir applib appname libdir
 
-SUBDIR= Families Lib Actions Images targets patches
+SUBDIR= Families Lib Actions Images targets patches locale
 
 TOP_MODULES =
 
