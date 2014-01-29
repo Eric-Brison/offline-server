@@ -146,9 +146,7 @@ class OfflineClientBuilder
     {
         $env = array();
         foreach ($varList as $var) {
-            $env[] = array(
-                $var => getenv($var)
-            );
+            $env[$var] = getenv($var);
         }
         return $env;
     }

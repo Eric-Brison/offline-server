@@ -52,7 +52,7 @@ function off_domainapi(\Action & $action)
                     }
                 } else {
                 }
-                if (!$out->error) {
+                if (empty($out->error)) {
                     $aconfig = array_merge($_GET, $_POST);
                     $config = new \stdClass();
                     $strip = get_magic_quotes_gpc();
@@ -76,7 +76,7 @@ function off_domainapi(\Action & $action)
         $out->error = sprintf("method %s not registered", $method);
     }
     if ($redirect) {
-        if ($out->error) $action->addWarningMsg($out->error);
+        if (!empty($out->error)) $action->addWarningMsg($out->error);
         redirect($action, 'FDL', 'FDL_CARD&latest=Y&refreshfld=Y&id=' . $redirect);
     } else {
         $action->lay->template = json_encode($out);

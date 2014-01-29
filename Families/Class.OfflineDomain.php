@@ -329,7 +329,7 @@ class OfflineDomain extends \Dcp\Family\Dir
                 break;
 
             default:
-                if ($sync->arg->error != '') {
+                if (!empty($sync->arg->error)) {
                     $status = "ko";
                 } else {
                     $status = "ok";

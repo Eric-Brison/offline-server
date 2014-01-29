@@ -53,7 +53,7 @@ class DomainSyncApi
      */
     public static function isUpToDate(\Doc & $doc, array & $stillRecorded)
     {
-        
+        if (!isset($stillRecorded[$doc->initid])) return false;
         if (!$stillRecorded[$doc->initid]) return false;
         if (intval($stillRecorded[$doc->initid]->locked) != intval($doc->locked)) return false;
         if (intval($stillRecorded[$doc->initid]->lockdomainid) != intval($doc->lockdomainid)) return false;
@@ -102,7 +102,8 @@ class DomainSyncApi
                 }
             }
             $out = $this->domainApi->getSharedDocuments($config, $callback);
-            $out->documentsToDelete = $this->getIntersect($this->domain->getSharedFolder() , $stillRecorded);
+            $sharedFolder = $this->domain->getSharedFolder();
+            $out->documentsToDelete = $this->getIntersect($sharedFolder, $stillRecorded);
         } else {
             $out = new \stdClass();
             $out->error = $err;
@@ -263,7 +264,8 @@ class DomainSyncApi
                 };
             }
             $out = $this->domainApi->getUserDocuments($config, $callback);
-            $out->documentsToDelete = $this->getIntersect($this->domain->getUserFolder() , $stillRecorded);
+            $sharedFolder = $this->domain->getUserFolder();
+            $out->documentsToDelete = $this->getIntersect($sharedFolder, $stillRecorded);
         } else {
             $out = new \stdClass();
             $out->error = $err;

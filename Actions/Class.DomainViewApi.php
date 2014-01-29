@@ -90,7 +90,7 @@ class DomainViewApi
         }
         foreach ($oas as $aid => & $oa) {
             if (($oa->usefor != "Q") && ($oa->type == 'frame')) {
-                $fid = $oa->fieldSet->id;
+                $fid = isset($oa->fieldSet->id) ? $oa->fieldSet->id : null;
                 if ($fid && $fid != "FIELD_HIDDENS") {
                     $node[$aid] = array();
                     //$tree[$aid] = &$node[$aid];
@@ -148,7 +148,7 @@ class DomainViewApi
     {
         if ($noa->ordered === null) {
             foreach ($oas as $aid => & $oa) {
-                $fid = $oa->fieldSet->id;
+                $fid = isset($oa->fieldSet->id) ? $oa->fieldSet->id : null;
                 if ($fid == $noa->id) {
                     $noa->ordered = intval($this->getNodeOrder($oa, $oas)) - 1;
                     break;
@@ -288,7 +288,7 @@ class DomainViewApi
     private function getDefaultValue($aid)
     {
         if (is_array($this->_defaultValues)) {
-            $def = $this->_defaultValues[$aid];
+            $def = isset($this->_defaultValues[$aid]) ? $this->_defaultValues[$aid] : null;
             if (strtolower($def) == "::getuserid()") $def = \Doc::getUserId();
             elseif (strtolower($def) == "::userdocid()") $def = \Doc::userDocId();
             elseif (substr($def, 0, 2) == "::") $def = '';

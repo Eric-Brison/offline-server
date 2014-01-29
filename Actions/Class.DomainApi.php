@@ -41,7 +41,8 @@ class DomainApi
     {
         include_once ("OFFLINE/Class.DomainManager.php");
         $col = new \Fdl_Collection();
-        $col->useDocumentList(\Dcp\Offline\DomainManager::getDomains());
+        $dl = \Dcp\Offline\DomainManager::getDomains();
+        $col->useDocumentList($dl);
         $col->setContentOnlyValue(true);
         $col->setContentCompleteProperties(false);
         $out = $col->getContent();
