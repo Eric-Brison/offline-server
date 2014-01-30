@@ -156,9 +156,30 @@ class DomainSyncApi
         $log = new \stdClass();
         $log->initid = $doc->initid;
         $log->title = $doc->getTitle();
-        $log->error = $out->error;
+        $log->error = $this->_getErrorMsg($out);
         $this->domain->addLog(__METHOD__, $log);
         return $out;
+    }
+    /**
+     * Get error message contained in:
+     * - a plain string
+     * - or the ->error property of an objet
+     * - or the 'error' key of an array
+     * @param mixed $v
+     * @return string
+     */
+    private function _getErrorMsg($v)
+    {
+        if (is_scalar($v)) {
+            return $v;
+        }
+        if (isset($v->error)) {
+            return $v->error;
+        }
+        if (isset($v['error'])) {
+            return $v['error'];
+        }
+        return $v;
     }
     /**
      * unlink document from user space
@@ -179,7 +200,7 @@ class DomainSyncApi
         $log = new \stdClass();
         $log->initid = $doc->initid;
         $log->title = $doc->getTitle();
-        $log->error = $out->error;
+        $log->error = $this->_getErrorMsg($out);
         $this->domain->addLog(__METHOD__, $log);
         return $out;
     }
@@ -497,7 +518,7 @@ class DomainSyncApi
         } else {
             $log = '';
         }
-        $log->error = $out->error;
+        $log->error = $this->_getErrorMsg($out);
         if (is_array($out)) {
             $log->message = $out["message"];
         }
@@ -770,11 +791,14 @@ class DomainSyncApi
                 $needToRollback = false;
                 /* @var \DocWait $waitDoc */
                 $eExtra = $waitDoc->getExtraData();
-                $saveerr = $this->callHook("onBeforeSaveDocument", $waitDoc->getWaitingDocument() , $waitDoc->getRefererDocument() , $eExtra);
+                $waitingDocument = $waitDoc->getWaitingDocument();
+                $refererDocument = $waitDoc->getRefererDocument();
+                $saveerr = $this->callHook("onBeforeSaveDocument", $waitingDocument, $refererDocument, $eExtra);
                 $savectxerr = '';
                 if (!$saveerr) {
                     if ($waitDoc->getRefererDocument()) {
-                        $saveerr = $this->verifyPrivilege($waitDoc->getRefererDocument());
+                        $refererDocument = $waitDoc->getRefererDocument();
+                        $saveerr = $this->verifyPrivilege($refererDocument);
                         $savectxerr = "getRefererDocument";
                     }
                 } else {
@@ -798,7 +822,8 @@ class DomainSyncApi
                                 if (!$out[$mid]) $out[$mid] = $link;
                             }
                         }
-                        $message = $this->callHook("onAfterSaveDocument", $waitDoc->getRefererDocument() , $eExtra);
+                        $refererDocument = $waitDoc->getRefererDocument();
+                        $message = $this->callHook("onAfterSaveDocument", $refererDocument, $eExtra);
                         $out[$waitDoc->refererinitid]["saveInfo"]->onAfterSaveDocument = $message;
                         if (isset($eExtra->changeState) && $eExtra->changeState) {
                             $message = $this->afterSaveChangeState($refererDocument, $eExtra->changeState);
@@ -811,7 +836,10 @@ class DomainSyncApi
                     $needToRollback = true;
                 }
                 if (!$needToRollback) {
-                    $waitDoc->getRefererDocument()->addHistoryEntry("synchronised");
+                    $refererDocument = $waitDoc->getRefererDocument();
+                    if (is_object($refererDocument)) {
+                        $refererDocument->addHistoryEntry("synchronised");
+                    }
                     $this->domain->commitPoint($waitPoint);
                 } else {
                     $failOut = array(
@@ -833,7 +861,10 @@ class DomainSyncApi
                         "status",
                         "statusmessage"
                     ));
-                    $waitDoc->getRefererDocument()->addHistoryEntry(sprintf(_("synchro: %s") , $waitDoc->statusmessage) , HISTO_ERROR);
+                    $refererDocument = $waitDoc->getRefererDocument();
+                    if (is_object($refererDocument)) {
+                        $refererDocument->addHistoryEntry(sprintf(_("synchro: %s") , $waitDoc->statusmessage) , HISTO_ERROR);
+                    }
                 }
             }
         }
