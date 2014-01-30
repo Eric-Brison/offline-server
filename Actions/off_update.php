@@ -133,14 +133,14 @@ function off_update_download_update(&$parms, &$action)
     $xml = "";
     $xml.= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     $xml.= "<updates xmlns=\"http://www.mozilla.org/2005/app-update\">\n";
-    $xml.= sprintf("<update type=\"major\" version=\"%s\" extensionVersion=\"%s\" buildID=\"%s\" detailsURL=\"%s\" >\n", $completeInfo['version'], $completeInfo['version'], $completeInfo['buildid'], sprintf("%s?app=OFFLINE&amp;action=OFF_DLCLIENT", $core_externurl));
+    $xml.= sprintf("<update type=\"major\" version=\"%s\" extensionVersion=\"%s\" buildID=\"%s\" detailsURL=\"%s\" >\n", isset($completeInfo['version']) ? $completeInfo['version'] : '', isset($completeInfo['version']) ? $completeInfo['version'] : '', isset($completeInfo['buildid']) ? $completeInfo['buildid'] : '', sprintf("%s?app=OFFLINE&amp;action=OFF_DLCLIENT", $core_externurl));
     
-    if ($parms['version'] == $partialInfo['version_from'] && $parms['buildid'] == $partialInfo['buildid_from']) {
+    if (isset($partialInfo['version_from']) && isset($partialInfo['buildid_from']) && $parms['version'] == $partialInfo['version_from'] && $parms['buildid'] == $partialInfo['buildid_from']) {
         /* Serve the partial update only if the client match the partial update */
-        $xml.= sprintf("  <patch type=\"partial\" URL=\"%s\" hashFunction=\"%s\" hashValue=\"%s\" size=\"%s\" />\n", sprintf("%sguest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=partial&amp;version=%%VERSION%%&amp;buildid=%%BUILD_ID%%&amp;os=%s&amp;arch=%s", $core_externurl, $parms['os'], $parms['arch']) , $partialInfo['hashfunction'], $partialInfo['hashvalue'], $partialInfo['size']);
+        $xml.= sprintf("  <patch type=\"partial\" URL=\"%s\" hashFunction=\"%s\" hashValue=\"%s\" size=\"%s\" />\n", sprintf("%sguest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=partial&amp;version=%%VERSION%%&amp;buildid=%%BUILD_ID%%&amp;os=%s&amp;arch=%s", $core_externurl, $parms['os'], $parms['arch']) , isset($partialInfo['hashfunction']) ? $partialInfo['hashfunction'] : '', isset($partialInfo['hashvalue']) ? $partialInfo['hashvalue'] : '', isset($partialInfo['size']) ? $partialInfo['size'] : '');
     }
     /* Serve the complete update */
-    $xml.= sprintf("  <patch type=\"complete\" URL=\"%s\" hashFunction=\"%s\" hashValue=\"%s\" size=\"%s\" />\n", sprintf("%sguest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=complete&amp;version=%%VERSION%%&amp;buildid=%%BUILD_ID%%&amp;os=%s&amp;arch=%s", $core_externurl, $parms['os'], $parms['arch']) , $completeInfo['hashfunction'], $completeInfo['hashvalue'], $completeInfo['size']);
+    $xml.= sprintf("  <patch type=\"complete\" URL=\"%s\" hashFunction=\"%s\" hashValue=\"%s\" size=\"%s\" />\n", sprintf("%sguest.php?app=OFFLINE&amp;action=OFF_UPDATE&amp;download=complete&amp;version=%%VERSION%%&amp;buildid=%%BUILD_ID%%&amp;os=%s&amp;arch=%s", $core_externurl, $parms['os'], $parms['arch']) , isset($completeInfo['hashfunction']) ? $completeInfo['hashfunction'] : '', isset($completeInfo['hashvalue']) ? $completeInfo['hashvalue'] : '', isset($completeInfo['size']) ? $completeInfo['size'] : '');
     
     $xml.= "</update>\n";
     $xml.= "</updates>\n";

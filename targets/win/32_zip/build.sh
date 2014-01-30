@@ -59,7 +59,6 @@ function _main {
     tar -C "$XULRUNTIMES_DIR/$BUILD_OS/$BUILD_ARCH" -cf - "xulrunner" | tar -C "$PKG_NAME" -xf -
 
     cp "$PKG_NAME/xulrunner/xulrunner-stub.exe" "$PKG_NAME/dynacase-offline.exe"
-    cp "$PKG_NAME/xulrunner/mozcrt19.dll" "$PKG_NAME/mozcrt19.dll"
     cp "$wpub/share/offline/targets/$BUILD_OS/$BUILD_ARCH/dynacase-offline.ico" "$PKG_NAME/dynacase-offline.ico"
 
     _make_mar "$PKG_NAME"

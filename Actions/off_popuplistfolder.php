@@ -39,7 +39,7 @@ function off_popuplistfolder(\Action & $action)
             ) ,
             "clear" => array(
                 "descr" => _("Clear User Folder") ,
-                "url" => "?app=OFFLINE&action=OFF_DOMAINAPI&htmlRedirect=" . $doc->initid . "&docid=" . $doc->initid . "&id=" . $doc->getValue("off_domain") . '&method=clearUserDocuments',
+                "url" => "?app=OFFLINE&action=OFF_DOMAINAPI&htmlRedirect=" . $doc->initid . "&docid=" . $doc->initid . "&id=" . $doc->getRawValue(\Dcp\AttributeIdentifiers\OfflineFolder::off_domain) . '&method=clearUserDocuments',
                 
                 "confirm" => "false",
                 "control" => "false",
@@ -61,7 +61,7 @@ function off_popuplistfolder(\Action & $action)
                 ) ,
                 "clear" => array(
                     "descr" => _("Clear Share Folder") ,
-                    "url" => "?app=OFFLINE&action=OFF_DOMAINAPI&htmlRedirect=" . $doc->initid . "&docid=" . $doc->initid . "&id=" . $doc->getValue("off_domain") . '&method=clearSharedDocuments',
+                    "url" => "?app=OFFLINE&action=OFF_DOMAINAPI&htmlRedirect=" . $doc->initid . "&docid=" . $doc->initid . "&id=" . $doc->getRawValue(\Dcp\AttributeIdentifiers\Offlinefolder::off_domain) . '&method=clearSharedDocuments',
                     
                     "confirm" => "false",
                     "control" => "false",
