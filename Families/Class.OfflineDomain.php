@@ -639,7 +639,7 @@ class OfflineDomain extends \Dcp\Family\Dir
                         $out[$index] = array(
                             "id" => $user["id"],
                             "docid" => $user["fid"],
-                            "displayName" => trim($user["firstname"] . " " . $user["lasttname"]) ,
+                            "displayName" => trim($user["firstname"] . " " . $user["lastname"]) ,
                             "login" => $user["login"]
                         );
                     }

@@ -3,7 +3,7 @@
  * @author Anakeen
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
  * @package FDL
- */
+*/
 /**
  * @mainpage Dynacase Offline Server Documentation
  * @brief
@@ -55,11 +55,10 @@ $app_const = array(
         "val" => "",
         "global" => "Y",
         "descr" => N_("OFFLINE:Offline update URL")
-    ),
+    ) ,
     "DCPOFFLINE_REPORT_NB_RESULT_MAX" => array(
         "val" => "200",
         "global" => "Y",
         "descr" => N_("OFFLINE:DCPOFFLINE_REPORT_NB_RESULT_MAX")
     )
 );
-?>
