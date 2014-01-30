@@ -9,8 +9,8 @@
     <requires>
         <module name="dynacase-workspace"/>
         <module name="dynacase-offline-client"/>
-        <module name="dynacase-offline-xulruntimes"/>
-        <module name="dynacase-htmledit"/>
+        <module name="dynacase-offline-xulruntimes-installer"/>
+        <module name="dynacase-offline-htmledit-installer"/>
 	<module name="dynacase-core" comp="ge" version="3.2.13"/>
 	<module name="dynacase-onefam"/>
     </requires>
