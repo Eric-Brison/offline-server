@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ -z "$wpub" ]; then
+	echo "Undefined or empty wpub environment variable!"
+	exit 1
+fi
+
+if [ -z "$pgservice_core" ]; then
+	echo "Undefined or empty pgservice_core!"
+	exit 1
+fi
+
+PGSERVICE=$pgservice_core psql -f - --set STOP_ON_ERROR=1 <<'EOF'
+BEGIN;
+
+UPDATE doc
+SET name = regexp_replace(name, E'^(offuser_[A-Z_]{3,20}_).*$', E'\\1' || users.id)
+FROM users
+WHERE      regexp_replace(name, E'^offuser_[A-Z_]{3,20}_(.*)$', E'\\1') = users.login
+	AND fromid IN (SELECT id FROM docfam WHERE name = 'OFFLINEFOLDER');
+
+COMMIT;
+EOF
+RET=$?
+if [ $RET -ne 0 ]; then
+	exit $RET
+fi
