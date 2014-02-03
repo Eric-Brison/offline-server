@@ -13,7 +13,7 @@
           <div class="content">Build your version of Dynacase Offline</div> 
         </div>
         <div id="welcome">
-            <button type="button" id="buildClients" data-href="[CORE_STANDURL]&amp;app=OFFLINE&amp;action=ADMIN&amp;command=build">Build Clients</button>
+            <button type="button" id="buildClients" data-href="[CORE_STANDURL]&amp;app=OFFLINE_ADMIN&amp;action=ADMIN&amp;command=build">Build Clients</button>
             <div id="buildingInProgress" style="display:none;">
                 <img src="Images/loading.gif" alt="loading"/> 
                 <span>Building in progress...</span>

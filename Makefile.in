@@ -29,10 +29,18 @@ include $(utildir)/PubRule
 DISTFILES += $(SUBDIR) \
             RELEASE VERSION
 
+.PHONY: publish clean webinst webinst-admin
+
 _static_dirs:
 	mkdir -p $(pubdir)/share/offline/clients $(pubdir)/share/offline/customize
 
 publish: _static_dirs
+
+webinst-admin:
+	make -C Admin webinst RELEASE=$(RELEASE) PACKAGE=$(PACKAGE)-admin VERSION=$(VERSION) appname=@APPNAME@_ADMIN
+	mv Admin/*webinst .
+
+webinst: webinst-admin
 
 clean:	
 	/bin/rm -f *.*~ config.* Makefile configure $(appname)_init.php info.xml $(PACKAGE)-*webinst

@@ -1,7 +1,4 @@
 <?php
-// ---------------------------------------------------------------
-// $Id:  $
-
 
 $app_desc = array(
     "name" => "OFFLINE", //Name
@@ -19,10 +16,6 @@ $app_acl = array(
 		"name" => "OFF_DLCLIENT",
 		"description" =>N_("OFFLINE:access list of clients to download"),
 		"group_default"  =>"Y"),
-	array(
-		"name" => "ADMIN",
-		"description" =>N_("OFFLINE:access client build"),
-		"group_default" =>"N"),
     array(
         "name" => "OFF_UPDATE",
         "description" =>N_("OFFLINE:access client update"),
@@ -73,18 +66,9 @@ $action_desc = array(
     ),
     
     array(
-        "name" => "ADMIN",
-        "short_name" => N_("OFFLINE:build clients"),
-        "acl" => "ADMIN",
-        "root" => "N"
-    ),
-    
-    array(
         "name" => "OFF_UPDATE",
         "short_name" => N_("OFFLINE:client update"),
         "acl" => "OFF_UPDATE",
         "root" => "N"
     )
 );
-
-?>

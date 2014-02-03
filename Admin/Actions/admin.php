@@ -2,14 +2,14 @@
 /*
  * @author Anakeen
  * @license http://www.fsf.org/licensing/licenses/agpl-3.0.html GNU Affero General Public License
- * @package FDL
+ * @package OFFLINE_ADMIN
 */
 
 function admin(&$action)
 {
-    $action->parent->AddJsRef("OFFLINE/Layout/admin.js");
+    $action->parent->AddJsRef("OFFLINE_ADMIN/Layout/admin.js");
     $action->parent->AddCssRef("CORE:welcome.css", true);
-    $action->parent->AddCssRef("OFFLINE:admin.css");
+    $action->parent->AddCssRef("OFFLINE_ADMIN:admin.css");
     
     $command = getHttpVars('command', '');
     
