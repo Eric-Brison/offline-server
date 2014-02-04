@@ -314,7 +314,7 @@ class OfflineDomain extends \Dcp\Family\Dir
                         $status = "ok";
                         foreach ($sync->arg->detailStatus as $dstatus) {
                             $dstatus = (object)$dstatus;
-                            if ($dstatus->saveInfo->onAfterSaveChangeState || $dstatus->saveInfo->onAfterSaveDocument) {
+                            if ((isset($dstatus->saveInfo->onAfterSaveChangeState) && $dstatus->saveInfo->onAfterSaveChangeState) || (isset($dstatus->saveInfo->onAfterSaveDocument) && $dstatus->saveInfo->onAfterSaveDocument)) {
                                 $status = "warn";
                                 break;
                             }
@@ -409,7 +409,7 @@ class OfflineDomain extends \Dcp\Family\Dir
 
             case 'DomainSyncApi::getUserDocuments':
             case 'DomainSyncApi::getSharedDocuments':
-                if (is_array($sync->arg->documentsToUpdate)) {
+                if (isset($sync->arg->documentsToUpdate) && is_array($sync->arg->documentsToUpdate)) {
                     $list = new \DocumentList();
                     $list->addDocumentIdentifiers($sync->arg->documentsToUpdate);
                     $msgdoc = array();
@@ -425,7 +425,7 @@ class OfflineDomain extends \Dcp\Family\Dir
                         $updateMessage = '';
                     }
                 }
-                if (is_array($sync->arg->documentsToDelete)) {
+                if (isset($sync->arg->documentsToDelete) && is_array($sync->arg->documentsToDelete)) {
                     $list = new \DocumentList();
                     $list->addDocumentIdentifiers($sync->arg->documentsToDelete);
                     $msgdoc = array();
@@ -485,10 +485,10 @@ class OfflineDomain extends \Dcp\Family\Dir
                 $msgdoc = '';
         }
         $statusMessage = '';
-        if ($status->saveInfo->onAfterSaveDocument) {
+        if (isset($status->saveInfo->onAfterSaveDocument) && $status->saveInfo->onAfterSaveDocument) {
             $statusMessage.= sprintf(_("after save warning:%s\n") , $status->saveInfo->onAfterSaveDocument);
         }
-        if ($status->saveInfo->onAfterSaveChangeState) {
+        if (isset($status->saveInfo->onAfterSaveChangeState) && $status->saveInfo->onAfterSaveChangeState) {
             $statusMessage.= sprintf(("%s\n") , $status->saveInfo->onAfterSaveChangeState);
         }
         if (!$msgConstraint) {
