@@ -274,6 +274,9 @@ class OfflineDomain extends \Dcp\Family\Dir
         $q->order_by = "date desc";
         
         $r = $q->query(0, getParam("DCPOFFLINE_REPORT_NB_RESULT_MAX", 200) , "TABLE");
+        if ($r === false) {
+            $r = array();
+        }
         $tsync = array();
         foreach ($r as $k => $v) {
             
