@@ -25,6 +25,7 @@ function off_domainapi(\Action & $action)
     $id = $action->getArgument("id");
     $use = $action->getArgument("use");
     $redirect = $action->getArgument("htmlRedirect");
+    $html = $action->getArgument("html");
     
     $out = new \stdClass();
     $out->error = '';
@@ -79,7 +80,12 @@ function off_domainapi(\Action & $action)
         if (!empty($out->error)) $action->addWarningMsg($out->error);
         redirect($action, 'FDL', 'FDL_CARD&latest=Y&refreshfld=Y&id=' . $redirect);
     } else {
-        $action->lay->template = json_encode($out);
+        if ($html === 'yes') {
+            $action->lay->template = isset($out->report) ? $out->report : htmlspecialchars($out->error);
+        } else {
+            header('Content-Type: application/json');
+            $action->lay->template = json_encode($out);
+        }
         $action->lay->noparse = true; // no need to parse after - increase performances
         
     }
