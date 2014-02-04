@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<module name="@PACKAGE@-admin" disabled="no" version="@VERSION@" release="@RELEASE@">
+    <description>Dynacase Offline administration component.</description>
+
+    <requires>
+        <module name="@PACKAGE@"/>
+    </requires>
+
+    <post-install>
+        <process command="programs/record_application @APPNAME@_ADMIN"/>
+        <process command="programs/update_catalog"/>
+    </post-install>
+
+    <post-upgrade>
+        <process command="programs/pre_migration @APPNAME@_ADMIN"/>
+        <process command="programs/record_application @APPNAME@_ADMIN"/>
+        <process command="programs/post_migration @APPNAME@_ADMIN"/>
+        <process command="programs/update_catalog"/>
+    </post-upgrade>
+</module>

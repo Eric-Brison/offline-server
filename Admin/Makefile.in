@@ -1,0 +1,32 @@
+PACKAGE = @PACKAGE@-admin
+VERSION = @VERSION@
+RELEASE = @RELEASE@
+utildir = @PUBRULE@
+pubdir = @prefix@
+appname = @APPNAME@_ADMIN
+srcdir = @srcdir@
+applib = FDL
+libdir = $(pubdir)/lib
+
+export pubdir utildir applib appname libdir
+
+SUBDIR = Actions Images
+
+TOP_MODULES =
+
+TAR = tar
+GZIP_ENV = --best
+
+export targetdir PACKAGE
+
+pages_not_xml = info.xml
+
+include $(utildir)/PubRule
+
+DISTFILES += $(SUBDIR)
+
+.PHONY: clean
+
+clean:	
+	/bin/rm -f *.*~ config.* Makefile $(appname)_init.php info.xml $(PACKAGE)-*webinst
+	/bin/rm -fr autom4te.cache
