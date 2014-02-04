@@ -286,7 +286,7 @@ class OfflineDomain extends \Dcp\Family\Dir
             $tsync[] = array(
                 "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v) ,
-                "syncCode" => substr($v->code, strlen('DomainSyncApi::')) ,
+                "syncCode" => substr($this->_stripNS($v->code), strlen('DomainSyncApi::')) ,
                 "syncAction" => $this->reportGetAction($v) ,
                 "syncMessage" => $this->reportGetMessage($v) ,
                 "syncStatus" => $this->reportGetStatus($v)
@@ -307,7 +307,7 @@ class OfflineDomain extends \Dcp\Family\Dir
     private function reportGetStatus($sync)
     {
         $status = "";
-        switch ($sync->code) {
+        switch ($this->_stripNS($sync->code)) {
             case 'DomainSyncApi::endTransaction':
                 switch ($sync->arg->status) {
                     case \Dcp\Offline\DomainSyncApi::successTransaction:
@@ -343,7 +343,7 @@ class OfflineDomain extends \Dcp\Family\Dir
     
     private function reportGetAction($sync)
     {
-        return _($sync->code); #  _("DomainSyncApi::bookDocument");_("DomainSyncApi::unbookDocument"); _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
+        return _($this->_stripNS($sync->code)); #  _("DomainSyncApi::bookDocument");_("DomainSyncApi::unbookDocument"); _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
         
     }
     
@@ -353,7 +353,7 @@ class OfflineDomain extends \Dcp\Family\Dir
         $updateMessage = "";
         $deleteMessage = "";
         
-        switch ($sync->code) {
+        switch ($this->_stripNS($sync->code)) {
             case 'DomainSyncApi::endTransaction':
                 $list = new \DocumentList();
                 $list->addDocumentIdentifiers(array_keys($sync->arg->detailStatus));
@@ -1530,5 +1530,15 @@ class OfflineDomain extends \Dcp\Family\Dir
         }
         
         return $err;
+    }
+    /**
+     * Strip namespace prefix in given class name.
+     *
+     * @param string $className class name with namespace
+     * @return string class name without namespace
+     */
+    private function _stripNS($className)
+    {
+        return preg_replace('/^.*\\\\/', '', $className);
     }
 }
