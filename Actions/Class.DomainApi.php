@@ -213,8 +213,20 @@ class DomainApi
         $out = '';
         if ($this->domain) {
             $docid = $config->docid;
-            
-            $err = $this->domain->insertSharedDocument($docid);
+            $doc = new_Doc('', $docid, true);
+            $reservedBy = null;
+            if ($doc->isAlive() && $doc->isLocked()) {
+                $userid = $this->domain->getSystemUserId();
+                if ($doc->locked == $userid && $doc->lockdomainid == $this->domain->id) {
+                    /*
+                     * IF the document is locked by the current user AND
+                     *    the document is domain locked on the current domain,
+                     * THEN it means the document is reserved by the current user.
+                    */
+                    $reservedBy = $doc->locked;
+                }
+            }
+            $err = $this->domain->insertSharedDocument($docid, $reservedBy);
             if ($err) $this->setError($err);
             $fdoc = new \Fdl_Document($docid);
             $out = $fdoc->getDocument(true, false);
