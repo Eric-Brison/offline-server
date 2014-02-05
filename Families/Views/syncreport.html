@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>[TEXT:Sync report] [date]</title>
-<style>
+<style type="text/css">
 @media screen, print {
     body {
         font-size: 9pt;
@@ -13,18 +13,9 @@
         margin: 0 10px 0 10px;
     }
     h1 {
-        background-color: #F6F6F6;
-        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#FFF),
-            to(#F6F6F6) );
-        background: -moz-linear-gradient(270deg, #FFF, #F6F6F6);
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
-        -moz-box-shadow: 1px 1px 2px #CCC;
-        -webkit-box-shadow: 1px 1px 2px #CCC;
+        background: #F6F6F6 linear-gradient(270deg, #FFF, #F6F6F6);
+        border-radius: 5px;
         box-shadow: 1px 1px 2px #CCC;
-        border: 1px solid #CCC;
         color: #666;
         text-shadow: 1px 1px 1px #FFF;
         padding: 15px 10px 15px 10px;
@@ -36,12 +27,13 @@
         padding-top: 2em;
     }
     table {
-        border-spacing: 0px;
+        width: 100%;
+        border-spacing: 0;
         border-collapse: collapse;
-        border: 0px solid red;
+        border: 0 solid red;
     }
     td {
-        border: 0px solid red;
+        border: 0 solid red;
     }
     td {
         border-bottom: 1px solid #AAA;
@@ -50,10 +42,7 @@
     }
     thead tr {
         border-bottom: 1px solid #AAA;
-        background-color: #D2D2D2;
-        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#D2D2D2),
-            to(#F3F3F3) );
-        background: -moz-linear-gradient(270deg, #D2D2D2, #F3F3F3);
+        background: #D2D2D2 linear-gradient(270deg, #D2D2D2, #F3F3F3);
     }
     tr:hover {
         background-color: #F6F6F1;
@@ -69,7 +58,7 @@
         font-size: 110%;
     }
     tr.beginTransaction td.syncAction {
-        padding-left: 0px;
+        padding-left: 0;
     }
     td.syncAction {
         padding-left: 20px;
@@ -116,7 +105,7 @@
         list-style-type: none;
     }
     li {
-        padding: 0px 3px 0px 3px;
+        padding: 0 3px 0 3px;
         border-right: 1px solid #CCC;
         float: left;
     }
@@ -129,16 +118,8 @@
         font-weight: bold;
         text-shadow: 0 1px 0 #fff;
         padding: 5px;
-        background-color: #F6F6F6;
-        background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#FFF),
-            to(#F6F6F6) );
-        background: -moz-linear-gradient(270deg, #FFF, #F6F6F6);
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-        border-bottom-left-radius: 5px;
-        border-bottom-right-radius: 5px;
-        -moz-box-shadow: 1px 1px 2px #CCC;
-        -webkit-box-shadow: 1px 1px 2px #CCC;
+        background: #F6F6F6 linear-gradient(270deg, #FFF, #F6F6F6);
+        border-radius: 5px;
         box-shadow: 1px 1px 2px #CCC;
         border: 1px solid #CCC;
     }
@@ -160,7 +141,8 @@
     }
 }
 </style>
-<script>
+<script type="text/javascript">
+// <![CDATA[
     window.allDisplayed = true;
     function showAll() {
         var tab = document.getElementById('synchro-result');
@@ -173,6 +155,7 @@
         }
         window.allDisplayed = (allDisplayed ? false : true);
     }
+// ]]>
 </script>
 </head>
 <body>

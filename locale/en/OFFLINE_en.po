@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-04 13:26+0200\n"
+"POT-Creation-Date: 2014-02-05 10:43+0100\n"
 "PO-Revision-Date: 2011-10-17 11:55+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#, c-format
+#, php-format
 msgid "%s Share folder"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "%s User folder"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "%s Users folder"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "%s following constraints are not validated: %s"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "%s has been downloaded"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "%s has been recorded"
 msgstr ""
 
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Domain"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "Domain %s"
 msgstr ""
 
@@ -85,6 +85,7 @@ msgstr "retrieve document"
 msgid "DomainSyncApi::unbookDocument"
 msgstr "unlock document"
 
+#, php-format
 msgid "Download offline client application"
 msgstr ""
 
@@ -94,19 +95,22 @@ msgstr ""
 msgid "Modification Date Menu"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "OFFLINE:%s directory not found"
 msgstr "Directory '%s' not found"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:%s directory not writable"
 msgstr "Directory '%s' not writable"
 
-#, c-format
+msgid "OFFLINE:DCPOFFLINE_REPORT_NB_RESULT_MAX"
+msgstr ""
+
+#, php-format
 msgid "OFFLINE:File '%s' not found"
 msgstr "File '%s' not found"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:File not found for '%s'"
 msgstr "File not found for '%s'"
 
@@ -131,11 +135,11 @@ msgstr "Offline data URL"
 msgid "OFFLINE:Offline update URL"
 msgstr "Offline update URL"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:Parameter %s must be set"
 msgstr "Parameter %s must be set"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:Transition non authorized from %s to %s"
 msgstr "Transition from %s to %s (non authorized)"
 
@@ -174,14 +178,14 @@ msgstr ""
 msgid "Reason"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "Remove from %s"
 msgstr ""
 
 msgid "Remove the document from share space"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "Set in %s"
 msgstr ""
 
@@ -197,14 +201,14 @@ msgstr ""
 msgid "Sync report"
 msgstr "Synchronization Report"
 
-#, c-format
+#, php-format
 msgid "Sync report %s.html"
 msgstr ""
 
 msgid "access to documents of my space"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "after save warning:%s\n"
 msgstr ""
 
@@ -214,36 +218,37 @@ msgstr ""
 msgid "book the document to modify it with offline application"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "delete document %s"
 msgstr ""
 
 msgid "delete documents :"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "document %s not found"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "document creation %s"
 msgstr ""
 
+#, php-format
 msgid "document creation failed"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "document is already book in other domain : %s"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "document to book not exists %s"
 msgstr ""
 
 msgid "domain not set"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "download document %s"
 msgstr ""
 
@@ -253,26 +258,23 @@ msgstr ""
 msgid "endTransaction:no transaction identificator"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "file %s must be a PHP file"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "file %s must be relative"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "file %s not exists"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "file %s not implement DomainHook"
 msgstr ""
 
 msgid "icon"
-msgstr ""
-
-msgid "id"
 msgstr ""
 
 msgid "insert the document to see it with offline application"
@@ -284,7 +286,7 @@ msgstr ""
 msgid "list documents in space"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "lock must be in domain %s"
 msgstr ""
 
@@ -306,30 +308,33 @@ msgstr ""
 msgid "not a member domain"
 msgstr ""
 
-#, c-format
 msgid "off:conflict"
 msgstr ""
 
-#, c-format
 msgid "off:constraint"
 msgstr ""
 
-#, c-format
 msgid "off:invalid"
 msgstr ""
 
-#, c-format
 msgid "off:upToDate"
+msgstr ""
+
+msgid "offline admin"
 msgstr ""
 
 msgid "offline management"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "push:invalid document : %s"
 msgstr ""
 
 msgid "push:no document found"
+msgstr ""
+
+#, php-format
+msgid "reference %s exists"
 msgstr ""
 
 msgid "remove from my space"
@@ -350,11 +355,11 @@ msgstr "Message"
 msgid "syncPrint"
 msgstr "Print"
 
-#, c-format
+#, php-format
 msgid "synchro: %s"
 msgstr ""
 
-#, c-format
+#, php-format
 msgid "synchronize change state to %s"
 msgstr ""
 

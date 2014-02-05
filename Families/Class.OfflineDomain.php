@@ -274,6 +274,9 @@ class OfflineDomain extends \Dcp\Family\Dir
         $q->order_by = "date desc";
         
         $r = $q->query(0, getParam("DCPOFFLINE_REPORT_NB_RESULT_MAX", 200) , "TABLE");
+        if ($r === false) {
+            $r = array();
+        }
         $tsync = array();
         foreach ($r as $k => $v) {
             
@@ -283,7 +286,7 @@ class OfflineDomain extends \Dcp\Family\Dir
             $tsync[] = array(
                 "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v) ,
-                "syncCode" => substr($v->code, strlen('DomainSyncApi::')) ,
+                "syncCode" => substr($this->_stripNS($v->code) , strlen('DomainSyncApi::')) ,
                 "syncAction" => $this->reportGetAction($v) ,
                 "syncMessage" => $this->reportGetMessage($v) ,
                 "syncStatus" => $this->reportGetStatus($v)
@@ -304,14 +307,14 @@ class OfflineDomain extends \Dcp\Family\Dir
     private function reportGetStatus($sync)
     {
         $status = "";
-        switch ($sync->code) {
+        switch ($this->_stripNS($sync->code)) {
             case 'DomainSyncApi::endTransaction':
                 switch ($sync->arg->status) {
                     case \Dcp\Offline\DomainSyncApi::successTransaction:
                         $status = "ok";
                         foreach ($sync->arg->detailStatus as $dstatus) {
                             $dstatus = (object)$dstatus;
-                            if ($dstatus->saveInfo->onAfterSaveChangeState || $dstatus->saveInfo->onAfterSaveDocument) {
+                            if ((isset($dstatus->saveInfo->onAfterSaveChangeState) && $dstatus->saveInfo->onAfterSaveChangeState) || (isset($dstatus->saveInfo->onAfterSaveDocument) && $dstatus->saveInfo->onAfterSaveDocument)) {
                                 $status = "warn";
                                 break;
                             }
@@ -340,8 +343,7 @@ class OfflineDomain extends \Dcp\Family\Dir
     
     private function reportGetAction($sync)
     {
-        return _($sync->code); #  _("DomainSyncApi::bookDocument");_("DomainSyncApi::unbookDocument"); _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
-        
+        return _($this->_stripNS($sync->code));
     }
     
     private function reportGetMessage($sync)
@@ -350,7 +352,7 @@ class OfflineDomain extends \Dcp\Family\Dir
         $updateMessage = "";
         $deleteMessage = "";
         
-        switch ($sync->code) {
+        switch ($this->_stripNS($sync->code)) {
             case 'DomainSyncApi::endTransaction':
                 $list = new \DocumentList();
                 $list->addDocumentIdentifiers(array_keys($sync->arg->detailStatus));
@@ -406,7 +408,7 @@ class OfflineDomain extends \Dcp\Family\Dir
 
             case 'DomainSyncApi::getUserDocuments':
             case 'DomainSyncApi::getSharedDocuments':
-                if (is_array($sync->arg->documentsToUpdate)) {
+                if (isset($sync->arg->documentsToUpdate) && is_array($sync->arg->documentsToUpdate)) {
                     $list = new \DocumentList();
                     $list->addDocumentIdentifiers($sync->arg->documentsToUpdate);
                     $msgdoc = array();
@@ -422,7 +424,7 @@ class OfflineDomain extends \Dcp\Family\Dir
                         $updateMessage = '';
                     }
                 }
-                if (is_array($sync->arg->documentsToDelete)) {
+                if (isset($sync->arg->documentsToDelete) && is_array($sync->arg->documentsToDelete)) {
                     $list = new \DocumentList();
                     $list->addDocumentIdentifiers($sync->arg->documentsToDelete);
                     $msgdoc = array();
@@ -482,10 +484,10 @@ class OfflineDomain extends \Dcp\Family\Dir
                 $msgdoc = '';
         }
         $statusMessage = '';
-        if ($status->saveInfo->onAfterSaveDocument) {
+        if (isset($status->saveInfo->onAfterSaveDocument) && $status->saveInfo->onAfterSaveDocument) {
             $statusMessage.= sprintf(_("after save warning:%s\n") , $status->saveInfo->onAfterSaveDocument);
         }
-        if ($status->saveInfo->onAfterSaveChangeState) {
+        if (isset($status->saveInfo->onAfterSaveChangeState) && $status->saveInfo->onAfterSaveChangeState) {
             $statusMessage.= sprintf(("%s\n") , $status->saveInfo->onAfterSaveChangeState);
         }
         if (!$msgConstraint) {
@@ -1527,5 +1529,32 @@ class OfflineDomain extends \Dcp\Family\Dir
         }
         
         return $err;
+    }
+    /**
+     * Strip namespace prefix in given class name.
+     *
+     * @param string $className class name with namespace
+     * @return string class name without namespace
+     */
+    private function _stripNS($className)
+    {
+        return preg_replace('/^.*\\\\/', '', $className);
+    }
+    /**
+     * Declaration of custom gettext's msgids to add in .po files
+     */
+    static function __gettext_msgid__()
+    {
+        return array(
+            _("DomainSyncApi::bookDocument") ,
+            _("DomainSyncApi::unbookDocument") ,
+            _("DomainSyncApi::removeUserDocument") ,
+            _("DomainSyncApi::endTransaction") ,
+            _("DomainSyncApi::beginTransaction") ,
+            _("DomainSyncApi::getUserDocuments") ,
+            _("DomainSyncApi::getSharedDocuments") ,
+            _("DomainSyncApi::revertDocument") ,
+            _("DomainSyncApi::pushDocument")
+        );
     }
 }
