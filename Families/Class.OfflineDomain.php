@@ -1450,26 +1450,20 @@ class OfflineDomain extends \Dcp\Family\Dir
     /**
      * Test if the file exist and if it contains a class that implements DomainHook
      *
-     * @param $filepath
+     * @param $className
      * @return string
      */
-    public function isPHPFile($filepath)
+    public function isClassExist($className)
     {
-        if ($filepath) {
-            if (strstr($filepath, '..')) {
-                return sprintf(_("file %s must be relative") , $filepath);
-            }
-            if (!file_exists(sprintf("%s/%s", DEFAULT_PUBDIR, $filepath))) {
-                return sprintf(_("file %s not exists") , $filepath);
-            }
-            if (!preg_match('/\.php$/', $filepath)) {
-                return sprintf(_("file %s must be a PHP file") , $filepath);
-            }
-            $fileContent = file_get_contents($filepath);
-            /* TODO : use reflection */
-            if (!preg_match('/class\s+([a-z_0-9]+)\s+implements\s+DomainHook/ims', $fileContent, $regs)) {
-                return sprintf(_("file %s not implement DomainHook") , $filepath);
-            }
+        if (empty($className)) {
+            return "";
+        }
+        if (!class_exists($className)) {
+            return sprintf("The class %s doesn't exist", $className);
+        }
+        $hookObject = new $className();
+        if (!is_subclass_of($hookObject, 'Dcp\Offline\DomainHook')) {
+            return sprintf("The class %s is not a subclass of Dcp\\Offline\\DomainHook", $className);
         }
         return "";
     }
@@ -1481,20 +1475,7 @@ class OfflineDomain extends \Dcp\Family\Dir
     {
         if (!$this->hookObject) {
             $hookPath = $this->getRawValue(MyAttributes::off_hookpath);
-            if ($hookPath) {
-                if (!strstr($hookPath, '..')) {
-                    /** @noinspection PhpIncludeInspection */
-                    require_once $hookPath;
-                    // search the classname
-                    $fileContent = file_get_contents($hookPath);
-                    if (preg_match('/class\s+([a-z_0-9]+)\s+implements\s+DomainHook/i', $fileContent, $regs)) {
-                        $className = $regs[1];
-                        $this->hookObject = new $className();
-                    } else {
-                        addWarningMsg("hook class not implement DomainHook");
-                    }
-                }
-            }
+            $this->hookObject = new $hookPath();
         }
         return $this->hookObject;
     }
