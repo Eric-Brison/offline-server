@@ -220,6 +220,10 @@ class DomainViewApi
         if (($visibility != "I") && ($visibility != "H")) {
             $label = $oa->encodeXml($oa->getLabel() , true);
             switch ($oa->type) {
+                case 'account':
+                    $out = sprintf('<xul:dcpAttribute label="%s" type="%s" attrid="%s" mode="view" relationFamily="%s" multiple="%s"/>', $label, $oa->type, $oa->id, trim($oa->format) ? trim($oa->format) : "IUSER", ($oa->getOption("multiple") == "yes") ? "true" : "false");
+                    break;
+
                 case 'docid':
                     $out = sprintf('<xul:dcpAttribute label="%s" type="%s" attrid="%s" mode="view" relationFamily="%s" multiple="%s"/>', $label, $oa->type, $oa->id, trim($oa->format) , ($oa->getOption("multiple") == "yes") ? "true" : "false");
                     break;
@@ -318,6 +322,9 @@ class DomainViewApi
             $label = $oa->encodeXml($oa->getLabel() , true);
             $common = sprintf(' label="%s" type="%s" attrid="%s" mode="edit" visibility="%s" required="%s" defaultValue="%s" %s', $label, $oa->type, $oa->id, $visibility, $oa->needed ? 'true' : 'false', $this->getDefaultValue($oa->id) , $opt);
             switch ($oa->type) {
+                case 'account':
+                    $out = sprintf('<xul:dcpAttribute %s relationFamily="%s" multiple="%s"/>', $common, trim($oa->format) ? trim($oa->format) : "IUSER", ($oa->getOption("multiple") == "yes") ? "true" : "false");
+                    break;
                 case 'docid':
                     $out = sprintf('<xul:dcpAttribute %s relationFamily="%s" multiple="%s"/>', $common, trim($oa->format) , ($oa->getOption("multiple") == "yes") ? "true" : "false");
                     break;
