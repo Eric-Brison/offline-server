@@ -13,7 +13,7 @@ ATTR;OFF_ALLFAMILIES;OFF_FR_CONFIG;Familles utilisables (cache);N;N;docid("-1");
 ATTR;OFF_ADMINS;OFF_FR_CONFIG;Administrateurs;N;N;docid("IUSER");160;W;;;;;;;multiple=yes|isuser=yes
 ATTR;OFF_TRANSACTIONPOLICY;OFF_FR_CONFIG;Politique de synchronisation;N;N;enum;170;W;;;;global|Synchronisation globale seulement,partial|Synchronisation partielle,one|Autoriser la synchronisation unitaire;;;system=yes|bmenu=no
 ATTR;OFF_SHAREPOLICY;OFF_FR_CONFIG;Gestion espace partagé;N;N;enum;180;W;;;;none|Pas de partage,admin|Limité aux administrateurs,users|Modifiable par tous;;;system=yes|bmenu=no
-ATTR;OFF_HOOKPATH;OFF_FR_CONFIG;Hameçons (PHP);N;N;text;190;W;;;;;;::isPHPfile(OFF_HOOKPATH);
+ATTR;OFF_HOOKPATH;OFF_FR_CONFIG;Hameçons (PHP);N;N;text;190;W;;;;;;::isClassExist(OFF_HOOKPATH);
 ATTR;OFF_FR_MEMBERS;;Membres;N;N;frame;200;W;;;;;;;
 ATTR;OFF_T_GROUPMEMBERS;OFF_FR_MEMBERS;Groupes Membres;N;N;array;210;W;;;;;;;
 ATTR;OFF_GROUP_MEMBERS;OFF_T_GROUPMEMBERS;Groupes;N;N;docid("IGROUP");220;W;;;;;;;isuser=yes
