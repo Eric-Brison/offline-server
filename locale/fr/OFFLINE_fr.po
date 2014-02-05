@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-04 13:26+0200\n"
-"PO-Revision-Date: 2011-10-24 14:41+0200\n"
+"POT-Creation-Date: 2014-02-05 10:43+0100\n"
+"PO-Revision-Date: 2014-02-05 10:49+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#, c-format
+#, php-format
 msgid "%s Share folder"
 msgstr "Dossier partagé %s"
 
-#, c-format
+#, php-format
 msgid "%s User folder"
 msgstr "Espace de %s"
 
-#, c-format
+#, php-format
 msgid "%s Users folder"
 msgstr "Espaces utilisateur %s"
 
-#, c-format
+#, php-format
 msgid "%s following constraints are not validated: %s"
 msgstr "%s les contraintes suivantes ne sont pas respectées : %s"
 
-#, c-format
+#, php-format
 msgid "%s has been downloaded"
 msgstr "téléchargement de %s"
 
-#, c-format
+#, php-format
 msgid "%s has been recorded"
 msgstr "enregistrement de %s"
 
@@ -54,7 +54,7 @@ msgstr "Effacer le dossier utilisateur"
 msgid "Domain"
 msgstr "Domaine"
 
-#, c-format
+#, php-format
 msgid "Domain %s"
 msgstr "Domaine %s"
 
@@ -85,6 +85,7 @@ msgstr "récupération d'un document"
 msgid "DomainSyncApi::unbookDocument"
 msgstr "Déverrouillage du document"
 
+#, php-format
 msgid "Download offline client application"
 msgstr "Télécharger l'application offline"
 
@@ -94,19 +95,22 @@ msgstr "Masquer les status OK"
 msgid "Modification Date Menu"
 msgstr "Date de modification"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:%s directory not found"
 msgstr "Répertoire '%s' non trouvé"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:%s directory not writable"
 msgstr "Répertoire '%s' non accessible en écriture"
 
-#, c-format
+msgid "OFFLINE:DCPOFFLINE_REPORT_NB_RESULT_MAX"
+msgstr ""
+
+#, php-format
 msgid "OFFLINE:File '%s' not found"
 msgstr "Fichier '%s' non trouvé"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:File not found for '%s'"
 msgstr "Fichier non trouvé pour '%s'"
 
@@ -131,11 +135,11 @@ msgstr "URL de données du client Offline"
 msgid "OFFLINE:Offline update URL"
 msgstr "URL de mise à jour du client Offline"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:Parameter %s must be set"
 msgstr "Le paramètre %s doit être renseigné"
 
-#, c-format
+#, php-format
 msgid "OFFLINE:Transition non authorized from %s to %s"
 msgstr "Transition de %s à %s (non autorisée)"
 
@@ -178,14 +182,14 @@ msgstr "Propriétés"
 msgid "Reason"
 msgstr "Raison"
 
-#, c-format
+#, php-format
 msgid "Remove from %s"
 msgstr "Enlever du %s"
 
 msgid "Remove the document from share space"
 msgstr "Enlever le document de l'espace partagé"
 
-#, c-format
+#, php-format
 msgid "Set in %s"
 msgstr "Mettre dans %s"
 
@@ -201,14 +205,14 @@ msgstr "Status"
 msgid "Sync report"
 msgstr "Rapport de synchronisation"
 
-#, c-format
+#, php-format
 msgid "Sync report %s.html"
 msgstr "Rapport de synchronisation %s.html"
 
 msgid "access to documents of my space"
 msgstr "accès aux documents de mon espace"
 
-#, c-format
+#, php-format
 msgid "after save warning:%s\n"
 msgstr "Avertissement suite à l'enregistrement : %s\n"
 
@@ -218,36 +222,37 @@ msgstr "api pour le domain de l'utilisateur courant"
 msgid "book the document to modify it with offline application"
 msgstr "réserver le document pour modification avec l'application offline"
 
-#, c-format
+#, php-format
 msgid "delete document %s"
 msgstr "suppression du document %s"
 
 msgid "delete documents :"
 msgstr "suppression des documents :"
 
-#, c-format
+#, php-format
 msgid "document %s not found"
 msgstr "document %s non trouvé"
 
-#, c-format
+#, php-format
 msgid "document creation %s"
 msgstr "création du document %s"
 
+#, php-format
 msgid "document creation failed"
 msgstr "erreur lors de la création d'un document"
 
-#, c-format
+#, php-format
 msgid "document is already book in other domain : %s"
 msgstr "document est déjà réservé dans un autre domaine : %s"
 
-#, c-format
+#, php-format
 msgid "document to book not exists %s"
 msgstr "document à réserver n'existe pas %s"
 
 msgid "domain not set"
 msgstr "domaine non initialisé"
 
-#, c-format
+#, php-format
 msgid "download document %s"
 msgstr "téléchargement du document %s"
 
@@ -257,27 +262,24 @@ msgstr "téléchargement des documents :"
 msgid "endTransaction:no transaction identificator"
 msgstr "fin de transaction : pas d'identificateur de transation"
 
-#, c-format
+#, php-format
 msgid "file %s must be a PHP file"
 msgstr "le fichier %s doit être un fichier PHP"
 
-#, c-format
+#, php-format
 msgid "file %s must be relative"
 msgstr "le fichier %s doit être relatif"
 
-#, c-format
+#, php-format
 msgid "file %s not exists"
 msgstr "le fichier %s n'existe pas"
 
-#, c-format
+#, php-format
 msgid "file %s not implement DomainHook"
 msgstr "le fichier %s doit implanter l'interface DomainHook"
 
 msgid "icon"
 msgstr "icone"
-
-msgid "id"
-msgstr "ide"
 
 msgid "insert the document to see it with offline application"
 msgstr "insérer le document pour lecture avec l'application offline"
@@ -288,7 +290,7 @@ msgstr "interface pour organiser les documents hors-lignes"
 msgid "list documents in space"
 msgstr "listes les documents d'un espace"
 
-#, c-format
+#, php-format
 msgid "lock must be in domain %s"
 msgstr "le verrou doit être dans le domaine %s"
 
@@ -310,31 +312,34 @@ msgstr "pas de dossier partagé"
 msgid "not a member domain"
 msgstr "n'est pas un membre du domaine"
 
-#, c-format
 msgid "off:conflict"
 msgstr "Conflit"
 
-#, c-format
 msgid "off:constraint"
 msgstr "Contrainte"
 
-#, c-format
 msgid "off:invalid"
 msgstr "Invalide"
 
-#, c-format
 msgid "off:upToDate"
 msgstr "Mis à jour"
+
+msgid "offline admin"
+msgstr "Administration mode déconnecté"
 
 msgid "offline management"
 msgstr "Mode déconnecté"
 
-#, c-format
+#, php-format
 msgid "push:invalid document : %s"
 msgstr "téléversement : document invalide : %s"
 
 msgid "push:no document found"
 msgstr "téléversement : pas de document trouvé"
+
+#, php-format
+msgid "reference %s exists"
+msgstr ""
 
 msgid "remove from my space"
 msgstr "enlever de mon espace"
@@ -354,11 +359,11 @@ msgstr "Message"
 msgid "syncPrint"
 msgstr "Imprimer"
 
-#, c-format
+#, php-format
 msgid "synchro: %s"
 msgstr "synchronisation : %s"
 
-#, c-format
+#, php-format
 msgid "synchronize change state to %s"
 msgstr "changement d'état par synchronisation vers %s"
 
@@ -385,3 +390,6 @@ msgstr "voir mon espace"
 
 #~ msgid "Parameter %s must be set."
 #~ msgstr "Le paramètre %s doit être renseigné."
+
+#~ msgid "id"
+#~ msgstr "ide"

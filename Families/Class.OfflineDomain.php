@@ -286,7 +286,7 @@ class OfflineDomain extends \Dcp\Family\Dir
             $tsync[] = array(
                 "oddClass" => ($k % 2 == 0) ? "even" : "odd",
                 "syncDate" => $this->reportGetDate($v) ,
-                "syncCode" => substr($this->_stripNS($v->code), strlen('DomainSyncApi::')) ,
+                "syncCode" => substr($this->_stripNS($v->code) , strlen('DomainSyncApi::')) ,
                 "syncAction" => $this->reportGetAction($v) ,
                 "syncMessage" => $this->reportGetMessage($v) ,
                 "syncStatus" => $this->reportGetStatus($v)
@@ -343,8 +343,7 @@ class OfflineDomain extends \Dcp\Family\Dir
     
     private function reportGetAction($sync)
     {
-        return _($this->_stripNS($sync->code)); #  _("DomainSyncApi::bookDocument");_("DomainSyncApi::unbookDocument"); _("DomainSyncApi::removeUserDocument");_("DomainSyncApi::endTransaction"); _("DomainSyncApi::beginTransaction");_("DomainSyncApi::getUserDocuments");_("DomainSyncApi::getSharedDocuments"); _("DomainSyncApi::revertDocument"); _("DomainSyncApi::pushDocument");
-        
+        return _($this->_stripNS($sync->code));
     }
     
     private function reportGetMessage($sync)
@@ -1540,5 +1539,22 @@ class OfflineDomain extends \Dcp\Family\Dir
     private function _stripNS($className)
     {
         return preg_replace('/^.*\\\\/', '', $className);
+    }
+    /**
+     * Declaration of custom gettext's msgids to add in .po files
+     */
+    static function __gettext_msgid__()
+    {
+        return array(
+            _("DomainSyncApi::bookDocument") ,
+            _("DomainSyncApi::unbookDocument") ,
+            _("DomainSyncApi::removeUserDocument") ,
+            _("DomainSyncApi::endTransaction") ,
+            _("DomainSyncApi::beginTransaction") ,
+            _("DomainSyncApi::getUserDocuments") ,
+            _("DomainSyncApi::getSharedDocuments") ,
+            _("DomainSyncApi::revertDocument") ,
+            _("DomainSyncApi::pushDocument")
+        );
     }
 }
