@@ -1474,8 +1474,10 @@ class OfflineDomain extends \Dcp\Family\Dir
     public function hook()
     {
         if (!$this->hookObject) {
-            $hookPath = $this->getRawValue(MyAttributes::off_hookpath);
-            $this->hookObject = new $hookPath();
+            $hookPath = $this->getRawValue(MyAttributes::off_hookpath, false);
+            if ($hookPath !== false) {
+                $this->hookObject = new $hookPath();
+            }
         }
         return $this->hookObject;
     }
