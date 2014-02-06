@@ -73,7 +73,7 @@ function _main {
     ( cd "$PKG_NAME/dist" && find . -maxdepth 1 -type f ) | sed -e 's:\./\(.*\)$:Delete "$INSTDIR\\\1":' > "$PKG_NAME/uninstall_files.nsi"
     ( cd "$PKG_NAME/dist" && ls -d */ ) | sed -e 's:^\(.*\)$:RMDir /r "$INSTDIR\\\1":' > "$PKG_NAME/uninstall_dirs.nsi"
 
-    ( cd "$PKG_NAME" && makensis -V2 build.nsi)
+    ( cd "$PKG_NAME" && makensis -V2 -DPRODUCT_VERSION="${APP_VERSION}" build.nsi)
 
     cp "$PKG_NAME/dynacase-offline-setup.exe" "$OUTPUT"
 

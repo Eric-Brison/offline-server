@@ -42,5 +42,4 @@ fi
 #AC_OUTPUT(Makefile GEARS_init.php info.xml)
 AC_OUTPUT(Makefile Admin/Makefile OFFLINE_init.php Admin/OFFLINE_ADMIN_init.php info.xml Admin/info.xml \
           targets/mac/universal/Dynacase\\ Offline.app.template/Contents/Info.plist \
-	  targets/win/32/build.nsi \
 )
