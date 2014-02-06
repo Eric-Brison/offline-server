@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-05 10:43+0100\n"
+"POT-Creation-Date: 2014-02-06 11:40+0100\n"
 "PO-Revision-Date: 2011-10-17 11:55+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -258,22 +258,6 @@ msgstr ""
 msgid "endTransaction:no transaction identificator"
 msgstr ""
 
-#, php-format
-msgid "file %s must be a PHP file"
-msgstr ""
-
-#, php-format
-msgid "file %s must be relative"
-msgstr ""
-
-#, php-format
-msgid "file %s not exists"
-msgstr ""
-
-#, php-format
-msgid "file %s not implement DomainHook"
-msgstr ""
-
 msgid "icon"
 msgstr ""
 
@@ -342,6 +326,12 @@ msgstr ""
 
 msgid "remove the document from my space"
 msgstr ""
+
+msgid "sync:There are errors"
+msgstr "There are errors"
+
+msgid "sync:Transaction OK"
+msgstr "Transaction OK"
 
 msgid "syncAction"
 msgstr "Action"

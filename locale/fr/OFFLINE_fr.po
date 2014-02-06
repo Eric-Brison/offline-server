@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dynacase-offline\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-05 10:43+0100\n"
+"POT-Creation-Date: 2014-02-06 11:40+0100\n"
 "PO-Revision-Date: 2014-02-05 10:49+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -262,22 +262,6 @@ msgstr "téléchargement des documents :"
 msgid "endTransaction:no transaction identificator"
 msgstr "fin de transaction : pas d'identificateur de transation"
 
-#, php-format
-msgid "file %s must be a PHP file"
-msgstr "le fichier %s doit être un fichier PHP"
-
-#, php-format
-msgid "file %s must be relative"
-msgstr "le fichier %s doit être relatif"
-
-#, php-format
-msgid "file %s not exists"
-msgstr "le fichier %s n'existe pas"
-
-#, php-format
-msgid "file %s not implement DomainHook"
-msgstr "le fichier %s doit implanter l'interface DomainHook"
-
 msgid "icon"
 msgstr "icone"
 
@@ -347,6 +331,12 @@ msgstr "enlever de mon espace"
 msgid "remove the document from my space"
 msgstr "enlever le document de mon espace"
 
+msgid "sync:There are errors"
+msgstr "Des élements demandent votre attention"
+
+msgid "sync:Transaction OK"
+msgstr "Synchronisation OK"
+
 msgid "syncAction"
 msgstr "Action"
 
@@ -390,6 +380,18 @@ msgstr "voir mon espace"
 
 #~ msgid "Parameter %s must be set."
 #~ msgstr "Le paramètre %s doit être renseigné."
+
+#~ msgid "file %s must be a PHP file"
+#~ msgstr "le fichier %s doit être un fichier PHP"
+
+#~ msgid "file %s must be relative"
+#~ msgstr "le fichier %s doit être relatif"
+
+#~ msgid "file %s not exists"
+#~ msgstr "le fichier %s n'existe pas"
+
+#~ msgid "file %s not implement DomainHook"
+#~ msgstr "le fichier %s doit implanter l'interface DomainHook"
 
 #~ msgid "id"
 #~ msgstr "ide"
