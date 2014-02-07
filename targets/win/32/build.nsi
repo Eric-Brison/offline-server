@@ -1,6 +1,8 @@
 !define PRODUCT_NAME "Dynacase Offline"
+!ifndef PRODUCT_VERSION
+    !error "PRODUCT_VERSION is not defined!"
+!endif
 !define PRODUCT_INTERNAL_NAME "dynacase-offline"
-!define PRODUCT_VERSION "@VERSION@"
 !define PRODUCT_WIN_VERSION "1.0.0.0"
 
 !define MESSAGEWINDOW_NAME "${PRODUCT_NAME}MessageWindow"
