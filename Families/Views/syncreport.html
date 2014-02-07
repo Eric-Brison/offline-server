@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -12,7 +12,7 @@
         background-color: #FFF;
         margin: 0 10px 0 10px;
     }
-    h1 {
+    h1, h2 {
         background: #F6F6F6 linear-gradient(270deg, #FFF, #F6F6F6);
         border-radius: 5px;
         box-shadow: 1px 1px 2px #CCC;
@@ -20,6 +20,11 @@
         text-shadow: 1px 1px 1px #FFF;
         padding: 15px 10px 15px 10px;
         border: 1px solid #444;
+        text-align: center;
+    }
+    .error {
+        background: #ffb03c;
+        text-shadow: 1px 1px 1px #545454;
     }
     h1 span.domain {
         float: right;
@@ -143,31 +148,82 @@
 </style>
 <script type="text/javascript">
 // <![CDATA[
-    window.allDisplayed = true;
-    function showAll() {
-        var tab = document.getElementById('synchro-result');
-        var elts = document.getElementsByTagName("tr");
-        for ( var i = 0; i < elts.length; i++) {
-            status = elts[i].getAttribute("status");
-            if (status == "ok") {
-                elts[i].style.display = (allDisplayed ? "none" : "table-row");
+    (function() {
+        window.allDisplayed = true;
+        var hidePreviousElements, hideHeader, computeStatus;
+        window.showAll = function showAll() {
+            var status;
+            var elts = document.getElementsByClassName("docLog");
+            for (var i = 0; i < elts.length; i++) {
+                status = elts[i].getAttribute("data-status");
+                if (status == "ok") {
+                    elts[i].style.display = (allDisplayed ? "none" : "table-row");
+                }
             }
-        }
-        window.allDisplayed = (allDisplayed ? false : true);
-    }
+            window.allDisplayed = (allDisplayed ? false : true);
+        };
+
+        hidePreviousElements = function() {
+            var element, hideElements = function (element) {
+                element.style.display = "none";
+                if (element.nextElementSibling) {
+                    hideElements(element.nextElementSibling);
+                }
+            };
+            element = document.getElementsByClassName("beginTransaction")[0];
+            hideElements(element.nextElementSibling);
+        };
+        hideHeader = function() {
+            document.getElementById("header").style.display = "none";
+        };
+        computeStatus = function() {
+            var currentStatus, status = true;
+            var elts = document.getElementsByClassName("docLog");
+            for (var i = 0; i < elts.length; i++) {
+                currentStatus = elts[i].getAttribute("data-status");
+                if (elts[i].style.display !== "none" && currentStatus !== "ok") {
+                    status = false;
+                    break;
+                }
+            }
+            showAll();
+            if (status) {
+                document.getElementById("synchro-head").style.display = "none";
+                document.getElementById("transactionOK").style.display = "";
+            } else {
+                document.getElementById("transactionKO").style.display = "";
+            }
+        };
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.location.hash === "#showOnlyLastTransaction") {
+                hidePreviousElements();
+                hideHeader();
+                computeStatus();
+            }
+        }, false);
+    })();
+
 // ]]>
 </script>
 </head>
 <body>
-<h1>[TEXT:Sync report] [date]<span class="domain">[TEXT:Domain] : [domain]</span></h1>
-<h2><span class="username">[username]</span></h2>
-<div class="button" >
-<a href="#" onclick="showAll()">[TEXT:Hide OK status]</a>
-<a href="#" onclick="self.print()">[TEXT:syncPrint]</a></div>
+<header id="header">
+    <h1>[TEXT:Sync report] [date]<span class="domain">[TEXT:Domain] : [domain]</span></h1>
+    <h2><span class="username">[username]</span></h2>
+    <div class="button" >
+        <a href="#" onclick="showAll()">[TEXT:Hide OK status]</a>
+        <a href="#" onclick="self.print()">[TEXT:syncPrint]</a>
+    </div>
+</header>
+<div id="transactionOK" style="display: none;">
+    <h1>[TEXT:sync:Transaction OK]</h1>
+</div>
+<div id="transactionKO" style="display: none;">
+    <h2 class="error">[TEXT:sync:There are errors]</h2>
+</div>
 <table id="synchro-result">
-    <thead>
-        <tr>
-            <th></th>
+    <thead id="synchro-head">
+        <tr> <th></th>
             <th>[TEXT:syncAction]</th>
             <th>[TEXT:syncMessage]</th>
             <th>[TEXT:syncDate]</th>
@@ -175,8 +231,8 @@
     </thead>
     <tbody>
         [BLOCK MSG]
-        <tr class="[syncStatus] [syncCode] [oddClass]"
-            status="[syncStatus]" code="[syncCode]">
+        <tr class="docLog [syncStatus] [syncCode] [oddClass]"
+            data-status="[syncStatus]" data-code="[syncCode]">
             <td class="syncStatus"></td>
             <td class="syncAction">[syncAction]</td>
             <td class="syncMessage">[syncMessage]</td>
