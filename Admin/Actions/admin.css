@@ -1,5 +1,9 @@
 @CHARSET "UTF-8";
 
+html, body {
+    background : whitesmoke;
+}
+
 #content {
     padding: 20px;
 }
